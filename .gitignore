@@ -8,10 +8,10 @@
 !.gitignore
 !.gitattributes
 
-# Allow only the _Game folder
+# Allow only the _Custom folder
 !Assets/
-!Assets/_Game/
-!Assets/_Game/**
+!Assets/_Custom/
+!Assets/_Custom/**
 
 # This .gitignore file should be placed at the root of your Unity project directory
 #
@@ -115,3 +115,4 @@ InitTestScene*.unity*
 
 # Unity meta files
 *.meta
+!Assets/_Custom/**/*.meta
