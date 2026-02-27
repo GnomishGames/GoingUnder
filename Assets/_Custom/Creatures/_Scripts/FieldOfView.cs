@@ -8,6 +8,7 @@ public class FieldOfView : MonoBehaviour
     public float viewAngle;
 
     public LayerMask targetMask; //creatures that can be seen/heard
+    public LayerMask obsticleMask; //walls/objects that block sight/hearing
 
     public List<Interactable> visibleTargets = new List<Interactable>();
 
@@ -47,7 +48,7 @@ public class FieldOfView : MonoBehaviour
                 if (Vector3.Angle(transform.forward, dirToTarget) < characterStats.characterRace.viewAngle / 2)
                 {
                     float disToTarget = Vector3.Distance(transform.position, target.transform.position);
-                    if (!Physics.Raycast(transform.position, dirToTarget, disToTarget) && !targetStats.dead) //no obstacles in the way!
+                    if (!Physics.Raycast(transform.position, dirToTarget, disToTarget, obsticleMask) && !targetStats.dead) //no obstacles in the way!
                     {
                         visibleTargets.Add(target);
                         visibleTargets.Remove(transform.GetComponent<Interactable>());
