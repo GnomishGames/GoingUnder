@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class Camera : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
     //camera
-    Camera cam;
+    CameraController cam;
 
     //mouse
     Vector2 mousePos;
@@ -19,7 +19,7 @@ public class Camera : MonoBehaviour
 
     void Start()
     {
-        cam = GetComponent<Camera>();
+        cam = GetComponent<CameraController>();
         originalPosition = cam.transform.localPosition;
         originalRotation = cam.transform.localRotation;
     }
