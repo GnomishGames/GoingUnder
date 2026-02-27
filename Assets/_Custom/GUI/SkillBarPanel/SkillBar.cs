@@ -6,7 +6,7 @@ public class SkillBar : MonoBehaviour
     public SkillBook skillBook;
 
     //skills that are equipped to the skill panel
-    public SkillSO[] skillSOs = new SkillSO[8];
+    public SkillSO[] skillSOs = new SkillSO[10];
 
     //event triggered when a skill slot changes (passes slot number)
     public event Action<int> OnSkillChanged;

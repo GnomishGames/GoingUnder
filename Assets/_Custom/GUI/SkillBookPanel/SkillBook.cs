@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SkillBook : MonoBehaviour
 {
-    public SkillSO[] skillSOs = new SkillSO[10];
+    public SkillSO[] skillSOs = new SkillSO[24];
 
     //panel references
     public SkillBarPanel skillBarPanel;
