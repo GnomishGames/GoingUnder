@@ -3,10 +3,15 @@ using TMPro;
 
 public class UIStatUpdate : MonoBehaviour
 {
-    [SerializeField] private CreatureStats creatureStats;
-    [SerializeField] private GameObject panelWithPlayerTag;
-    public Transform player;
-    [SerializeField] private TextMeshProUGUI textDisplay;
+
+    /*
+    This script is attached to text objects in the character panel and updates their display when the corresponding stat changes.
+    It uses the name of the GameObject it's attached to determine which stat to display (e.g. "Health", "Mana", "StrengthScore", etc.)
+    */
+
+    Transform player;
+    CreatureStats creatureStats;
+    TextMeshProUGUI textDisplay;
     [SerializeField] private string prefix = "";
     [SerializeField] private string suffix = "";
     [SerializeField] private string formatString = "F0"; // "F0" for whole numbers, "F1" for one decimal, etc.
@@ -15,6 +20,9 @@ public class UIStatUpdate : MonoBehaviour
 
     void Start()
     {
+        //find player by tag. This assumes this script is only used for the player character panel. If used for NPCs, this will need to be changed.
+        player = GameObject.FindGameObjectWithTag("Player").transform; 
+
         // Use the GameObject's name as the stat name
         statName = this.gameObject.name;
 
@@ -65,9 +73,9 @@ public class UIStatUpdate : MonoBehaviour
         switch (statName)
         {
             // Health
-            case "Health":
+            case "Hitpoints":
                 return creatureStats.currentHitPoints;
-            case "MaxHealth":
+            case "MaxHitpoints":
                 return creatureStats.maxHitpoints;
 
             // Experience

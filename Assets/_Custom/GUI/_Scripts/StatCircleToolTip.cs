@@ -3,6 +3,11 @@ using UnityEngine.EventSystems;
 
 public class StatCircleToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    /*
+    This script is attached to UI elements that have a hover tooltip.
+    It shows the tooltip when the pointer enters the element and hides it when the pointer exits.
+    */
+    
     //panel that is hovered over
     public GameObject hoverBoxPanel;
 
