@@ -10,8 +10,6 @@ public class Camera : MonoBehaviour
     float mouseTranslation = 0.1f;  //Translate camera with mouse
     float mouseRotation = 2f;       //Rotate camera with mouse
     float smoothSpeed = 5f;         //smoothen the camera movement
-    float deadzoneRadius = 0.1f;    //radius of the deadzone for camera mouse follow
-    float mouseSensitivity = 1f;    //sensitivity of the camera mouse follow
 
     Vector3 targetTranslation;
     Quaternion targetRotation;
