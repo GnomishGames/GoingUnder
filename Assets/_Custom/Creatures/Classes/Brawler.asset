@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0678d80237935d04387163022f4ae71c, type: 3}
   m_Name: Brawler
   m_EditorClassIdentifier: Assembly-CSharp::ClassSO
-  className: 
-  hitDie: 0
-  manaDie: 0
-  strengthBonus: 0
-  dexterityBonus: 0
-  constitutionBonus: 0
-  intelligenceBonus: 0
-  wisdomBonus: 0
-  charismaBonus: 0
+  className: Brawler
+  hitDie: 8
+  manaDie: 1
+  strengthBonus: 1
+  dexterityBonus: 1
+  constitutionBonus: 1
+  intelligenceBonus: 1
+  wisdomBonus: 1
+  charismaBonus: 1

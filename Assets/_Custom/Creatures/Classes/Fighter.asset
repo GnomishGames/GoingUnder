@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Fighter
   m_EditorClassIdentifier: Assembly-CSharp::ClassSO
   className: Fighter
-  hitDie: 0
-  manaDie: 0
-  strengthBonus: 0
-  dexterityBonus: 0
-  constitutionBonus: 0
-  intelligenceBonus: 0
-  wisdomBonus: 0
-  charismaBonus: 0
+  hitDie: 10
+  manaDie: 1
+  strengthBonus: 1
+  dexterityBonus: 1
+  constitutionBonus: 1
+  intelligenceBonus: 1
+  wisdomBonus: 1
+  charismaBonus: 1
