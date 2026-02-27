@@ -83,7 +83,7 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         }
     }
 
-    private void UpdateSlotIcons()
+    void UpdateSlotIcons()
     {
         if (inventory == null) return;
 
@@ -102,12 +102,7 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
     public void OnPointerDown(PointerEventData eventData)
     {
         inventoryPanel.fromSlot = slotNumber;
-
-        // Clear other panels since we're dragging from inventory
-        if (equipmentPanel != null)
-            equipmentPanel.fromPanel = null;
-        if (containerPanel != null)
-            containerPanel.fromPanel = null;
+        inventoryPanel.fromPanel = "Inventory";
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -167,6 +162,20 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
     public void OnDrop(PointerEventData eventData)
     {
-        
+        if (eventData.pointerDrag != null)
+        {
+            if (inventoryPanel.fromPanel == "Inventory")
+            {
+                inventory.MoveItem(inventoryPanel.fromSlot, slotNumber);
+            }
+            else
+            {
+                Debug.LogWarning($"OnDrop: fromPanel is '{inventoryPanel.fromPanel}', not 'Inventory'");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("OnDrop: eventData.pointerDrag is null!");
+        }
     }
 }

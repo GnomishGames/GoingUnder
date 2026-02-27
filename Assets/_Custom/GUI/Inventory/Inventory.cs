@@ -14,7 +14,7 @@ so that the UI can update accordingly.
 public class Inventory : MonoBehaviour
 {
     // this is the array of items that IS the inventory
-    public ItemSO[] inventoryItem = new ItemSO[48];
+    public ItemSO[] inventoryItem = new ItemSO[12];
 
     //references
     Equipment equipment;
@@ -34,14 +34,14 @@ public class Inventory : MonoBehaviour
         OnInventorySlotChanged?.Invoke(slotNumber);
     }
 
-    public void MoveItem(Inventory sourceInventory, Inventory targetInventory, int sourceSlot, int targetSlot)
+    public void MoveItem(int from, int to)
     {
-        var buffer = sourceInventory.inventoryItem[sourceSlot];
-        sourceInventory.inventoryItem[sourceSlot] = targetInventory.inventoryItem[targetSlot];
-        targetInventory.inventoryItem[targetSlot] = buffer;
+        var buffer = inventoryItem[to];
+        inventoryItem[to] = inventoryItem[from];
+        inventoryItem[from] = buffer;
         
-        sourceInventory.OnInventorySlotChanged?.Invoke(sourceSlot);
-        targetInventory.OnInventorySlotChanged?.Invoke(targetSlot);
+        OnInventorySlotChanged?.Invoke(from);
+        OnInventorySlotChanged?.Invoke(to);
     }
 
     public void DestroyItem(int from)

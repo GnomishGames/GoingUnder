@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa7ffca5d03ca66d4a1b0b37b2ef6f15, type: 3}
   m_Name: ShortSword
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSO
-  itemName: 
-  sprite: {fileID: 0}
-  itemWeight: 0
+  itemName: Short Sword
+  sprite: {fileID: 21300000, guid: 20c8731ec8bfc1f4399be346e4084439, type: 3}
+  itemWeight: 1
   itemHealth: 0
-  slotType: 0
+  slotType: 8
   ArmorBonus: 0
-  damageType: 0
-  Damage: 0
-  Range: 0
+  damageType: 2
+  Damage: 1
+  Range: 1
