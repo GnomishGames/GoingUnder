@@ -33,7 +33,10 @@ public class SkillBarPanelSlot : MonoBehaviour, IPointerClickHandler, IBeginDrag
         canvasGroup = GetComponent<CanvasGroup>();
 
         player = GameObject.FindWithTag("Player").transform;
-        
+
+        skillBarPanel = GetComponentInParent<SkillBarPanel>();
+        skillBookPanel = transform.root.GetComponentInChildren<SkillBookPanel>();
+
         //set array references
         skillBar = GetComponentInParent<SkillBar>();
 

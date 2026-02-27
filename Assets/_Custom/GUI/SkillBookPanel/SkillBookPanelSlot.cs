@@ -31,6 +31,7 @@ public class SkillBookPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         canvas = GetComponentInParent<Canvas>();
         canvasGroup = GetComponent<CanvasGroup>();
 
+        player = GameObject.FindWithTag("Player").transform;
 
         //set ui elements
         rectTransform = GetComponent<RectTransform>();
@@ -38,6 +39,7 @@ public class SkillBookPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         //draglayer keeps icons on top when dragging
         dragLayer = GameObject.FindWithTag("DragLayer").transform;
 
+        skillBookPanel = GetComponentInParent<SkillBookPanel>();
         //get skillBook from player (not from UI)
         skillBook = player.GetComponent<SkillBook>();
 
