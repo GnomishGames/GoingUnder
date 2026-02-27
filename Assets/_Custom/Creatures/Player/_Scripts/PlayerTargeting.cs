@@ -6,10 +6,13 @@ public class PlayerTargeting : MonoBehaviour
     Camera cam;
     [SerializeField] LayerMask interactableLayerMask;
     [SerializeField] Interactable currentTarget;
+    TargetPanel targetPanel;
     
     void Start()
     {
         cam = GetComponentInChildren<Camera>(); //camera component is on a child object of the player
+        targetPanel = GetComponentInChildren<TargetPanel>(true); //target panel is on a child object of the player, but is inactive at the start of the game
+        targetPanel.gameObject.SetActive(false); //make sure the target panel is inactive at the start of the game
     }
 
     void Update()
@@ -36,12 +39,16 @@ public class PlayerTargeting : MonoBehaviour
                 {
                     // If the hit object has a CreatureStats component, set it as the target
                     currentTarget = creature.GetComponent<Interactable>();
+                    targetPanel.SetNewTarget(creature);
+                    targetPanel.gameObject.SetActive(true);
                 }
             }
             else
             {
                 // Clicked on empty space, clear target
                 currentTarget = null;
+                targetPanel.SetNewTarget(null);
+                targetPanel.gameObject.SetActive(false);
             }
         }
     }
