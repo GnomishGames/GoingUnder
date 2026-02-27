@@ -1,6 +1,16 @@
 using System;
 using UnityEngine;
 
+/*
+This script goes on the player at the root level, and is the main script for the inventory. 
+
+It holds the array of items that is the inventory, and has functions for moving items, 
+destroying items, equipping and unequipping items, and picking up items. 
+
+It also has events for when an item is equipped or when an inventory slot is changed, 
+so that the UI can update accordingly.
+*/
+
 public class Inventory : MonoBehaviour
 {
     // this is the array of items that IS the inventory
