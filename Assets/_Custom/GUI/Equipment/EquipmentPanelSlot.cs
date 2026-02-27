@@ -43,7 +43,7 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
     {
         canvas = GetComponentInParent<Canvas>();
 
-        inventoryPanel = GetComponentInParent<InventoryPanel>();
+        inventoryPanel = transform.root.GetComponentInChildren<InventoryPanel>();
         equipmentPanel = GetComponentInParent<EquipmentPanel>();
         containerPanel = GetComponentInParent<ContainerPanel>();
 
@@ -53,22 +53,10 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
             return;
         }
 
+        player = GameObject.FindWithTag("Player").transform;
 
         //set arrays
         equipment = player.GetComponent<Equipment>();
-
-        // Find other panels from canvas that match this player's tag
-        if (canvas != null)
-        {
-            InventoryPanel[] allInventoryPanels = canvas.GetComponentsInChildren<InventoryPanel>(true);
-
-            ContainerPanel[] allContainerPanels = canvas.GetComponentsInChildren<ContainerPanel>(true);
-            foreach (ContainerPanel panel in allContainerPanels)
-            {
-                containerPanel = panel; // Container doesn't have playerTag, just get first one
-                break;
-            }
-        }
 
         //set ui elements
         rectTransform = GetComponent<RectTransform>();
@@ -124,12 +112,7 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
     public void OnPointerDown(PointerEventData eventData)
     {
         equipmentPanel.fromSlot = slotNumber;
-
-        // Clear other panels since we're dragging from equipment panel
-        if (inventoryPanel != null)
-            inventoryPanel.fromPanel = null;
-        if (containerPanel != null)
-            containerPanel.fromPanel = null;
+        equipmentPanel.fromPanel = "Armor";
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -189,5 +172,38 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (eventData.pointerDrag != null)
+        {
+            if (inventoryPanel.fromPanel == "Inventory")
+            {
+                equipment.EquipArmor(inventoryPanel.fromSlot, slotNumber, slotType);
+            }
+
+            if (equipmentPanel.fromPanel == "Armor")
+            {
+                equipment.MoveArmor(equipmentPanel.fromSlot, slotNumber, slotType);
+            }
+            
+            // snap the dragged item's RectTransform to this slot's anchored position and reparent it back
+            var draggedRect = eventData.pointerDrag.GetComponent<RectTransform>();
+            if (draggedRect != null)
+            {
+                // reparent to this slot's parent so anchoredPosition aligns correctly
+                var targetParent = rectTransform.parent;
+                Vector3 worldPos = draggedRect.position;
+                draggedRect.SetParent(targetParent, false);
+                // preserve world pos to avoid jump, then set anchored to slot
+                draggedRect.position = worldPos;
+                draggedRect.anchoredPosition = rectTransform.anchoredPosition;
+                // restore sibling so it sits in the same slot place
+                draggedRect.SetSiblingIndex(rectTransform.GetSiblingIndex());
+            }
+        }
+        if (inventoryPanel != null)
+            inventoryPanel.fromPanel = null;
+        if (equipmentPanel != null)            
+            equipmentPanel.fromPanel = null;
+        if (containerPanel != null)
+            containerPanel.fromPanel = null;
     }
 }

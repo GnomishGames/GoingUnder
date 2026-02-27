@@ -1,21 +1,8 @@
-using System.ComponentModel.Design.Serialization;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-/*
-This script goes on the inventory panel slot prefab, 
-and is used to handle dragging and dropping items in the inventory. 
-
-It also updates the slot's icon when the inventory changes. 
-
-It implements the necessary interfaces for drag and drop functionality, 
-and has references to the inventory, player, and other panels so that it can 
-update them accordingly when an item is dragged and dropped. It also has a reference 
-to a drag layer to ensure that dragged items render on top of other UI elements.
-*/
-
-public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
+public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
     private RectTransform rectTransform;
     [SerializeField] private Canvas canvas;
@@ -29,37 +16,49 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
     //player reference
     public Transform player;
 
-    //array references
-    public Inventory inventory;
+    //panels
+    public InventoryPanel inventoryPanel;
+    public EquipmentPanel equipmentPanel;
+    public WeaponPanel weaponPanel;
+    public ContainerPanel containerPanel;
 
-    //panel references
-    InventoryPanel inventoryPanel;
-    EquipmentPanel equipmentPanel;
-    ContainerPanel containerPanel;
+    //class references
+    Equipment equipment;
 
-    public int slotNumber;  //manually set on the interface
+    public int slotNumber; //manually set on the interface
+    public SlotType slotType;
 
     private void Start()
     {
         canvas = GetComponentInParent<Canvas>();
 
-        inventoryPanel = GetComponentInParent<InventoryPanel>();
+        inventoryPanel = transform.root.GetComponentInChildren<InventoryPanel>();
         equipmentPanel = transform.root.GetComponentInChildren<EquipmentPanel>();
-        containerPanel = GetComponentInParent<ContainerPanel>();
+        weaponPanel = transform.root.GetComponentInChildren<WeaponPanel>();
+        containerPanel = transform.root.GetComponentInChildren<ContainerPanel>();
+
+        if (weaponPanel == null)
+        {
+            Debug.LogError("WeaponsPanelSlot: WeaponPanel not found in parent hierarchy!");
+            return;
+        }
 
         player = GameObject.FindWithTag("Player").transform;
-        inventory = player.GetComponent<Inventory>();
 
+        //set arrays
+        equipment = player.GetComponent<Equipment>();
+
+        //set ui elements
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
 
         //draglayer keeps icons on top when dragging
         dragLayer = GameObject.FindWithTag("DragLayer").transform;
 
-        // Subscribe to inventory change events
-        if (inventory != null)
+        // Subscribe to weapon change events
+        if (equipment != null)
         {
-            inventory.OnInventorySlotChanged += OnInventorySlotChanged;
+            equipment.OnWeaponSlotChanged += OnWeaponSlotChanged;
         }
 
         // Initial update
@@ -69,13 +68,13 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
     void OnDestroy()
     {
         // Unsubscribe from events
-        if (inventory != null)
+        if (equipment != null)
         {
-            inventory.OnInventorySlotChanged -= OnInventorySlotChanged;
+            equipment.OnWeaponSlotChanged -= OnWeaponSlotChanged;
         }
     }
 
-    void OnInventorySlotChanged(int changedSlot)
+    void OnWeaponSlotChanged(int changedSlot)
     {
         // Only update if this is the slot that changed
         if (changedSlot == slotNumber)
@@ -84,16 +83,16 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         }
     }
 
-    void UpdateSlotIcons()
+    private void UpdateSlotIcons()
     {
-        if (inventory == null) return;
-
-        if (inventory.inventoryItem[slotNumber] != null)
+        if (equipment == null) return;
+        
+        if (equipment.weaponSOs[slotNumber] != null)
         {
-            GetComponent<Image>().sprite = inventory.inventoryItem[slotNumber].sprite;
+            GetComponent<Image>().sprite = equipment.weaponSOs[slotNumber].sprite;
             GetComponent<Image>().color = new Color(255, 255, 255, 1);
         }
-        if (inventory.inventoryItem[slotNumber] == null)
+        if (equipment.weaponSOs[slotNumber] == null)
         {
             GetComponent<Image>().sprite = null;
             GetComponent<Image>().color = new Color(255, 255, 255, 0);
@@ -102,8 +101,8 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        inventoryPanel.fromSlot = slotNumber;
-        inventoryPanel.fromPanel = "Inventory";
+        equipmentPanel.fromSlot = slotNumber;
+        equipmentPanel.fromPanel = "Weapon";
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -148,15 +147,13 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
     public void OnDrag(PointerEventData eventData)
     {
-        // Convert screen point to local point in the canvas, properly handling Canvas Scaler
         if (canvas != null)
         {
-            Vector2 localPoint;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvas.transform as RectTransform,
                 eventData.position,
                 canvas.worldCamera,
-                out localPoint);
+                out Vector2 localPoint);
             rectTransform.position = canvas.transform.TransformPoint(localPoint);
         }
     }
@@ -167,25 +164,12 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         {
             if (inventoryPanel.fromPanel == "Inventory")
             {
-                inventory.MoveItem(inventoryPanel.fromSlot, slotNumber);
-            }
-
-            if (equipmentPanel.fromPanel == "Armor")
-            {
-                inventory.UnEquipArmor(slotNumber, equipmentPanel.fromSlot);
+                equipment.EquipWeapon(inventoryPanel.fromSlot, slotNumber, slotType);
             }
 
             if (equipmentPanel.fromPanel == "Weapon")
             {
-                inventory.UnEquipWeapon(slotNumber, equipmentPanel.fromSlot);
-            }
-
-            if (containerPanel != null)
-            {
-                if (containerPanel.fromPanel == "Container")
-                {
-                    inventory.LootItem(slotNumber, containerPanel.fromSlot);
-                }
+                equipment.MoveWeapon(equipmentPanel.fromSlot, slotNumber, slotType);
             }
 
             // snap the dragged item's RectTransform to this slot's anchored position and reparent it back
@@ -203,6 +187,7 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
                 draggedRect.SetSiblingIndex(rectTransform.GetSiblingIndex());
             }
         }
+        
         if (inventoryPanel != null)
             inventoryPanel.fromPanel = null;
         if (equipmentPanel != null)
