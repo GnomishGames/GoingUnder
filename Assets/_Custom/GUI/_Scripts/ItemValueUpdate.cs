@@ -19,8 +19,12 @@ public class ItemValueUpdate : MonoBehaviour
         
         if (parentSlot == null)
         {
-            Debug.LogError($"ItemValueUpdate on {gameObject.name}: parentSlot not assigned in inspector");
-            return;
+            parentSlot = GetComponentInParent<InventoryPanelSlot>();
+            if (parentSlot == null)
+            {
+                Debug.LogError($"ItemValueUpdate on {gameObject.name}: parentSlot not assigned in inspector and could not find in parent hierarchy");
+                return;
+            }
         }
 
         // Get the player's inventory

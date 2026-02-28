@@ -12,12 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa7ffca5d03ca66d4a1b0b37b2ef6f15, type: 3}
   m_Name: ShortSword
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSO
-  itemName: Short Sword
   sprite: {fileID: 21300000, guid: b6b3f9269f51dca40bfb8647c6040636, type: 3}
+  itemName: Short Sword
+  itemNameSuffix: Of Slicing
+  itemDescription: This sword slices.
   itemWeight: 1
-  itemHealth: 0
+  itemValue: 10
   slotType: 8
   ArmorBonus: 0
+  StaminaBonus: 0
+  ManaBonus: 0
+  StrengthBonus: 0
+  ConstitutionBonus: 0
+  DexterityBonus: 0
+  IntelligenceBonus: 0
+  WisdomBonus: 0
+  CharismaBonus: 0
+  CriticalChanceBonus: 0
+  CriticalDamageBonus: 0
   damageType: 2
-  Damage: 1
-  Range: 1
+  DieMultiplier: 1
+  Die: 4
+  DieBonus: 4

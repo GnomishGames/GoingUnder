@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using TMPro;
+using UnityEngine.UI;
 
 public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -14,17 +16,23 @@ public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     //bool for enabling/disabling the hover box
     public bool isHoverBoxEnabled = true;
 
+    // look for the image component on this GO
+    private Image image;
+
     void Start()
     {
         if (hoverBoxPanel != null)
         {
             hoverBoxPanel.SetActive(false);
         }
+
+        // Look for the Image component on this GameObject
+        image = GetComponent<Image>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (hoverBoxPanel != null && isHoverBoxEnabled)
+        if (hoverBoxPanel != null && isHoverBoxEnabled && image.sprite != null)
         {
             hoverBoxPanel.SetActive(true);
         }
