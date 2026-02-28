@@ -26,7 +26,7 @@ public class SkillBar : MonoBehaviour
         var buffer = skillSOs[to];
         skillSOs[to] = skillSOs[from];
         skillSOs[from] = buffer;
-        
+
         OnSkillChanged?.Invoke(from);
         OnSkillChanged?.Invoke(to);
     }
@@ -38,14 +38,14 @@ public class SkillBar : MonoBehaviour
             Debug.LogError($"SkillBar: skillBook is null! Cannot unequip skill.");
             return;
         }
-        
+
         if (skillSOs[skillBarSlot] == null)
         {
             var buffer = skillSOs[skillBarSlot];
             skillSOs[skillBarSlot] = skillBook.skillSOs[skillBookSlot];
             skillBook.skillSOs[skillBookSlot] = (SkillSO)buffer;
         }
-        else if (skillSOs[skillBarSlot].slotType == skillBook.skillSOs[skillBookSlot].slotType)
+        else if (skillBook.skillSOs[skillBookSlot] != null && skillSOs[skillBarSlot].slotType == skillBook.skillSOs[skillBookSlot].slotType)
         {
             var buffer = skillSOs[skillBarSlot];
             skillSOs[skillBarSlot] = skillBook.skillSOs[skillBookSlot];
