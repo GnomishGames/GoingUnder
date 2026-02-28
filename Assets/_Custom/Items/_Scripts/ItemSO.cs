@@ -5,8 +5,15 @@ using UnityEngine;
 public class ItemSO : ScriptableObject
 {
     [Header("Base Item Stats")]
-    public string itemName;
     public Sprite sprite;
+    
+    public string itemName;
+    public string itemNameSuffix;
+    
+    public string itemDescription;
+
     public float itemWeight;
+    public int itemValue;
+    
     public SlotType slotType;
 }
