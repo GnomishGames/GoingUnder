@@ -12,9 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4d396249cc1ee23ac5d1eb00797b39, type: 3}
   m_Name: ChainShirt
   m_EditorClassIdentifier: Assembly-CSharp::ArmorSO
-  itemName: 
-  sprite: {fileID: 0}
-  itemWeight: 0
-  itemHealth: 0
-  slotType: 0
-  ArmorBonus: 0
+  itemName: Chain Shirt
+  sprite: {fileID: 21300000, guid: 55596b2276e4077478bbd19151a93d02, type: 3}
+  itemWeight: 2
+  slotType: 4
+  ArmorBonus: 4
+  StaminaBonus: 0
+  ManaBonus: 0
+  StrengthBonus: 0
+  ConstitutionBonus: 0
+  DexterityBonus: 0
+  IntelligenceBonus: 0
+  WisdomBonus: 0
+  CharismaBonus: 0
+  CriticalChanceBonus: 0
+  CriticalDamageBonus: 0

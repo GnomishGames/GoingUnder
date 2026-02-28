@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class EquipmentSO : ItemSO
 {
-    //primary stats
+    [Header("Primary Bonuses")]
     public int ArmorBonus;
     public int StaminaBonus;
     public int ManaBonus;
 
-    //stats
+    [Header("Stat Bonuses")]
     public int StrengthBonus;
     public int ConstitutionBonus;
     public int DexterityBonus;
@@ -15,7 +15,7 @@ public class EquipmentSO : ItemSO
     public int WisdomBonus;
     public int CharismaBonus;
 
-    //critical stats
+    [Header("Critical Bonuses")]
     public int CriticalChanceBonus;
     public int CriticalDamageBonus;
 }

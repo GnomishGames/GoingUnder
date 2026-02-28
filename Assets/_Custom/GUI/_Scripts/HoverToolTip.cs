@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class StatCircleToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     /*
     This script is attached to UI elements that have a hover tooltip.
