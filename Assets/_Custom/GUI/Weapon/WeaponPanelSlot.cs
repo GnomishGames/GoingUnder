@@ -91,11 +91,13 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         {
             GetComponent<Image>().sprite = equipment.weaponSOs[slotNumber].sprite;
             GetComponent<Image>().color = new Color(255, 255, 255, 1);
+            GetComponent<Image>().preserveAspect = true;
         }
         if (equipment.weaponSOs[slotNumber] == null)
         {
             GetComponent<Image>().sprite = null;
             GetComponent<Image>().color = new Color(255, 255, 255, 0);
+            GetComponent<Image>().preserveAspect = true;
         }
     }
 

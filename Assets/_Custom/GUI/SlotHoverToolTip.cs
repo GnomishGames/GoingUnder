@@ -172,6 +172,13 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
                 else
                     UpdateHoverBoxText("Die", weapon.DieMultiplier.ToString() + "d" + weapon.Die.ToString());
             }
+            else if (item is ArmorSO)
+            {
+                // If it's armor, show armor-specific stats
+                UpdateHoverBoxText("SlotType", equipmentData.slotType.ToString());
+                DisableHoverBoxField("DamageType");
+                DisableHoverBoxField("Die");
+            }
             else
             {
                 DisableHoverBoxField("DamageType");
@@ -181,7 +188,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
         }
         else
         {
-            // If not equipment, disable all equipment stat fields
+            // If not equipment (armor or weapon), disable all equipment stat fields
             DisableHoverBoxField("ArmorBonus");
             DisableHoverBoxField("StrengthBonus");
             DisableHoverBoxField("ConstitutionBonus");

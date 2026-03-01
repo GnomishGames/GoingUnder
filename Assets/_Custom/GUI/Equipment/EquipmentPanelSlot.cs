@@ -101,11 +101,13 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         {
             GetComponent<Image>().sprite = equipment.armorSOs[slotNumber].sprite;
             GetComponent<Image>().color = new Color(255, 255, 255, 1);
+            GetComponent<Image>().preserveAspect = true;
         }
         if (equipment.armorSOs[slotNumber] == null)
         {
             GetComponent<Image>().sprite = null;
             GetComponent<Image>().color = new Color(255, 255, 255, 0);
+            GetComponent<Image>().preserveAspect = true;
         }
     }
 
