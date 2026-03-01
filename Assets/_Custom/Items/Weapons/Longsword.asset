@@ -30,7 +30,7 @@ MonoBehaviour:
   CharismaBonus: 0
   CriticalChanceBonus: 0
   CriticalDamageBonus: 0
-  damageType: 0
+  damageType: 2
   DieMultiplier: 1
-  Die: 4
+  Die: 6
   DieBonus: 0

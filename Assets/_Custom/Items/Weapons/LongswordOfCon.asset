@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LongswordOfCon
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSO
   sprite: {fileID: 21300000, guid: b6b3f9269f51dca40bfb8647c6040636, type: 3}
-  itemName: Iron Mace
-  itemNameSuffix: 
+  itemName: Longsword
+  itemNameSuffix: of Constitution
   itemDescription: 
   itemWeight: 1
   itemValue: 10
@@ -23,14 +23,14 @@ MonoBehaviour:
   StaminaBonus: 0
   ManaBonus: 0
   StrengthBonus: 0
-  ConstitutionBonus: 0
+  ConstitutionBonus: 2
   DexterityBonus: 0
   IntelligenceBonus: 0
   WisdomBonus: 0
   CharismaBonus: 0
   CriticalChanceBonus: 0
   CriticalDamageBonus: 0
-  damageType: 0
+  damageType: 2
   DieMultiplier: 1
-  Die: 4
+  Die: 6
   DieBonus: 0

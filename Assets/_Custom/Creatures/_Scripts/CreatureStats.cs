@@ -134,7 +134,6 @@ public class CreatureStats : Creature
         equipment = GetComponent<Equipment>();
         if (equipment != null)
         {
-            equipment.OnAcChanged += UpdateEquipmentAc;
             equipment.OnEquipmentStatsChanged += UpdateEquipmentStats;
             equipment.CalculateStatChanges();
         }
@@ -269,13 +268,9 @@ public class CreatureStats : Creature
         return statScore;
     }
 
-    void UpdateEquipmentAc(float newAc)
-    {
-        equipmentAc = newAc;
-    }
-
     void UpdateEquipmentStats(Equipment.EquipmentStatBonuses bonuses)
     {
+        equipmentAc = bonuses.ArmorAC;
         equipmentStrengthBonus = bonuses.StrengthBonus;
         equipmentConstitutionBonus = bonuses.ConstitutionBonus;
         equipmentDexterityBonus = bonuses.DexterityBonus;

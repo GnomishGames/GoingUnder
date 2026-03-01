@@ -9,45 +9,59 @@ public class ItemValueUpdate : MonoBehaviour
     */
 
     public TextMeshProUGUI itemValueText; // Reference to the TextMeshProUGUI component for displaying the item value
-    
-    [Tooltip("parentSlot is the slot that holds the item. I usually just call it \"Slot\".")]
-    [SerializeField] private InventoryPanelSlot parentSlot; // Assign this in the inspector
-    
-    private Inventory inventory;
+    private InventoryPanelSlot parentSlot; // Reference to the parent InventoryPanelSlot to know which slot's item value to display
+    private Inventory inventory; // Reference to the player's inventory to access item data
 
-    void Start()
+    void OnEnable()
     {
         // Get the text component on the item value text object
         itemValueText = GetComponent<TextMeshProUGUI>();
 
-        // Get the player's inventory
-        GameObject player = GameObject.FindWithTag("Player");
-
-        // Get the player's inventory.
-        if (player != null)
+        // Find the parent InventoryPanelSlot in the hierarchy if not already found
+        parentSlot = null;
+        parentSlot = GetComponentInParent<InventoryPanelSlot>();
+        if (parentSlot == null)
         {
-            inventory = player.GetComponent<Inventory>();
-            
-            if (inventory != null)
-            {
-                // Subscribe to inventory change events
-                inventory.OnInventorySlotChanged += OnInventorySlotChanged;
-                
-                // Initial update
-                UpdateText();
-            }
-            else
-            {
-                Debug.LogError("ItemValueUpdate could not find Inventory component on Player");
-            }
+            parentSlot = transform.parent.GetComponentInChildren<InventoryPanelSlot>(true);
+        }
+        else if (parentSlot == null)
+        {
+            parentSlot = transform.parent.parent.GetComponentInChildren<InventoryPanelSlot>(true);
+        }
+        else if (parentSlot == null)
+        {
+            parentSlot = transform.parent.parent.parent.GetComponentInChildren<InventoryPanelSlot>(true);
         }
         else
         {
-            Debug.LogError("ItemValueUpdate could not find Player GameObject");
+            Debug.LogError("ItemValueUpdate could not find InventoryPanelSlot in parent hierarchy", gameObject);
+            return;
         }
+
+        // Get the player
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player == null)
+        {
+            Debug.LogError("ItemValueUpdate could not find Player GameObject");
+            return;
+        }
+
+        // Get the player's inventory.
+        inventory = player.GetComponent<Inventory>();
+        if (inventory == null)
+        {
+            Debug.LogError("ItemValueUpdate could not find Inventory component on Player");
+            return;
+        }
+
+        // Subscribe to inventory change events
+        inventory.OnInventorySlotChanged += OnInventorySlotChanged;
+
+        // Initial update
+        UpdateText();
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
         // Unsubscribe from events
         if (inventory != null)
@@ -67,9 +81,16 @@ public class ItemValueUpdate : MonoBehaviour
 
     void UpdateText()
     {
-        if (inventory == null || parentSlot == null)
+        if (inventory == null)
         {
             itemValueText.text = "0";
+            Debug.LogError("ItemValueUpdate: Inventory is null, cannot update text.");
+            return;
+        }
+
+        if (parentSlot == null)
+        {
+            Debug.LogError("ItemValueUpdate: ParentSlot is not assigned.");
             return;
         }
 
@@ -212,9 +233,13 @@ public class ItemValueUpdate : MonoBehaviour
                     itemValueText.text = item is WeaponSO weapon ? weapon.damageType.ToString() : "";
                     break;
                 case "Die":
-                    if (item is WeaponSO weapon3 && (weapon3.DieMultiplier != 0 || weapon3.DieBonus != 0))
+                    if (item is WeaponSO weapon3 && (weapon3.DieMultiplier != 0 || weapon3.Die != 0) && weapon3.DieBonus != 0)
                     {
-                        itemValueText.text = weapon3.DieMultiplier.ToString() + "d" + weapon3.DieBonus.ToString();
+                        itemValueText.text = weapon3.DieMultiplier.ToString() + "d" + weapon3.Die.ToString() + "+" + weapon3.DieBonus.ToString();
+                    }
+                    else if (item is WeaponSO weapon2 && (weapon2.DieMultiplier != 0 || weapon2.Die != 0))
+                    {
+                        itemValueText.text = weapon2.DieMultiplier.ToString() + "d" + weapon2.Die.ToString();
                     }
                     else
                     {

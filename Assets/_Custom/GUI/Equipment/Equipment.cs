@@ -5,6 +5,7 @@ public class Equipment : MonoBehaviour
 {
     public struct EquipmentStatBonuses
     {
+        public int ArmorAC;
         public int StrengthBonus;
         public int ConstitutionBonus;
         public int DexterityBonus;
@@ -22,7 +23,6 @@ public class Equipment : MonoBehaviour
     Inventory inventory;
 
     //events
-    public event Action<float> OnAcChanged;
     public event Action<EquipmentStatBonuses> OnEquipmentStatsChanged;
     public event Action<string> OnEquippedItemChanged;
     public event Action<int> OnArmorSlotChanged;
@@ -101,9 +101,9 @@ public class Equipment : MonoBehaviour
             }
         }
 
-        OnAcChanged?.Invoke(ArmorAC); //notify listeners that AC has changed
         OnEquipmentStatsChanged?.Invoke(new EquipmentStatBonuses
         {
+            ArmorAC = ArmorAC,
             StrengthBonus = StrengthBonus,
             ConstitutionBonus = ConstitutionBonus,
             DexterityBonus = DexterityBonus,
