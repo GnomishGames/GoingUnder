@@ -127,10 +127,20 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         originalParent = rectTransform.parent;
         originalSiblingIndex = rectTransform.GetSiblingIndex();
 
-        // choose drag layer
+        // if dragLayer is not set, find it in the scene (this should only happen if something went wrong in Start)
+        // we do this here instead of Start to ensure we have a reference even if the drag layer was not found at startup
         if (dragLayer == null)
         {
-            dragLayer = (canvas != null) ? canvas.transform : rectTransform.root;
+            if ((canvas != null))
+            {
+                dragLayer = canvas.transform; // use canvas as drag layer if available
+            }
+            else
+            {
+                dragLayer = rectTransform.root; // fallback to root if no canvas found
+            }
+
+            // i'm not sure this whole thing is really necessary...
         }
 
         // preserve world position and reparent to drag layer so it renders on top
@@ -144,6 +154,7 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
     {
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
+        
         // restore this slot's parent and rect position (in case the drag was not dropped on another slot)
         if (originalParent != null && rectTransform.parent != originalParent)
         {

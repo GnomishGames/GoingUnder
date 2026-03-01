@@ -12,6 +12,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     //panel that is hovered over
     public GameObject hoverBoxPanel;
+    private Transform hoverBoxOriginalParent;
 
     //get player's inventory to access item data
     private Inventory inventory;
@@ -22,6 +23,12 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     // look for the image component on this GO
     private Image image;
+
+    //drag layer reference
+    private Transform dragLayer;
+
+    //player reference
+    private GameObject player;
 
     // Reference to the parent slot
     private InventoryPanelSlot inventoryParentSlot;
@@ -34,10 +41,15 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
         if (hoverBoxPanel != null)
         {
             hoverBoxPanel.SetActive(false);
+            // Store the original parent so we can restore it later
+            hoverBoxOriginalParent = hoverBoxPanel.transform.parent;
         }
 
+        //draglayer keeps icons on top when dragging
+        dragLayer = GameObject.FindWithTag("DragLayer").transform;
+
         // Get the player        
-        GameObject player = GameObject.FindWithTag("Player");
+        player = GameObject.FindWithTag("Player");
 
         // get player's inventory
         inventory = player.GetComponent<Inventory>();
@@ -81,6 +93,10 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
             return;
         }
 
+        // set the transform to be on the draglayer so it renders on top of everything else
+        hoverBoxPanel.transform.SetParent(dragLayer, true);
+        hoverBoxPanel.transform.SetAsLastSibling();
+        
         //turn on the hoverbox and populate it with the item's stats
         hoverBoxPanel.SetActive(true);
         PopulateHoverBoxWithStats(item);
@@ -89,6 +105,15 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void OnPointerExit(PointerEventData eventData)
     {
         if (hoverBoxPanel != null)
+            
+            // Restore the hoverBoxPanel to its original parent
+            if (hoverBoxOriginalParent != null && hoverBoxPanel.transform.parent != hoverBoxOriginalParent)
+            {
+                // preserve world pos while reparenting
+                Vector3 worldPos = hoverBoxPanel.transform.position;
+                hoverBoxPanel.transform.SetParent(hoverBoxOriginalParent, false);
+                hoverBoxPanel.transform.position = worldPos;
+            }
         {
             hoverBoxPanel.SetActive(false);
         }
