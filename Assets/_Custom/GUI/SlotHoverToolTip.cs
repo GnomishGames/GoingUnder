@@ -15,6 +15,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     //get player's inventory to access item data
     private Inventory inventory;
+    private Equipment equipment;
 
     //bool for enabling/disabling the hover box
     public bool isHoverBoxEnabled = true;
@@ -29,21 +30,20 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     void Start()
     {
+        // turn off hoverbox on start
         if (hoverBoxPanel != null)
         {
             hoverBoxPanel.SetActive(false);
         }
 
-        // Get the player's inventory        
+        // Get the player        
         GameObject player = GameObject.FindWithTag("Player");
-        if (player != null)
-        {
-            inventory = player.GetComponent<Inventory>();
-        }
-        else
-        {
-            Debug.LogError("SlotHoverToolTip: Player not found in scene!", gameObject);
-        }
+
+        // get player's inventory
+        inventory = player.GetComponent<Inventory>();
+
+        // get players equipment
+        equipment = player.GetComponent<Equipment>();
 
         // Look for the Image component on this GameObject
         image = GetComponent<Image>();
@@ -61,23 +61,27 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (hoverBoxPanel == null || !isHoverBoxEnabled || image.sprite == null || inventory == null)
+        // If the hover box is not enabled, or if there is no item in the slot, do not show the hover box
+        if (hoverBoxPanel == null || !isHoverBoxEnabled || image.sprite == null || inventory == null || equipment == null)
         {
             return;
         }
 
+        // Determine which slot this is and get the corresponding item
         int slotNumber = inventoryParentSlot != null ? inventoryParentSlot.slotNumber : equipmentParentSlot != null ? equipmentParentSlot.slotNumber : weaponsPanelSlot != null ? weaponsPanelSlot.slotNumber : -1;
         if (slotNumber == -1)
         {
             return;
         }
 
-        ItemSO item = inventory.inventoryItem[slotNumber];
+        // Get the item from the appropriate slot
+        ItemSO item = inventoryParentSlot != null ? inventory.inventoryItem[slotNumber] : equipmentParentSlot != null ? equipment.armorSOs[slotNumber] : weaponsPanelSlot != null ? equipment.weaponSOs[slotNumber] : null;
         if (item == null)
         {
             return;
         }
 
+        //turn on the hoverbox and populate it with the item's stats
         hoverBoxPanel.SetActive(true);
         PopulateHoverBoxWithStats(item);
     }
@@ -102,55 +106,56 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
         // Display all potential stat bonuses
         if (item is EquipmentSO equipmentItem)
         {
-            EquipmentSO equipment = (EquipmentSO)item;
+            // Renamed variable to avoid shadowing the class field
+            EquipmentSO equipmentData = equipmentItem;
 
-            if (equipment.ArmorBonus != 0)
-                UpdateHoverBoxText("ArmorBonus", "ac: " + equipment.ArmorBonus.ToString());
+            if (equipmentData.ArmorBonus != 0)
+                UpdateHoverBoxText("ArmorBonus", "ac: " + equipmentData.ArmorBonus.ToString());
             else
                 DisableHoverBoxField("ArmorBonus");
 
-            if (equipment.StrengthBonus != 0)
-                UpdateHoverBoxText("StrengthBonus", "str: " + equipment.StrengthBonus.ToString());
+            if (equipmentData.StrengthBonus != 0)
+                UpdateHoverBoxText("StrengthBonus", "str: " + equipmentData.StrengthBonus.ToString());
             else
                 DisableHoverBoxField("StrengthBonus");
 
-            if (equipment.ConstitutionBonus != 0)
-                UpdateHoverBoxText("ConstitutionBonus", "con: " + equipment.ConstitutionBonus.ToString());
+            if (equipmentData.ConstitutionBonus != 0)
+                UpdateHoverBoxText("ConstitutionBonus", "con: " + equipmentData.ConstitutionBonus.ToString());
             else
                 DisableHoverBoxField("ConstitutionBonus");
 
-            if (equipment.DexterityBonus != 0)
-                UpdateHoverBoxText("DexterityBonus", "dex: " + equipment.DexterityBonus.ToString());
+            if (equipmentData.DexterityBonus != 0)
+                UpdateHoverBoxText("DexterityBonus", "dex: " + equipmentData.DexterityBonus.ToString());
             else
                 DisableHoverBoxField("DexterityBonus");
 
-            if (equipment.IntelligenceBonus != 0)
-                UpdateHoverBoxText("IntelligenceBonus", "int: " + equipment.IntelligenceBonus.ToString());
+            if (equipmentData.IntelligenceBonus != 0)
+                UpdateHoverBoxText("IntelligenceBonus", "int: " + equipmentData.IntelligenceBonus.ToString());
             else
                 DisableHoverBoxField("IntelligenceBonus");
 
-            if (equipment.WisdomBonus != 0)
-                UpdateHoverBoxText("WisdomBonus", "wis: " + equipment.WisdomBonus.ToString());
+            if (equipmentData.WisdomBonus != 0)
+                UpdateHoverBoxText("WisdomBonus", "wis: " + equipmentData.WisdomBonus.ToString());
             else
                 DisableHoverBoxField("WisdomBonus");
 
-            if (equipment.CharismaBonus != 0)
-                UpdateHoverBoxText("CharismaBonus", "cha: " + equipment.CharismaBonus.ToString());
+            if (equipmentData.CharismaBonus != 0)
+                UpdateHoverBoxText("CharismaBonus", "cha: " + equipmentData.CharismaBonus.ToString());
             else
                 DisableHoverBoxField("CharismaBonus");
 
-            if (equipment.StaminaBonus != 0)
-                UpdateHoverBoxText("StaminaBonus", "sta: " + equipment.StaminaBonus.ToString());
+            if (equipmentData.StaminaBonus != 0)
+                UpdateHoverBoxText("StaminaBonus", "sta: " + equipmentData.StaminaBonus.ToString());
             else
                 DisableHoverBoxField("StaminaBonus");
 
-            if (equipment.ManaBonus != 0)
-                UpdateHoverBoxText("ManaBonus", "mana: " + equipment.ManaBonus.ToString());
+            if (equipmentData.ManaBonus != 0)
+                UpdateHoverBoxText("ManaBonus", "mana: " + equipmentData.ManaBonus.ToString());
             else
                 DisableHoverBoxField("ManaBonus");
 
-            if (equipment.CriticalChanceBonus != 0 || equipment.CriticalDamageBonus != 0)
-                UpdateHoverBoxText("Critical", "crit: " + equipment.CriticalChanceBonus.ToString() + "% @ " + equipment.CriticalDamageBonus.ToString() + "x");
+            if (equipmentData.CriticalChanceBonus != 0 || equipmentData.CriticalDamageBonus != 0)
+                UpdateHoverBoxText("Critical", "crit: " + equipmentData.CriticalChanceBonus.ToString() + "% @ " + equipmentData.CriticalDamageBonus.ToString() + "x");
             else
                 DisableHoverBoxField("Critical");
 
@@ -158,7 +163,8 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
             if (item is WeaponSO weapon)
             {
                 UpdateHoverBoxText("DamageType", weapon.damageType.ToString());
-                
+                UpdateHoverBoxText("SlotType", weapon.slotType.ToString());
+
                 if (weapon.DieBonus > 0)
                     UpdateHoverBoxText("Die", weapon.DieMultiplier.ToString() + "d" + weapon.Die.ToString() + "+" + weapon.DieBonus.ToString());
                 else if (weapon.DieBonus < 0)
@@ -169,6 +175,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
             else
             {
                 DisableHoverBoxField("DamageType");
+                DisableHoverBoxField("SlotType");
                 DisableHoverBoxField("Die");
             }
         }
@@ -186,6 +193,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
             DisableHoverBoxField("ManaBonus");
             DisableHoverBoxField("Critical");
             DisableHoverBoxField("DamageType");
+            DisableHoverBoxField("SlotType");
             DisableHoverBoxField("Die");
         }
 
@@ -198,7 +206,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         // Recursively search for the child by name
         Transform statTextTransform = FindDeepChild(hoverBoxPanel.transform, statName);
-        
+
         if (statTextTransform != null)
         {
             TextMeshProUGUI textMesh = statTextTransform.GetComponent<TextMeshProUGUI>();
@@ -227,7 +235,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         // Recursively search for the child by name
         Transform statTextTransform = FindDeepChild(hoverBoxPanel.transform, statName);
-        
+
         if (statTextTransform != null && statTextTransform.parent != null)
         {
             // Disable the parent GameObject
@@ -242,7 +250,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             if (child.name == childName)
                 return child;
-            
+
             Transform result = FindDeepChild(child, childName);
             if (result != null)
                 return result;

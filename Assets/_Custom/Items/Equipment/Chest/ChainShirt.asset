@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4d396249cc1ee23ac5d1eb00797b39, type: 3}
   m_Name: ChainShirt
   m_EditorClassIdentifier: Assembly-CSharp::ArmorSO
-  sprite: {fileID: 21300000, guid: 55596b2276e4077478bbd19151a93d02, type: 3}
+  sprite: {fileID: 21300000, guid: c2618f66ac40e4643887cc8caf50a7de, type: 3}
   itemName: Chain Shirt
   itemNameSuffix: of Stamina
   itemDescription: 

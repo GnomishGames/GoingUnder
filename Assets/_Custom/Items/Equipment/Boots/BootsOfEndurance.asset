@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e4d396249cc1ee23ac5d1eb00797b39, type: 3}
   m_Name: BootsOfEndurance
   m_EditorClassIdentifier: Assembly-CSharp::ArmorSO
-  sprite: {fileID: 21300000, guid: 30974af2d8f722e478213e6e8aa290e1, type: 3}
+  sprite: {fileID: 21300000, guid: 00db08e70a0fdc64b96a18dc907fca34, type: 3}
   itemName: Boots
   itemNameSuffix: of Endurance
   itemDescription: Designed for those who trek long distances without rest.

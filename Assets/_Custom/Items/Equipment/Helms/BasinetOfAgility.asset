@@ -29,4 +29,4 @@ MonoBehaviour:
   WisdomBonus: 0
   CharismaBonus: 0
   CriticalChanceBonus: 1
-  CriticalDamageBonus: 0
+  CriticalDamageBonus: 1

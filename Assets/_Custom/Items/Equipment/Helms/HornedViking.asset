@@ -28,5 +28,5 @@ MonoBehaviour:
   IntelligenceBonus: 0
   WisdomBonus: 0
   CharismaBonus: 2
-  CriticalChanceBonus: 0
+  CriticalChanceBonus: 1
   CriticalDamageBonus: 2
