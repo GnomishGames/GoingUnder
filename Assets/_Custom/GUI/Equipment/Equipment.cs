@@ -3,6 +3,18 @@ using UnityEngine;
 
 public class Equipment : MonoBehaviour
 {
+    public struct EquipmentStatBonuses
+    {
+        public int StrengthBonus;
+        public int ConstitutionBonus;
+        public int DexterityBonus;
+        public int IntelligenceBonus;
+        public int WisdomBonus;
+        public int CharismaBonus;
+        public int StaminaBonus;
+        public int ManaBonus;
+    }
+
     public ArmorSO[] armorSOs = new ArmorSO[9];
     public WeaponSO[] weaponSOs = new WeaponSO[4];
 
@@ -11,12 +23,22 @@ public class Equipment : MonoBehaviour
 
     //events
     public event Action<float> OnAcChanged;
+    public event Action<EquipmentStatBonuses> OnEquipmentStatsChanged;
     public event Action<string> OnEquippedItemChanged;
     public event Action<int> OnArmorSlotChanged;
     public event Action<int> OnWeaponSlotChanged;
 
     //vars
     public int ArmorAC;
+    public int StrengthBonus { get; private set; }
+    public int ConstitutionBonus { get; private set; }
+    public int DexterityBonus { get; private set; }
+    public int IntelligenceBonus { get; private set; }
+    public int WisdomBonus { get; private set; }
+    public int CharismaBonus { get; private set; }
+    public int StaminaBonus { get; private set; }
+    public int ManaBonus { get; private set; }
+
     float timer;
     public GameObject prefab;
     
@@ -46,19 +68,28 @@ public class Equipment : MonoBehaviour
         if (timer <= 0)
         {
             //UpdateEquipped();
-            CalculateArmorClass();
+            CalculateStatChanges();
             timer = 1;
         }
     }
 
-    public void CalculateArmorClass()
+    public void CalculateStatChanges()
     {
         ArmorAC = 0;
+        StrengthBonus = 0;
+        ConstitutionBonus = 0;
+        DexterityBonus = 0;
+        IntelligenceBonus = 0;
+        WisdomBonus = 0;
+        CharismaBonus = 0;
+        StaminaBonus = 0;
+        ManaBonus = 0;
+
         for (int i = 0; i < armorSOs.Length; i++)
         {
             if (armorSOs[i] != null)
             {
-                ArmorAC += armorSOs[i].ArmorBonus;
+                AddBonusesFromItem(armorSOs[i]);
             }
         }
 
@@ -66,11 +97,35 @@ public class Equipment : MonoBehaviour
         {
             if (weaponSOs[i] != null)
             {
-                ArmorAC += weaponSOs[i].ArmorBonus;
+                AddBonusesFromItem(weaponSOs[i]);
             }
         }
 
         OnAcChanged?.Invoke(ArmorAC); //notify listeners that AC has changed
+        OnEquipmentStatsChanged?.Invoke(new EquipmentStatBonuses
+        {
+            StrengthBonus = StrengthBonus,
+            ConstitutionBonus = ConstitutionBonus,
+            DexterityBonus = DexterityBonus,
+            IntelligenceBonus = IntelligenceBonus,
+            WisdomBonus = WisdomBonus,
+            CharismaBonus = CharismaBonus,
+            StaminaBonus = StaminaBonus,
+            ManaBonus = ManaBonus
+        });
+    }
+
+    void AddBonusesFromItem(EquipmentSO item)
+    {
+        ArmorAC += item.ArmorBonus;
+        StrengthBonus += item.StrengthBonus;
+        ConstitutionBonus += item.ConstitutionBonus;
+        DexterityBonus += item.DexterityBonus;
+        IntelligenceBonus += item.IntelligenceBonus;
+        WisdomBonus += item.WisdomBonus;
+        CharismaBonus += item.CharismaBonus;
+        StaminaBonus += item.StaminaBonus;
+        ManaBonus += item.ManaBonus;
     }
 
     public void MoveArmor(int from, int to, SlotType slotType)
@@ -111,7 +166,7 @@ public class Equipment : MonoBehaviour
             OnArmorSlotChanged?.Invoke(equipmentSlot);
             inventory.TriggerInventorySlotChanged(inventorySlot);
 
-            CalculateArmorClass();
+            CalculateStatChanges();
         }
     }
     public void EquipWeapon(int inventorySlot, int equipmentSlot, SlotType slotType)
@@ -126,7 +181,7 @@ public class Equipment : MonoBehaviour
             OnWeaponSlotChanged?.Invoke(equipmentSlot);
             inventory.TriggerInventorySlotChanged(inventorySlot);
 
-            CalculateArmorClass();
+            CalculateStatChanges();
         }
     }
 
@@ -142,7 +197,7 @@ public class Equipment : MonoBehaviour
             OnArmorSlotChanged?.Invoke(equipmentSlot);
             container.TriggerContainerSlotChanged(containerSlot);
 
-            CalculateArmorClass();
+            CalculateStatChanges();
         }
     }
 
@@ -158,7 +213,7 @@ public class Equipment : MonoBehaviour
             OnWeaponSlotChanged?.Invoke(equipmentSlot);
             container.TriggerContainerSlotChanged(containerSlot);
 
-            CalculateArmorClass();
+            CalculateStatChanges();
         }
     }
 

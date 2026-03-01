@@ -117,6 +117,14 @@ public class CreatureStats : Creature
 
     //armor and size
     public float equipmentAc { get; private set; }
+    public float equipmentStrengthBonus { get; private set; }
+    public float equipmentConstitutionBonus { get; private set; }
+    public float equipmentDexterityBonus { get; private set; }
+    public float equipmentIntelligenceBonus { get; private set; }
+    public float equipmentWisdomBonus { get; private set; }
+    public float equipmentCharismaBonus { get; private set; }
+    public float equipmentStaminaBonus { get; private set; }
+    public float equipmentManaBonus { get; private set; }
 
     //math
     Unity.Mathematics.Random rand;
@@ -124,9 +132,16 @@ public class CreatureStats : Creature
     void Awake()
     {
         equipment = GetComponent<Equipment>();
-        equipment.OnAcChanged += UpdateEquipmentAc;
-
-        CalculateStats();
+        if (equipment != null)
+        {
+            equipment.OnAcChanged += UpdateEquipmentAc;
+            equipment.OnEquipmentStatsChanged += UpdateEquipmentStats;
+            equipment.CalculateStatChanges();
+        }
+        else
+        {
+            CalculateStats();
+        }
 
         ModifyHealth(maxHitpoints);
         ModifyStamina(maxStamina);
@@ -143,7 +158,7 @@ public class CreatureStats : Creature
         OnRaceChanged?.Invoke(characterRace);
 
         //Strength
-        strengthScore = CalculateStatScore(strengthBase, characterRace.strengthBonus, characterClass.strengthBonus, characterLevel);
+        strengthScore = CalculateStatScore(strengthBase, characterRace.strengthBonus, characterClass.strengthBonus, characterLevel) + equipmentStrengthBonus;
         strengthModifier = CalculateStatModifier(strengthScore, characterLevel);
 
         OnStrengthRaceChanged?.Invoke(characterRace.strengthBonus);
@@ -153,7 +168,7 @@ public class CreatureStats : Creature
         OnStrengthBaseChanged?.Invoke(strengthBase);
 
         //Constitution
-        constitutionScore = CalculateStatScore(constitutionBase, characterRace.constitutionBonus, characterClass.constitutionBonus, characterLevel);
+        constitutionScore = CalculateStatScore(constitutionBase, characterRace.constitutionBonus, characterClass.constitutionBonus, characterLevel) + equipmentConstitutionBonus;
         constitutionModifier = CalculateStatModifier(constitutionScore, characterLevel);
 
         OnConstitutionRaceChanged?.Invoke(characterRace.constitutionBonus);
@@ -163,7 +178,7 @@ public class CreatureStats : Creature
         OnConstitutionBaseChanged?.Invoke(constitutionBase);
 
         //Dexterity
-        dexterityScore = CalculateStatScore(dexterityBase, characterRace.dexterityBonus, characterClass.dexterityBonus, characterLevel);
+        dexterityScore = CalculateStatScore(dexterityBase, characterRace.dexterityBonus, characterClass.dexterityBonus, characterLevel) + equipmentDexterityBonus;
         dexterityModifier = CalculateStatModifier(dexterityScore, characterLevel);
 
         OnDexterityRaceChanged?.Invoke(characterRace.dexterityBonus);
@@ -173,7 +188,7 @@ public class CreatureStats : Creature
         OnDexterityBaseChanged?.Invoke(dexterityBase);
 
         //Intelligence
-        intelligenceScore = CalculateStatScore(intelligenceBase, characterRace.intelligenceBonus, characterClass.intelligenceBonus, characterLevel);
+        intelligenceScore = CalculateStatScore(intelligenceBase, characterRace.intelligenceBonus, characterClass.intelligenceBonus, characterLevel) + equipmentIntelligenceBonus;
         intelligenceModifier = CalculateStatModifier(intelligenceScore, characterLevel);
 
         OnIntelligenceRaceChanged?.Invoke(characterRace.intelligenceBonus);
@@ -183,7 +198,7 @@ public class CreatureStats : Creature
         OnIntelligenceBaseChanged?.Invoke(intelligenceBase);
 
         //Wisdom
-        wisdomScore = CalculateStatScore(wisdomBase, characterRace.wisdomBonus, characterClass.wisdomBonus, characterLevel);
+        wisdomScore = CalculateStatScore(wisdomBase, characterRace.wisdomBonus, characterClass.wisdomBonus, characterLevel) + equipmentWisdomBonus;
         wisdomModifier = CalculateStatModifier(wisdomScore, characterLevel);
 
         OnWisdomRaceChanged?.Invoke(characterRace.wisdomBonus);
@@ -193,7 +208,7 @@ public class CreatureStats : Creature
         OnWisdomModifierChanged?.Invoke(wisdomModifier);
 
         //Charisma  
-        charismaScore = CalculateStatScore(charismaBase, characterRace.charismaBonus, characterClass.charismaBonus, characterLevel);
+        charismaScore = CalculateStatScore(charismaBase, characterRace.charismaBonus, characterClass.charismaBonus, characterLevel) + equipmentCharismaBonus;
         charismaModifier = CalculateStatModifier(charismaScore, characterLevel);
 
         OnCharismaRaceChanged?.Invoke(characterRace.charismaBonus);
@@ -207,11 +222,11 @@ public class CreatureStats : Creature
         OnMaxHealthChanged?.Invoke(maxHitpoints);
 
         //Max Stamina
-        maxStamina = (characterClass.hitDie * characterLevel) + constitutionModifier; //(level * base) + con modifier
+        maxStamina = (characterClass.hitDie * characterLevel) + constitutionModifier + equipmentStaminaBonus; //(level * base) + con modifier
         OnMaxStaminaChanged?.Invoke(maxStamina);
 
         //Max Mana
-        maxMana = (characterClass.manaDie * characterLevel) + intelligenceModifier; //(level * base) + int modifier
+        maxMana = (characterClass.manaDie * characterLevel) + intelligenceModifier + equipmentManaBonus; //(level * base) + int modifier
         OnMaxManaChanged?.Invoke(maxMana);
 
         //Armor Class
@@ -257,6 +272,19 @@ public class CreatureStats : Creature
     void UpdateEquipmentAc(float newAc)
     {
         equipmentAc = newAc;
+    }
+
+    void UpdateEquipmentStats(Equipment.EquipmentStatBonuses bonuses)
+    {
+        equipmentStrengthBonus = bonuses.StrengthBonus;
+        equipmentConstitutionBonus = bonuses.ConstitutionBonus;
+        equipmentDexterityBonus = bonuses.DexterityBonus;
+        equipmentIntelligenceBonus = bonuses.IntelligenceBonus;
+        equipmentWisdomBonus = bonuses.WisdomBonus;
+        equipmentCharismaBonus = bonuses.CharismaBonus;
+        equipmentStaminaBonus = bonuses.StaminaBonus;
+        equipmentManaBonus = bonuses.ManaBonus;
+
         CalculateStats(); // Recalculate armor class with new equipment AC
     }
 

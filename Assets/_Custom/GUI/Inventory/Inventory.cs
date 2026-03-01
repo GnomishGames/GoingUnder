@@ -73,7 +73,7 @@ public class Inventory : MonoBehaviour
             equipment.TriggerArmorSlotChanged(equipmentSlot);
         }
 
-        equipment.CalculateArmorClass();
+        equipment.CalculateStatChanges();
     }
 
     public void UnEquipWeapon(int inventorySlot, int equipmentSlot)
@@ -99,7 +99,7 @@ public class Inventory : MonoBehaviour
             equipment.TriggerWeaponSlotChanged(equipmentSlot);
         }
 
-        equipment.CalculateArmorClass();
+        equipment.CalculateStatChanges();
     }
 
     internal void LootItem(int inventorySlot, int containerSlot)
