@@ -115,4 +115,3 @@ InitTestScene*.unity*
 
 # Unity meta files
 *.meta
-!Assets/_Custom/**/*.meta
