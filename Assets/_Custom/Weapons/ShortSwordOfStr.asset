@@ -33,4 +33,4 @@ MonoBehaviour:
   damageType: 2
   DieMultiplier: 1
   Die: 4
-  DieBonus: 4
+  DieBonus: 3
