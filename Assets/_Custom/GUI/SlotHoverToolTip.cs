@@ -1,11 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using TMPro;
 using UnityEngine.UI;
 
-public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    /*
+/*
     This script is attached to UI elements that have a hover tooltip.
     It shows the tooltip when the pointer enters the element and hides it when the pointer exits.
     */
@@ -32,7 +31,7 @@ public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (hoverBoxPanel != null && isHoverBoxEnabled)
+        if (hoverBoxPanel != null && isHoverBoxEnabled && image.sprite != null)
         {
             hoverBoxPanel.SetActive(true);
         }

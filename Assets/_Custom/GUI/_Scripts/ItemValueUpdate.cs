@@ -9,26 +9,21 @@ public class ItemValueUpdate : MonoBehaviour
     */
 
     public TextMeshProUGUI itemValueText; // Reference to the TextMeshProUGUI component for displaying the item value
+    
+    [Tooltip("parentSlot is the slot that holds the item. I usually just call it \"Slot\".")]
     [SerializeField] private InventoryPanelSlot parentSlot; // Assign this in the inspector
+    
     private Inventory inventory;
 
     void Start()
     {
         // Get the text component on the item value text object
         itemValueText = GetComponent<TextMeshProUGUI>();
-        
-        if (parentSlot == null)
-        {
-            parentSlot = GetComponentInParent<InventoryPanelSlot>();
-            if (parentSlot == null)
-            {
-                Debug.LogError($"ItemValueUpdate on {gameObject.name}: parentSlot not assigned in inspector and could not find in parent hierarchy");
-                return;
-            }
-        }
 
         // Get the player's inventory
         GameObject player = GameObject.FindWithTag("Player");
+
+        // Get the player's inventory.
         if (player != null)
         {
             inventory = player.GetComponent<Inventory>();
@@ -106,6 +101,15 @@ public class ItemValueUpdate : MonoBehaviour
                     break;
                 case "SlotType":
                     itemValueText.text = item.slotType.ToString();
+                    break;
+                case "ArmorBonus":
+                    itemValueText.text = item is EquipmentSO equipment ? equipment.ArmorBonus.ToString() : "";
+                    break;
+                case "StaminaBonus":
+                    itemValueText.text = item is EquipmentSO equipment2 ? equipment2.StaminaBonus.ToString() : "";
+                    break;
+                case "ManaBonus":
+                    itemValueText.text = item is EquipmentSO equipment3 ? equipment3.ManaBonus.ToString() : "";
                     break;
                 default:
                     itemValueText.text = "";
