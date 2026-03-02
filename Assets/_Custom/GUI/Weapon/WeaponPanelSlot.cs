@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
+public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler, IPointerClickHandler
 {
     private RectTransform rectTransform;
     [SerializeField] private Canvas canvas;
@@ -24,6 +25,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
     //class references
     Equipment equipment;
+    PlayerTargeting playerTargeting;
 
     public int slotNumber; //manually set on the interface
     public SlotType slotType;
@@ -32,10 +34,10 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
     {
         canvas = GetComponentInParent<Canvas>();
 
-        inventoryPanel = transform.root.GetComponentInChildren<InventoryPanel>();
-        equipmentPanel = transform.root.GetComponentInChildren<EquipmentPanel>();
-        weaponPanel = transform.root.GetComponentInChildren<WeaponPanel>();
-        containerPanel = transform.root.GetComponentInChildren<ContainerPanel>();
+        inventoryPanel = transform.root.GetComponentInChildren<InventoryPanel>(true);
+        equipmentPanel = transform.root.GetComponentInChildren<EquipmentPanel>(true);
+        weaponPanel = transform.root.GetComponentInChildren<WeaponPanel>(true);
+        containerPanel = transform.root.GetComponentInChildren<ContainerPanel>(true);
 
         if (weaponPanel == null)
         {
@@ -47,6 +49,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
         //set arrays
         equipment = player.GetComponent<Equipment>();
+        playerTargeting = player.GetComponent<PlayerTargeting>();
 
         //set ui elements
         rectTransform = GetComponent<RectTransform>();
@@ -86,7 +89,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
     private void UpdateSlotIcons()
     {
         if (equipment == null) return;
-        
+
         if (equipment.weaponSOs[slotNumber] != null)
         {
             GetComponent<Image>().sprite = equipment.weaponSOs[slotNumber].sprite;
@@ -189,12 +192,50 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
                 draggedRect.SetSiblingIndex(rectTransform.GetSiblingIndex());
             }
         }
-        
+
         if (inventoryPanel != null)
             inventoryPanel.fromPanel = null;
         if (equipmentPanel != null)
             equipmentPanel.fromPanel = null;
         if (containerPanel != null)
             containerPanel.fromPanel = null;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (equipment.weaponSOs[slotNumber] != null)
+        {
+            // Do attack
+            //check for target null
+            if (playerTargeting.currentTarget == null)
+            {
+                Debug.Log($"Weapon: No target selected.");
+                return;
+            }
+
+            // target dead?
+            if (playerTargeting.currentTarget.GetComponent<CreatureStats>().isDead)
+            {
+                Debug.Log($"Weapon: Target is too dead for attack.");
+                return;
+            }
+
+            // Am I dead?
+            if (player.GetComponent<CreatureStats>().isDead)
+            {
+                Debug.Log($"Weapon: Player is too dead to attack.");
+                return;
+            }
+
+            // check if attack hits
+            int attackRoll = player.GetComponent<CreatureStats>().AttackRoll();
+
+
+            // calculate damage
+            if (attackRoll >= player.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().armorClass)
+            { 
+                Debug.Log($"Weapon: Attack hit!");
+            }
+        }
     }
 }

@@ -78,7 +78,7 @@ public class StatSlider : MonoBehaviour
     {
         switch (statName)
         {
-            case "Health":
+            case "Hitpoints":
                 return creatureStats.currentHitPoints;
             case "Experience":
                 return creatureStats.experience;
@@ -96,7 +96,7 @@ public class StatSlider : MonoBehaviour
     {
         switch (statName)
         {
-            case "Health":
+            case "Hitpoints":
                 return creatureStats.maxHitpoints;
             case "Experience":
                 return creatureStats.maxExperience;
