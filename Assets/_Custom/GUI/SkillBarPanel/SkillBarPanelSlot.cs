@@ -185,13 +185,6 @@ public class SkillBarPanelSlot : MonoBehaviour, IPointerClickHandler, IBeginDrag
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        //null check
-        if (skillBar.skillSOs[slotNumber] == null)
-        {
-            Debug.LogWarning("No skill assigned to this slot.");
-            return;
-        }
-
-        //skillBar.DoSkill(slotNumber, skillBar.skillTimer[slotNumber]);
+        skillBar.DoSkill(slotNumber);
     }
 }

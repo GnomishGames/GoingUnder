@@ -126,8 +126,8 @@ public class CreatureStats : Creature
     public float equipmentStaminaBonus { get; private set; }
     public float equipmentManaBonus { get; private set; }
 
-    //math
-    Unity.Mathematics.Random rand;
+    // death
+    public bool isDead { get; private set; } = false;
 
     void Awake()
     {
@@ -336,5 +336,11 @@ public class CreatureStats : Creature
     public void AddStamina(float amount)
     {
         ModifyStamina(amount);
+    }
+
+    public int AttackRoll()
+    {
+        int attackRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)strengthModifier;
+        return attackRoll;
     }
 }

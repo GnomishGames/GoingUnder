@@ -5,7 +5,7 @@ public class PlayerTargeting : MonoBehaviour
 {
     Camera cam;
     [SerializeField] LayerMask interactableLayerMask;
-    [SerializeField] Interactable currentTarget;
+    public Interactable currentTarget;
     TargetPanel targetPanel;
     
     void Start()

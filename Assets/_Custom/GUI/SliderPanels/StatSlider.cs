@@ -16,7 +16,7 @@ public class StatSlider : MonoBehaviour
 
         characterPanel = GetComponentInParent<CharacterPanel>();
 
-        creatureStats = GetComponent<CreatureStats>();
+        creatureStats = transform.root.GetComponent<CreatureStats>();
 
         slider = GetComponent<Slider>();
 
