@@ -1,7 +1,7 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
-public class Die : MonoBehaviour
+public class AttackDie : MonoBehaviour
 {
     // display the results of die roll on the die face
     TextMeshProUGUI dieText;
@@ -17,13 +17,13 @@ public class Die : MonoBehaviour
     void OnEnable()
     {
         //subscribe to the event that triggers when dice are rolled for a skill
-        skillBar.OnDiceRolled += SetDieValue;
+        skillBar.OnAttackRoll += SetDieValue;
     }
 
     void OnDisable()
     {
         //unsubscribe from the event when the die is disabled
-        skillBar.OnDiceRolled -= SetDieValue;
+        skillBar.OnAttackRoll -= SetDieValue;
     }
 
     public void SetDieValue(int value)
