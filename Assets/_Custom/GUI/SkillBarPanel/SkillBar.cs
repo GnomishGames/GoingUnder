@@ -105,6 +105,7 @@ public class SkillBar : MonoBehaviour
             //first get the weapon
             var weapon = equipment.weaponSOs[0]; // Assuming the first weapon slot is used for the attack
 
+            // Now calculate the damage based on the weapon's stats
             int damage = 0;
             for (int i = 0; i < weapon.DieMultiplier; i++)
             {
