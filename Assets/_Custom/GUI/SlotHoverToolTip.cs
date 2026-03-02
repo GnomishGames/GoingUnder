@@ -250,7 +250,6 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
                 {
                     statTextTransform.parent.gameObject.SetActive(true);
                 }
-                Debug.Log($"Updated {statName} to: {statValue}");
             }
             else
             {

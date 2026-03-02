@@ -13,7 +13,9 @@ public class SkillBar : MonoBehaviour
     public event Action<int> OnSkillChanged;
 
     Equipment equipment;
-
+    //event triggered when dice are rolled for a skill (passes total rolled)
+    public event Action<int> OnDiceRolled;
+    
     void Awake()
     {
         skillBook = GetComponent<SkillBook>();
@@ -118,6 +120,9 @@ public class SkillBar : MonoBehaviour
             this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().SubtractHealth(damage);
 
             Debug.Log($"SkillBar: Skill {skillSOs[slotNumber].name} hit for {damage} damage!");
+
+            //event to send out total dice rolled
+            OnDiceRolled?.Invoke(damage);
         }
         else
         {
