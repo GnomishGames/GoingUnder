@@ -6,8 +6,6 @@ public class AttackDie : MonoBehaviour
     // display the results of die roll on the die face
     TextMeshProUGUI dieText;
 
-    SkillBar skillBar;
-
     private void Awake()
     {
         dieText = GetComponentInChildren<TextMeshProUGUI>();
@@ -15,6 +13,13 @@ public class AttackDie : MonoBehaviour
 
     public void SetDieValue(int value)
     {
-        dieText.text = value.ToString();
+        if (value > 0)
+        {
+            dieText.text = value.ToString();
+        }
+        else
+        {
+            dieText.text = "";
+        }
     }
 }

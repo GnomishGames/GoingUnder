@@ -7,12 +7,20 @@ public class PlayerTargeting : MonoBehaviour
     [SerializeField] LayerMask interactableLayerMask;
     public Interactable currentTarget;
     TargetPanel targetPanel;
+
+    //dice
+    AttackDie attackDie;
+    DamageDie damageDie;
     
     void Start()
     {
         cam = GetComponentInChildren<Camera>(); //camera component is on a child object of the player
         targetPanel = GetComponentInChildren<TargetPanel>(true); //target panel is on a child object of the player, but is inactive at the start of the game
         targetPanel.gameObject.SetActive(false); //make sure the target panel is inactive at the start of the game
+
+        // Find AttackDie and DamageDie in the scene
+        attackDie = FindFirstObjectByType<AttackDie>();
+        damageDie = FindFirstObjectByType<DamageDie>();
     }
 
     void Update()
@@ -49,6 +57,8 @@ public class PlayerTargeting : MonoBehaviour
                 currentTarget = null;
                 targetPanel.SetNewTarget(null);
                 targetPanel.gameObject.SetActive(false);
+                damageDie.SetDieValue(0); // Clear damage die display when no target is selected
+                attackDie.SetDieValue(0); // Clear attack die display when no target is selected
             }
         }
     }

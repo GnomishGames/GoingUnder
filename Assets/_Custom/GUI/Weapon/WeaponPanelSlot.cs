@@ -27,6 +27,10 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
     Equipment equipment;
     PlayerTargeting playerTargeting;
 
+    //dice
+    AttackDie attackDie;
+    DamageDie damageDie;
+
     public int slotNumber; //manually set on the interface
     public SlotType slotType;
 
@@ -54,6 +58,10 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         //set ui elements
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+
+        // Find AttackDie and DamageDie in the scene
+        attackDie = FindFirstObjectByType<AttackDie>();
+        damageDie = FindFirstObjectByType<DamageDie>();
 
         //draglayer keeps icons on top when dragging
         dragLayer = GameObject.FindWithTag("DragLayer").transform;
@@ -229,12 +237,32 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
             // check if attack hits
             int attackRoll = player.GetComponent<CreatureStats>().AttackRoll();
-
+            attackDie.SetDieValue(attackRoll); // Update attack die display
 
             // calculate damage
-            if (attackRoll >= player.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().armorClass)
-            { 
-                Debug.Log($"Weapon: Attack hit!");
+            if (attackRoll >= playerTargeting.currentTarget.GetComponent<CreatureStats>().armorClass)
+            {
+                Debug.Log($"Weapon: Attack hit!" + $" Attack Roll: {attackRoll} vs Target AC: {playerTargeting.currentTarget.GetComponent<CreatureStats>().armorClass}");
+                //first get the weapon
+                var weapon = equipment.weaponSOs[0]; // Assuming the first weapon slot is used for the attack
+
+                // Now calculate the damage based on the weapon's stats
+                int damage = 0;
+                for (int i = 0; i < weapon.DieMultiplier; i++)
+                {
+                    damage += UnityEngine.Random.Range(1, weapon.Die + 1);
+                }
+
+                damage += weapon.DieBonus;
+
+                // Apply damage to the target
+                playerTargeting.currentTarget.GetComponent<CreatureStats>().SubtractHealth(damage);
+                damageDie.SetDieValue(damage); // Update damage die display
+            }
+            else
+            {
+                Debug.Log($"Weapon: Attack missed!" + $" Attack Roll: {attackRoll} vs Target AC: {playerTargeting.currentTarget.GetComponent<CreatureStats>().armorClass}");
+                damageDie.SetDieValue(0); // Clear damage die display on miss
             }
         }
     }
