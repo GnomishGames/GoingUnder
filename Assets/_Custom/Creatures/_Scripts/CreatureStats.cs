@@ -241,7 +241,7 @@ public class CreatureStats : Creature
         // Calculate XP needed for next level
         float xpForCurrentLevel = GetXPRequiredForLevel(characterLevel);
         float xpForNextLevel = GetXPRequiredForLevel(characterLevel + 1);
-        
+
         maxExperience = xpForNextLevel - xpForCurrentLevel;
 
         OnLevelChanged?.Invoke(characterLevel);
@@ -293,6 +293,13 @@ public class CreatureStats : Creature
 
         OnHealthChanged?.Invoke(currentHitPoints);
         OnMaxHealthChanged?.Invoke(maxHitpoints);
+
+        if (currentHitPoints <= 0)
+        {
+            isDead = true;
+            inCombat = false;
+            Debug.Log($"{interactableName} has died.");
+        }
     }
 
     public void SubtractHealth(float amount)

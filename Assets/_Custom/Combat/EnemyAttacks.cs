@@ -9,6 +9,7 @@ public class EnemyAttacks : MonoBehaviour
     CreatureStats myStats;
     CreatureStats targetStats;
     Initiative initiative;
+    private bool hasAttackedThisTurn = false;
 
     void Start()
     {
@@ -23,14 +24,25 @@ public class EnemyAttacks : MonoBehaviour
 
     void Update()
     {
-        if (creatureStats.inCombat)
+        if (creatureStats.inCombat && !hasAttackedThisTurn)
         {
             AttackPlayer(player);
+            hasAttackedThisTurn = true; // Only attack once per turn
+        }
+        else if (!creatureStats.inCombat)
+        {
+            hasAttackedThisTurn = false; // Reset flag when it's not our turn
         }
     }
 
     public void AttackPlayer(Transform enemy)
     {
+        // Silently stop if player is already dead
+        if (targetStats.isDead)
+        {
+            return;
+        }
+
         // Resolve the attack using the combat system
         int slotNumber = 0; // For simplicity, enemies will always use the first weapon slot. This can be expanded to allow for multiple attacks or different weapons.
         WeaponSO weapon = equipment.weaponSOs[slotNumber];
@@ -39,17 +51,17 @@ public class EnemyAttacks : MonoBehaviour
         // Handle the result
         if (!result.wasAttempted)
         {
-            Debug.Log($"Weapon: Attack failed - {result.failureReason}");
+            Debug.Log($"Enemy: Attack failed - {result.failureReason}");
             return;
         }
 
         if (result.wasHit)
         {
-            Debug.Log($"Weapon: Attack hit! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}, Damage: {result.damageDealt}");
+            Debug.Log($"Enemy: Attack hit! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}, Damage: {result.damageDealt}");
         }
         else
         {
-            Debug.Log($"Weapon: Attack missed! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}");
+            Debug.Log($"Enemy: Attack missed! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}");
         }
 
         // Advance to next turn

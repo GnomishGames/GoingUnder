@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bear
   m_EditorClassIdentifier: Assembly-CSharp::RaceSO
   raceName: Bear
-  strengthBonus: 2
+  strengthBonus: 5
   constitutionBonus: 2
   dexterityBonus: 1
   intelligenceBonus: 1

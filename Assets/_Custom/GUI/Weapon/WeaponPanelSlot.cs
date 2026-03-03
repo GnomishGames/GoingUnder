@@ -235,6 +235,12 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         CreatureStats playerStats = player.GetComponent<CreatureStats>();
         CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
 
+        // Silently stop if target is already dead (expected behavior, no need to spam)
+        if (targetStats.isDead)
+        {
+            return;
+        }
+
         // Resolve the attack using the combat system
         WeaponSO weapon = equipment.weaponSOs[slotNumber];
         AttackResult result = combatResolver.ResolveAttack(playerStats, targetStats, weapon);
