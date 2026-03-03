@@ -26,6 +26,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
     //class references
     Equipment equipment;
+    CombatResolver combatResolver;
 
     //dice
     AttackDie attackDie;
@@ -62,6 +63,13 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         // Find AttackDie and DamageDie in the scene
         attackDie = FindFirstObjectByType<AttackDie>();
         damageDie = FindFirstObjectByType<DamageDie>();
+
+        // Find CombatResolver in the scene
+        combatResolver = FindFirstObjectByType<CombatResolver>();
+        if (combatResolver == null)
+        {
+            Debug.LogError("WeaponsPanelSlot: CombatResolver not found in scene!");
+        }
 
         //draglayer keeps icons on top when dragging
         dragLayer = GameObject.FindWithTag("DragLayer").transform;
@@ -211,72 +219,51 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (equipment.weaponSOs[slotNumber] != null)
+        if (equipment.weaponSOs[slotNumber] == null)
         {
-            // Do attack
-            //check for target null
-            if (playerTargeting.currentTarget == null)
-            {
-                Debug.Log($"Weapon: No target selected.");
-                return;
-            }
-
-            // target dead?
-            if (playerTargeting.currentTarget.GetComponent<CreatureStats>().isDead)
-            {
-                Debug.Log($"Weapon: Target is too dead for attack.");
-                return;
-            }
-
-            // Am I dead?
-            if (player.GetComponent<CreatureStats>().isDead)
-            {
-                Debug.Log($"Weapon: Player is too dead to attack.");
-                return;
-            }
-
-            // is it my turn?
-            if (!player.GetComponent<CreatureStats>().inCombat)
-            {
-                Debug.Log($"Weapon: It's not the player's turn to attack.");
-                return;
-            }
-
-            // check if attack hits
-            int attackRoll = player.GetComponent<CreatureStats>().AttackRoll();
-            attackDie.SetDieValue(attackRoll); // Update attack die display
-
-            // calculate damage
-            if (attackRoll >= playerTargeting.currentTarget.GetComponent<CreatureStats>().armorClass)
-            {
-                Debug.Log($"Weapon: Attack hit!" + $" Attack Roll: {attackRoll} vs Target AC: {playerTargeting.currentTarget.GetComponent<CreatureStats>().armorClass}");
-                //first get the weapon
-                var weapon = equipment.weaponSOs[0]; // Assuming the first weapon slot is used for the attack
-
-                // Now calculate the damage based on the weapon's stats
-                int damage = 0;
-                for (int i = 0; i < weapon.DieMultiplier; i++)
-                {
-                    damage += UnityEngine.Random.Range(1, weapon.Die + 1);
-                }
-
-                damage += weapon.DieBonus;
-
-                // Apply damage to the target
-                playerTargeting.currentTarget.GetComponent<CreatureStats>().SubtractHealth(damage);
-                damageDie.SetDieValue(damage); // Update damage die display
-            }
-            else
-            {
-                Debug.Log($"Weapon: Attack missed!" + $" Attack Roll: {attackRoll} vs Target AC: {playerTargeting.currentTarget.GetComponent<CreatureStats>().armorClass}");
-                damageDie.SetDieValue(0); // Clear damage die display on miss
-            }
+            Debug.Log("Weapon: No weapon equipped in this slot.");
+            return;
         }
 
+        // Check basic requirements
+        if (playerTargeting.currentTarget == null)
+        {
+            Debug.Log("Weapon: No target selected.");
+            return;
+        }
+
+        CreatureStats playerStats = player.GetComponent<CreatureStats>();
+        CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+
+        // Resolve the attack using the combat system
+        WeaponSO weapon = equipment.weaponSOs[slotNumber];
+        AttackResult result = combatResolver.ResolveAttack(playerStats, targetStats, weapon);
+
+        // Handle the result
+        if (!result.wasAttempted)
+        {
+            Debug.Log($"Weapon: Attack failed - {result.failureReason}");
+            return;
+        }
+
+        if (result.wasHit)
+        {
+            Debug.Log($"Weapon: Attack hit! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}, Damage: {result.damageDealt}");
+            attackDie.SetDieValue(result.attackRoll);
+            damageDie.SetDieValue(result.damageDealt);
+        }
+        else
+        {
+            Debug.Log($"Weapon: Attack missed! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}");
+            attackDie.SetDieValue(result.attackRoll);
+            damageDie.SetDieValue(0);
+        }
+
+        // Advance to next turn
         Initiative initiative = FindAnyObjectByType<Initiative>();
         if (initiative != null)
         {
-            initiative.NextTurn(); // Move to the next combatant in initiative order
+            initiative.NextTurn();
         }
     }
 }
