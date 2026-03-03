@@ -1,8 +1,7 @@
 using UnityEngine;
 
-/// <summary>
-/// Data structure representing the result of an attack
-/// </summary>
+// Data structure representing the result of an attack
+
 public struct AttackResult
 {
     public bool wasAttempted;

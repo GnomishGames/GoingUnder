@@ -1,14 +1,11 @@
 using UnityEngine;
 
-/// <summary>
-/// Handles all combat resolution logic including attack rolls, damage calculation, and damage application.
-/// This is separate from UI and can be used by any system that needs to resolve attacks.
-/// </summary>
+// Handles all combat resolution logic including attack rolls, damage calculation, and damage application.
+// This is separate from UI and can be used by any system that needs to resolve attacks.
+
 public class CombatResolver : MonoBehaviour
 {
-    /// <summary>
-    /// Resolves an attack from an attacker to a target using a specific weapon
-    /// </summary>
+    // Resolves an attack from an attacker to a target using a specific weapon
     public AttackResult ResolveAttack(CreatureStats attacker, CreatureStats target, WeaponSO weapon)
     {
         // Validation checks
@@ -84,10 +81,8 @@ public class CombatResolver : MonoBehaviour
         );
     }
 
-    /// <summary>
-    /// Calculates damage for an attack based on the weapon and attacker stats
-    /// Can be extended to include modifiers, critical hits, resistances, etc.
-    /// </summary>
+    // Calculates damage for an attack based on the weapon and attacker stats
+    // Can be extended to include modifiers, critical hits, resistances, etc.
     private int CalculateDamage(CreatureStats attacker, WeaponSO weapon)
     {
         int damage = 0;
