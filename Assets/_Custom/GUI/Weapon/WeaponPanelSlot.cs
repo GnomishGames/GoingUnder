@@ -16,6 +16,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
     //player reference
     public Transform player;
+    PlayerTargeting playerTargeting;
 
     //panels
     public InventoryPanel inventoryPanel;
@@ -25,7 +26,6 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
     //class references
     Equipment equipment;
-    PlayerTargeting playerTargeting;
 
     //dice
     AttackDie attackDie;
@@ -235,6 +235,13 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
                 return;
             }
 
+            // is it my turn?
+            if (!player.GetComponent<CreatureStats>().inCombat)
+            {
+                Debug.Log($"Weapon: It's not the player's turn to attack.");
+                return;
+            }
+
             // check if attack hits
             int attackRoll = player.GetComponent<CreatureStats>().AttackRoll();
             attackDie.SetDieValue(attackRoll); // Update attack die display
@@ -264,6 +271,12 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
                 Debug.Log($"Weapon: Attack missed!" + $" Attack Roll: {attackRoll} vs Target AC: {playerTargeting.currentTarget.GetComponent<CreatureStats>().armorClass}");
                 damageDie.SetDieValue(0); // Clear damage die display on miss
             }
+        }
+
+        Initiative initiative = FindAnyObjectByType<Initiative>();
+        if (initiative != null)
+        {
+            initiative.NextTurn(); // Move to the next combatant in initiative order
         }
     }
 }

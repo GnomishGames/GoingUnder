@@ -129,6 +129,9 @@ public class CreatureStats : Creature
     // death
     public bool isDead { get; private set; } = false;
 
+    //initiative
+    public bool inCombat = false;
+
     void Awake()
     {
         equipment = GetComponent<Equipment>();
@@ -342,5 +345,11 @@ public class CreatureStats : Creature
     {
         int attackRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)strengthModifier;
         return attackRoll;
+    }
+
+    internal int RollInitiative()
+    {
+        int initiativeRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)dexterityModifier;
+        return initiativeRoll;
     }
 }
