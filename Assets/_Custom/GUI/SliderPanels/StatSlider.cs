@@ -29,11 +29,11 @@ public class StatSlider : MonoBehaviour
     {
         switch (statName)
         {
-            //Heath
-            case "Health":
+            //Hitpoints
+            case "Hitpoints":
                 creatureStats.OnHealthChanged += UpdateSlider;
                 break;
-            case "MaxHealth":
+            case "MaxHitpoints":
                 creatureStats.OnMaxHealthChanged += UpdateSlider;
                 break;
 
