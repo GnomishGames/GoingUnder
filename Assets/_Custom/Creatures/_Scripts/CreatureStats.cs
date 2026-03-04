@@ -231,16 +231,17 @@ public class CreatureStats : Creature
 
     private void RecalculateArmorClass()
     {
-        int newArmorClass = 10 + equipmentAc + Dexterity.Modifier;
+        int newArmorClass = 10 + equipmentAc + Dexterity.Modifier + characterRace.sizeAcBonus;
         if (newArmorClass == armorClass) return;
 
         armorClass = newArmorClass;
         OnArmorClassChanged?.Invoke(armorClass);
     }
 
-    public int toHit()
+    public int attackRoll()
     {
-        int attackRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)Strength.Modifier;
+        int attackRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)Strength.Modifier + characterRace.sizeAcBonus;
+        //ranged attacks could use Dexterity instead, and we can add more complexity later (proficiency bonus, weapon bonuses, etc.)
         return attackRoll;
     }
 
