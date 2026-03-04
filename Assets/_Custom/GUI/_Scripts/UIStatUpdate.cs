@@ -62,21 +62,21 @@ public class UIStatUpdate : MonoBehaviour
 
             // All other stats (numbers)
             default:
-                float value = GetCurrentStatValue();
+                int value = GetCurrentStatValue();
                 UpdateDisplay(value);
                 break;
         }
     }
 
-    float GetCurrentStatValue()
+    int GetCurrentStatValue()
     {
         switch (statName)
         {
             // Health
             case "Hitpoints":
-                return creatureStats.currentHitPoints;
+                return creatureStats.Hitpoints.Current;
             case "MaxHitpoints":
-                return creatureStats.maxHitpoints;
+                return creatureStats.Hitpoints.Max;
 
             // Experience
             case "Level":
@@ -88,87 +88,87 @@ public class UIStatUpdate : MonoBehaviour
 
             // Stamina
             case "Stamina":
-                return creatureStats.currentStamina;
+                return creatureStats.Stamina.Current;
             case "MaxStamina":
-                return creatureStats.maxStamina;
+                return creatureStats.Stamina.Max;
 
             // Mana
             case "Mana":
-                return creatureStats.currentMana;
+                return creatureStats.Mana.Current;
             case "MaxMana":
-                return creatureStats.maxMana;
+                return creatureStats.Mana.Max;
 
             // Strength
             case "StrengthBase":
-                return creatureStats.strengthBase;
+                return creatureStats.Strength.BaseValue;
             case "StrengthRace":
-                return creatureStats.characterRace.strengthBonus;
+                return creatureStats.Strength.RaceBonus;
             case "StrengthClass":
-                return creatureStats.characterClass.strengthBonus;
+                return creatureStats.Strength.ClassBonus;
             case "StrengthScore":
-                return creatureStats.strengthScore;
+                return creatureStats.Strength.Score;
             case "StrengthModifier":
-                return creatureStats.strengthModifier;
+                return creatureStats.Strength.Modifier;
 
             // Dexterity
             case "DexterityBase":
-                return creatureStats.dexterityBase;
+                return creatureStats.Dexterity.BaseValue;
             case "DexterityRace":
-                return creatureStats.characterRace.dexterityBonus;
+                return creatureStats.Dexterity.RaceBonus;
             case "DexterityClass":
-                return creatureStats.characterClass.dexterityBonus;
+                return creatureStats.Dexterity.ClassBonus;
             case "DexterityScore":
-                return creatureStats.dexterityScore;
+                return creatureStats.Dexterity.Score;
             case "DexterityModifier":
-                return creatureStats.dexterityModifier;
+                return creatureStats.Dexterity.Modifier;
 
             // Constitution
             case "ConstitutionBase":
-                return creatureStats.constitutionBase;
+                return creatureStats.Constitution.BaseValue;
             case "ConstitutionRace":
-                return creatureStats.characterRace.constitutionBonus;
+                return creatureStats.Constitution.RaceBonus;
             case "ConstitutionClass":
-                return creatureStats.characterClass.constitutionBonus;
+                return creatureStats.Constitution.ClassBonus;
             case "ConstitutionScore":
-                return creatureStats.constitutionScore;
+                return creatureStats.Constitution.Score;
             case "ConstitutionModifier":
-                return creatureStats.constitutionModifier;
+                return creatureStats.Constitution.Modifier;
 
             // Intelligence
             case "IntelligenceBase":
-                return creatureStats.intelligenceBase;
+                return creatureStats.Intelligence.BaseValue;
             case "IntelligenceRace":
-                return creatureStats.characterRace.intelligenceBonus;
+                return creatureStats.Intelligence.RaceBonus;
             case "IntelligenceClass":
-                return creatureStats.characterClass.intelligenceBonus;
+                return creatureStats.Intelligence.ClassBonus;
             case "IntelligenceScore":
-                return creatureStats.intelligenceScore;
+                return creatureStats.Intelligence.Score;
             case "IntelligenceModifier":
-                return creatureStats.intelligenceModifier;
+                return creatureStats.Intelligence.Modifier;
 
             // Wisdom
             case "WisdomBase":
-                return creatureStats.wisdomBase;
+                return creatureStats.Wisdom.BaseValue;
             case "WisdomRace":
-                return creatureStats.characterRace.wisdomBonus;
+                return creatureStats.Wisdom.RaceBonus;
             case "WisdomClass":
-                return creatureStats.characterClass.wisdomBonus;
+                return creatureStats.Wisdom.ClassBonus;
             case "WisdomScore":
-                return creatureStats.wisdomScore;
+                return creatureStats.Wisdom.Score;
             case "WisdomModifier":
-                return creatureStats.wisdomModifier;
+                return creatureStats.Wisdom.Modifier;
 
             // Charisma
             case "CharismaBase":
-                return creatureStats.charismaBase;
+                return creatureStats.Charisma.BaseValue;
             case "CharismaRace":
-                return creatureStats.characterRace.charismaBonus;
+                return creatureStats.Charisma.RaceBonus;
             case "CharismaClass":
-                return creatureStats.characterClass.charismaBonus;
+                return creatureStats.Charisma.ClassBonus;
             case "CharismaScore":
-                return creatureStats.charismaScore;
+                return creatureStats.Charisma.Score;
             case "CharismaModifier":
-                return creatureStats.charismaModifier;
+                return creatureStats.Charisma.Modifier;
 
             // Armor
             case "ArmorClass":
@@ -205,10 +205,10 @@ public class UIStatUpdate : MonoBehaviour
 
             // Health
             case "Health":
-                creatureStats.OnHealthChanged += UpdateDisplay;
+                creatureStats.Hitpoints.OnCurrentChanged += UpdateDisplay;
                 break;
             case "MaxHealth":
-                creatureStats.OnMaxHealthChanged += UpdateDisplay;
+                creatureStats.Hitpoints.OnMaxChanged += UpdateDisplay;
                 break;
 
             // Experience
@@ -224,120 +224,120 @@ public class UIStatUpdate : MonoBehaviour
 
             // Stamina
             case "Stamina":
-                creatureStats.OnStaminaChanged += UpdateDisplay;
+                creatureStats.Stamina.OnCurrentChanged += UpdateDisplay;
                 break;
             case "MaxStamina":
-                creatureStats.OnMaxStaminaChanged += UpdateDisplay;
+                creatureStats.Stamina.OnMaxChanged += UpdateDisplay;
                 break;
 
             // Mana
             case "Mana":
-                creatureStats.OnManaChanged += UpdateDisplay;
+                creatureStats.Mana.OnCurrentChanged += UpdateDisplay;
                 break;
             case "MaxMana":
-                creatureStats.OnMaxManaChanged += UpdateDisplay;
+                creatureStats.Mana.OnMaxChanged += UpdateDisplay;
                 break;
 
             // Strength
             case "StrengthBase":
-                creatureStats.OnStrengthBaseChanged += UpdateDisplay;
+                creatureStats.Strength.OnChanged += UpdateDisplay;
                 break;
             case "StrengthRace":
-                creatureStats.OnStrengthRaceChanged += UpdateDisplay;
+                creatureStats.Strength.OnChanged += UpdateDisplay;
                 break;
             case "StrengthClass":
-                creatureStats.OnStrengthClassChanged += UpdateDisplay;
+                creatureStats.Strength.OnChanged += UpdateDisplay;
                 break;
             case "StrengthScore":
-                creatureStats.OnStrengthScoreChanged += UpdateDisplay;
+                creatureStats.Strength.OnChanged += UpdateDisplay;
                 break;
             case "StrengthModifier":
-                creatureStats.OnStrengthModifierChanged += UpdateDisplay;
+                creatureStats.Strength.OnChanged += UpdateDisplay;
                 break;
 
             // Dexterity
             case "DexterityBase":
-                creatureStats.OnDexterityBaseChanged += UpdateDisplay;
+                creatureStats.Dexterity.OnChanged += UpdateDisplay;
                 break;
             case "DexterityRace":
-                creatureStats.OnDexterityRaceChanged += UpdateDisplay;
+                creatureStats.Dexterity.OnChanged += UpdateDisplay;
                 break;
             case "DexterityClass":
-                creatureStats.OnDexterityClassChanged += UpdateDisplay;
+                creatureStats.Dexterity.OnChanged += UpdateDisplay;
                 break;
             case "DexterityScore":
-                creatureStats.OnDexterityScoreChanged += UpdateDisplay;
+                creatureStats.Dexterity.OnChanged += UpdateDisplay;
                 break;
             case "DexterityModifier":
-                creatureStats.OnDexterityModifierChanged += UpdateDisplay;
+                creatureStats.Dexterity.OnChanged += UpdateDisplay;
                 break;
 
             // Constitution
             case "ConstitutionBase":
-                creatureStats.OnConstitutionBaseChanged += UpdateDisplay;
+                creatureStats.Constitution.OnChanged += UpdateDisplay;
                 break;
             case "ConstitutionRace":
-                creatureStats.OnConstitutionRaceChanged += UpdateDisplay;
+                creatureStats.Constitution.OnChanged += UpdateDisplay;
                 break;
             case "ConstitutionClass":
-                creatureStats.OnConstitutionClassChanged += UpdateDisplay;
+                creatureStats.Constitution.OnChanged += UpdateDisplay;
                 break;
             case "ConstitutionScore":
-                creatureStats.OnConstitutionScoreChanged += UpdateDisplay;
+                creatureStats.Constitution.OnChanged += UpdateDisplay;
                 break;
             case "ConstitutionModifier":
-                creatureStats.OnConstitutionModifierChanged += UpdateDisplay;
+                creatureStats.Constitution.OnChanged += UpdateDisplay;
                 break;
 
             // Intelligence
             case "IntelligenceBase":
-                creatureStats.OnIntelligenceBaseChanged += UpdateDisplay;
+                creatureStats.Intelligence.OnChanged += UpdateDisplay;
                 break;
             case "IntelligenceRace":
-                creatureStats.OnIntelligenceRaceChanged += UpdateDisplay;
+                creatureStats.Intelligence.OnChanged += UpdateDisplay;
                 break;
             case "IntelligenceClass":
-                creatureStats.OnIntelligenceClassChanged += UpdateDisplay;
+                creatureStats.Intelligence.OnChanged += UpdateDisplay;
                 break;
             case "IntelligenceScore":
-                creatureStats.OnIntelligenceScoreChanged += UpdateDisplay;
+                creatureStats.Intelligence.OnChanged += UpdateDisplay;
                 break;
             case "IntelligenceModifier":
-                creatureStats.OnIntelligenceModifierChanged += UpdateDisplay;
+                creatureStats.Intelligence.OnChanged += UpdateDisplay;
                 break;
 
             // Wisdom
             case "WisdomBase":
-                creatureStats.OnWisdomBaseChanged += UpdateDisplay;
+                creatureStats.Wisdom.OnChanged += UpdateDisplay;
                 break;
             case "WisdomRace":
-                creatureStats.OnWisdomRaceChanged += UpdateDisplay;
+                creatureStats.Wisdom.OnChanged += UpdateDisplay;
                 break;
             case "WisdomClass":
-                creatureStats.OnWisdomClassChanged += UpdateDisplay;
+                creatureStats.Wisdom.OnChanged += UpdateDisplay;
                 break;
             case "WisdomScore":
-                creatureStats.OnWisdomScoreChanged += UpdateDisplay;
+                creatureStats.Wisdom.OnChanged += UpdateDisplay;
                 break;
             case "WisdomModifier":
-                creatureStats.OnWisdomModifierChanged += UpdateDisplay;
+                creatureStats.Wisdom.OnChanged += UpdateDisplay;
                 break;
 
             // Charisma
             case "CharismaBase":
-                creatureStats.OnCharismaBaseChanged += UpdateDisplay;
+                creatureStats.Charisma.OnChanged += UpdateDisplay;
                 break;
             case "CharismaRace":
-                creatureStats.OnCharismaRaceChanged += UpdateDisplay;
+                creatureStats.Charisma.OnChanged += UpdateDisplay;
                 break;
             case "CharismaClass":
-                creatureStats.OnCharismaClassChanged += UpdateDisplay;
+                creatureStats.Charisma.OnChanged += UpdateDisplay;
                 break;
             case "CharismaScore":
-                creatureStats.OnCharismaScoreChanged += UpdateDisplay;
+                creatureStats.Charisma.OnChanged += UpdateDisplay;
                 break;
             case "CharismaModifier":
-                creatureStats.OnCharismaModifierChanged += UpdateDisplay;
+                creatureStats.Charisma.OnChanged += UpdateDisplay;
                 break;
 
             // Armor
@@ -364,10 +364,10 @@ public class UIStatUpdate : MonoBehaviour
 
             // Health
             case "Health":
-                creatureStats.OnHealthChanged -= UpdateDisplay;
+                creatureStats.Hitpoints.OnCurrentChanged -= UpdateDisplay;
                 break;
             case "MaxHealth":
-                creatureStats.OnMaxHealthChanged -= UpdateDisplay;
+                creatureStats.Hitpoints.OnMaxChanged -= UpdateDisplay;
                 break;
 
             // Experience
@@ -383,120 +383,120 @@ public class UIStatUpdate : MonoBehaviour
 
             // Stamina
             case "Stamina":
-                creatureStats.OnStaminaChanged -= UpdateDisplay;
+                creatureStats.Stamina.OnCurrentChanged -= UpdateDisplay;
                 break;
             case "MaxStamina":
-                creatureStats.OnMaxStaminaChanged -= UpdateDisplay;
+                creatureStats.Stamina.OnMaxChanged -= UpdateDisplay;
                 break;
 
             // Mana
             case "Mana":
-                creatureStats.OnManaChanged -= UpdateDisplay;
+                creatureStats.Mana.OnCurrentChanged -= UpdateDisplay;
                 break;
             case "MaxMana":
-                creatureStats.OnMaxManaChanged -= UpdateDisplay;
+                creatureStats.Mana.OnMaxChanged -= UpdateDisplay;
                 break;
 
             // Strength
             case "StrengthBase":
-                creatureStats.OnStrengthBaseChanged -= UpdateDisplay;
+                creatureStats.Strength.OnChanged -= UpdateDisplay;
                 break;
             case "StrengthRace":
-                creatureStats.OnStrengthRaceChanged -= UpdateDisplay;
+                creatureStats.Strength.OnChanged -= UpdateDisplay;
                 break;
             case "StrengthClass":
-                creatureStats.OnStrengthClassChanged -= UpdateDisplay;
+                creatureStats.Strength.OnChanged -= UpdateDisplay;
                 break;
             case "StrengthScore":
-                creatureStats.OnStrengthScoreChanged -= UpdateDisplay;
+                creatureStats.Strength.OnChanged -= UpdateDisplay;
                 break;
             case "StrengthModifier":
-                creatureStats.OnStrengthModifierChanged -= UpdateDisplay;
+                creatureStats.Strength.OnChanged -= UpdateDisplay;
                 break;
 
             // Dexterity
             case "DexterityBase":
-                creatureStats.OnDexterityBaseChanged -= UpdateDisplay;
+                creatureStats.Dexterity.OnChanged -= UpdateDisplay;
                 break;
             case "DexterityRace":
-                creatureStats.OnDexterityRaceChanged -= UpdateDisplay;
+                creatureStats.Dexterity.OnChanged -= UpdateDisplay;
                 break;
             case "DexterityClass":
-                creatureStats.OnDexterityClassChanged -= UpdateDisplay;
+                creatureStats.Dexterity.OnChanged -= UpdateDisplay;
                 break;
             case "DexterityScore":
-                creatureStats.OnDexterityScoreChanged -= UpdateDisplay;
+                creatureStats.Dexterity.OnChanged -= UpdateDisplay;
                 break;
             case "DexterityModifier":
-                creatureStats.OnDexterityModifierChanged -= UpdateDisplay;
+                creatureStats.Dexterity.OnChanged -= UpdateDisplay;
                 break;
 
             // Constitution
             case "ConstitutionBase":
-                creatureStats.OnConstitutionBaseChanged -= UpdateDisplay;
+                creatureStats.Constitution.OnChanged -= UpdateDisplay;
                 break;
             case "ConstitutionRace":
-                creatureStats.OnConstitutionRaceChanged -= UpdateDisplay;
+                creatureStats.Constitution.OnChanged -= UpdateDisplay;
                 break;
             case "ConstitutionClass":
-                creatureStats.OnConstitutionClassChanged -= UpdateDisplay;
+                creatureStats.Constitution.OnChanged -= UpdateDisplay;
                 break;
             case "ConstitutionScore":
-                creatureStats.OnConstitutionScoreChanged -= UpdateDisplay;
+                creatureStats.Constitution.OnChanged -= UpdateDisplay;
                 break;
             case "ConstitutionModifier":
-                creatureStats.OnConstitutionModifierChanged -= UpdateDisplay;
+                creatureStats.Constitution.OnChanged -= UpdateDisplay;
                 break;
 
             // Intelligence
             case "IntelligenceBase":
-                creatureStats.OnIntelligenceBaseChanged -= UpdateDisplay;
+                creatureStats.Intelligence.OnChanged -= UpdateDisplay;
                 break;
             case "IntelligenceRace":
-                creatureStats.OnIntelligenceRaceChanged -= UpdateDisplay;
+                creatureStats.Intelligence.OnChanged -= UpdateDisplay;
                 break;
             case "IntelligenceClass":
-                creatureStats.OnIntelligenceClassChanged -= UpdateDisplay;
+                creatureStats.Intelligence.OnChanged -= UpdateDisplay;
                 break;
             case "IntelligenceScore":
-                creatureStats.OnIntelligenceScoreChanged -= UpdateDisplay;
+                creatureStats.Intelligence.OnChanged -= UpdateDisplay;
                 break;
             case "IntelligenceModifier":
-                creatureStats.OnIntelligenceModifierChanged -= UpdateDisplay;
+                creatureStats.Intelligence.OnChanged -= UpdateDisplay;
                 break;
 
             // Wisdom
             case "WisdomBase":
-                creatureStats.OnWisdomBaseChanged -= UpdateDisplay;
+                creatureStats.Wisdom.OnChanged -= UpdateDisplay;
                 break;
             case "WisdomRace":
-                creatureStats.OnWisdomRaceChanged -= UpdateDisplay;
+                creatureStats.Wisdom.OnChanged -= UpdateDisplay;
                 break;
             case "WisdomClass":
-                creatureStats.OnWisdomClassChanged -= UpdateDisplay;
+                creatureStats.Wisdom.OnChanged -= UpdateDisplay;
                 break;
             case "WisdomScore":
-                creatureStats.OnWisdomScoreChanged -= UpdateDisplay;
+                creatureStats.Wisdom.OnChanged -= UpdateDisplay;
                 break;
             case "WisdomModifier":
-                creatureStats.OnWisdomModifierChanged -= UpdateDisplay;
+                creatureStats.Wisdom.OnChanged -= UpdateDisplay;
                 break;
 
             // Charisma
             case "CharismaBase":
-                creatureStats.OnCharismaBaseChanged -= UpdateDisplay;
+                creatureStats.Charisma.OnChanged -= UpdateDisplay;
                 break;
             case "CharismaRace":
-                creatureStats.OnCharismaRaceChanged -= UpdateDisplay;
+                creatureStats.Charisma.OnChanged -= UpdateDisplay;
                 break;
             case "CharismaClass":
-                creatureStats.OnCharismaClassChanged -= UpdateDisplay;
+                creatureStats.Charisma.OnChanged -= UpdateDisplay;
                 break;
             case "CharismaScore":
-                creatureStats.OnCharismaScoreChanged -= UpdateDisplay;
+                creatureStats.Charisma.OnChanged -= UpdateDisplay;
                 break;
             case "CharismaModifier":
-                creatureStats.OnCharismaModifierChanged -= UpdateDisplay;
+                creatureStats.Charisma.OnChanged -= UpdateDisplay;
                 break;
 
             // Armor
@@ -506,7 +506,7 @@ public class UIStatUpdate : MonoBehaviour
         }
     }
 
-    void UpdateDisplay(float value)
+    void UpdateDisplay(int value)
     {
         if (textDisplay != null)
         {

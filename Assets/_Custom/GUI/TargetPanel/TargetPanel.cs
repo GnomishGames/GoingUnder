@@ -21,12 +21,12 @@ public class TargetPanel : MonoBehaviour
         // Unsubscribe from old target
         if (currentTargetStats != null)
         {
-            currentTargetStats.OnHealthChanged -= (value) => SetSliderValue(value, hpSlider);
-            currentTargetStats.OnMaxHealthChanged -= (value) => SetSliderMax(value, hpSlider);
-            currentTargetStats.OnStaminaChanged -= (value) => SetSliderValue(value, staminaSlider);
-            currentTargetStats.OnMaxStaminaChanged -= (value) => SetSliderMax(value, staminaSlider);
-            //currentTargetStats.OnManaChanged -= (value) => SetSliderValue(value, manaSlider);
-            //currentTargetStats.OnMaxManaChanged -= (value) => SetSliderMax(value, manaSlider);
+            currentTargetStats.Hitpoints.OnCurrentChanged -= (value) => SetSliderValue(value, hpSlider);
+            currentTargetStats.Hitpoints.OnMaxChanged -= (value) => SetSliderMax(value, hpSlider);
+            currentTargetStats.Stamina.OnCurrentChanged -= (value) => SetSliderValue(value, staminaSlider);
+            currentTargetStats.Stamina.OnMaxChanged -= (value) => SetSliderMax(value, staminaSlider);
+            //currentTargetStats.Mana.OnCurrentChanged -= (value) => SetSliderValue(value, manaSlider);
+            //currentTargetStats.Mana.OnMaxChanged -= (value) => SetSliderMax(value, manaSlider);
             currentTargetStats.OnNameChanged -= SetTextValue;
         }
 
@@ -35,21 +35,21 @@ public class TargetPanel : MonoBehaviour
         if (currentTargetStats != null)
         {
             // Subscribe to new target's events
-            currentTargetStats.OnHealthChanged += (value) => SetSliderValue(value, hpSlider);
-            currentTargetStats.OnMaxHealthChanged += (value) => SetSliderMax(value, hpSlider);
-            currentTargetStats.OnStaminaChanged += (value) => SetSliderValue(value, staminaSlider);
-            currentTargetStats.OnMaxStaminaChanged += (value) => SetSliderMax(value, staminaSlider);
-            //currentTargetStats.OnManaChanged += (value) => SetSliderValue(value, manaSlider);
-            //currentTargetStats.OnMaxManaChanged += (value) => SetSliderMax(value, manaSlider);
+            currentTargetStats.Hitpoints.OnCurrentChanged += (value) => SetSliderValue(value, hpSlider);
+            currentTargetStats.Hitpoints.OnMaxChanged += (value) => SetSliderMax(value, hpSlider);
+            currentTargetStats.Stamina.OnCurrentChanged += (value) => SetSliderValue(value, staminaSlider);
+            currentTargetStats.Stamina.OnMaxChanged += (value) => SetSliderMax(value, staminaSlider);
+            //currentTargetStats.Mana.OnCurrentChanged += (value) => SetSliderValue(value, manaSlider);
+            //currentTargetStats.Mana.OnMaxChanged += (value) => SetSliderMax(value, manaSlider);
             currentTargetStats.OnNameChanged += SetTextValue;
 
             // Get initial values
-            SetSliderValue(currentTargetStats.currentHitPoints, hpSlider);
-            SetSliderMax(currentTargetStats.maxHitpoints, hpSlider);
-            SetSliderValue(currentTargetStats.currentStamina, staminaSlider);
-            SetSliderMax(currentTargetStats.maxStamina, staminaSlider);
-            //SetSliderValue(currentTargetStats.currentMana, manaSlider);
-            //SetSliderMax(currentTargetStats.maxMana, manaSlider);
+            SetSliderValue(currentTargetStats.Hitpoints.Current, hpSlider);
+            SetSliderMax(currentTargetStats.Hitpoints.Max, hpSlider);
+            SetSliderValue(currentTargetStats.Stamina.Current, staminaSlider);
+            SetSliderMax(currentTargetStats.Stamina.Max, staminaSlider);
+            //SetSliderValue(currentTargetStats.Mana.Current, manaSlider);
+            //SetSliderMax(currentTargetStats.Mana.Max, manaSlider);
             SetTextValue(currentTargetStats.interactableName);
             UpdatePortrait(currentTargetStats);
         }
@@ -60,12 +60,12 @@ public class TargetPanel : MonoBehaviour
         // Unsubscribe when panel closes
         if (currentTargetStats != null)
         {
-            currentTargetStats.OnHealthChanged -= (value) => SetSliderValue(value, hpSlider);
-            currentTargetStats.OnMaxHealthChanged -= (value) => SetSliderMax(value, hpSlider);
-            currentTargetStats.OnStaminaChanged -= (value) => SetSliderValue(value, staminaSlider);
-            currentTargetStats.OnMaxStaminaChanged -= (value) => SetSliderMax(value, staminaSlider);
-            //currentTargetStats.OnManaChanged -= (value) => SetSliderValue(value, manaSlider);
-            //currentTargetStats.OnMaxManaChanged -= (value) => SetSliderMax(value, manaSlider);
+            currentTargetStats.Hitpoints.OnCurrentChanged -= (value) => SetSliderValue(value, hpSlider);
+            currentTargetStats.Hitpoints.OnMaxChanged -= (value) => SetSliderMax(value, hpSlider);
+            currentTargetStats.Stamina.OnCurrentChanged -= (value) => SetSliderValue(value, staminaSlider);
+            currentTargetStats.Stamina.OnMaxChanged -= (value) => SetSliderMax(value, staminaSlider);
+            //currentTargetStats.Mana.OnCurrentChanged -= (value) => SetSliderValue(value, manaSlider);
+            //currentTargetStats.Mana.OnMaxChanged -= (value) => SetSliderMax(value, manaSlider);
             currentTargetStats.OnNameChanged -= SetTextValue;
         }
     }

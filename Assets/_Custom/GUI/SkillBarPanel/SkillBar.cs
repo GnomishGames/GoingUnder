@@ -116,7 +116,7 @@ public class SkillBar : MonoBehaviour
             damage += weapon.DieBonus;
 
             // Apply damage to the target
-            this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().SubtractHealth(damage);
+            this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().Hitpoints.ModifyCurrent(-damage);
 
             Debug.Log($"SkillBar: Skill {skillSOs[slotNumber].name} hit for {damage} damage!");
         }

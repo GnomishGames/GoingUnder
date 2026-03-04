@@ -69,7 +69,7 @@ public class CombatResolver : MonoBehaviour
         if (isHit)
         {
             damageDealt = CalculateDamage(attacker, weapon);
-            target.SubtractHealth(damageDealt);
+            target.Hitpoints.ModifyCurrent(-damageDealt);
         }
 
         return new AttackResult(

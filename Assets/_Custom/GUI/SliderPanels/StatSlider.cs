@@ -31,10 +31,10 @@ public class StatSlider : MonoBehaviour
         {
             //Hitpoints
             case "Hitpoints":
-                creatureStats.OnHealthChanged += UpdateSlider;
+                creatureStats.Hitpoints.OnCurrentChanged += UpdateSlider;
                 break;
             case "MaxHitpoints":
-                creatureStats.OnMaxHealthChanged += UpdateSlider;
+                creatureStats.Hitpoints.OnMaxChanged += UpdateSlider;
                 break;
 
             //Experience
@@ -47,63 +47,63 @@ public class StatSlider : MonoBehaviour
 
             // Stamina
             case "Stamina":
-                creatureStats.OnStaminaChanged += UpdateSlider;
+                creatureStats.Stamina.OnCurrentChanged += UpdateSlider;
                 break;
             case "MaxStamina":
-                creatureStats.OnMaxStaminaChanged += UpdateSlider;
+                creatureStats.Stamina.OnMaxChanged += UpdateSlider;
                 break;
 
             // Mana
             case "Mana":
-                creatureStats.OnManaChanged += UpdateSlider;
+                creatureStats.Mana.OnCurrentChanged += UpdateSlider;
                 break;
             case "MaxMana":
-                creatureStats.OnMaxManaChanged += UpdateSlider;
+                creatureStats.Mana.OnMaxChanged += UpdateSlider;
                 break;
         }
     }
 
-    void UpdateSlider(float eventValue)
+    void UpdateSlider(int eventValue)
     {
         // Ignore the event parameter and fetch the correct values based on statName
-        float currentValue = GetCurrentStatValue();
-        float maxValue = GetMaxStatValue();
+        int currentValue = GetCurrentStatValue();
+        int maxValue = GetMaxStatValue();
 
         // IMPORTANT: Set maxValue FIRST, then value, to avoid clamping issues
         slider.maxValue = maxValue;
         slider.value = currentValue;
     }
 
-    float GetCurrentStatValue()
+    int GetCurrentStatValue()
     {
         switch (statName)
         {
             case "Hitpoints":
-                return creatureStats.currentHitPoints;
+                return creatureStats.Hitpoints.Current;
             case "Experience":
                 return creatureStats.experience;
             case "Stamina":
-                return creatureStats.currentStamina;
+                return creatureStats.Stamina.Current;
             case "Mana":
-                return creatureStats.currentMana;
+                return creatureStats.Mana.Current;
             default:
                 Debug.LogError($"Stat name {statName} not recognized!");
                 return 0;
         }
     }
 
-    float GetMaxStatValue()
+    int GetMaxStatValue()
     {
         switch (statName)
         {
             case "Hitpoints":
-                return creatureStats.maxHitpoints;
+                return creatureStats.Hitpoints.Max;
             case "Experience":
                 return creatureStats.maxExperience;
             case "Stamina":
-                return creatureStats.maxStamina;
+                return creatureStats.Stamina.Max;
             case "Mana":
-                return creatureStats.maxMana;
+                return creatureStats.Mana.Max;
             default:
                 Debug.LogError($"Stat name {statName} not recognized!");
                 return 0;
