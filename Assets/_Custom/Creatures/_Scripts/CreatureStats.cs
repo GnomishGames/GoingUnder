@@ -130,6 +130,10 @@ public class CreatureStats : Creature
 
         InitializeStats();
         InitializeArmorClass();
+
+        // Subscribe to equipment changes to update stats and armor class
+        equipment.OnEquipmentStatsChanged += OnEquipmentStatsChanged;
+        equipment.CalculateStatChanges(); // Calculate initial equipment bonuses
     }
 
     private void InitializeStats()
@@ -150,6 +154,29 @@ public class CreatureStats : Creature
         Mana.ModifyCurrent(Mana.Max);
 
         armorClass = 10 + equipmentAc + Dexterity.Modifier; // Size modifier can be added later when we have different creature sizes
+        OnArmorClassChanged?.Invoke(armorClass);
+    }
+
+    private void OnEquipmentStatsChanged(Equipment.EquipmentStatBonuses bonuses)
+    {
+        equipmentAc = bonuses.ArmorAC;
+
+        Strength.SetEquipmentBonus(bonuses.StrengthBonus);
+        Constitution.SetEquipmentBonus(bonuses.ConstitutionBonus);
+        Dexterity.SetEquipmentBonus(bonuses.DexterityBonus);
+        Intelligence.SetEquipmentBonus(bonuses.IntelligenceBonus);
+        Wisdom.SetEquipmentBonus(bonuses.WisdomBonus);
+        Charisma.SetEquipmentBonus(bonuses.CharismaBonus);
+
+        RecalculateArmorClass();
+    }
+
+    private void RecalculateArmorClass()
+    {
+        int newArmorClass = 10 + equipmentAc + Dexterity.Modifier;
+        if (newArmorClass == armorClass) return;
+
+        armorClass = newArmorClass;
         OnArmorClassChanged?.Invoke(armorClass);
     }
 
