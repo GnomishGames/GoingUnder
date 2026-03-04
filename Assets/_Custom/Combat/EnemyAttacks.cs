@@ -10,8 +10,11 @@ public class EnemyAttacks : MonoBehaviour
     CreatureStats targetStats;
     Initiative initiative;
     AnimationController animController;
-    
+
+    float attackDelay = 1f; // Delay before enemy attacks after their turn starts
+
     private bool hasAttackedThisTurn = false;
+
 
     void Start()
     {
@@ -29,12 +32,18 @@ public class EnemyAttacks : MonoBehaviour
     {
         if (creatureStats.inCombat && !hasAttackedThisTurn)
         {
-            AttackPlayer(player);
-            hasAttackedThisTurn = true; // Only attack once per turn
+            // wait 1 second
+            attackDelay -= Time.deltaTime;
+            if (attackDelay <= 0f)
+            {
+                AttackPlayer(player);
+                hasAttackedThisTurn = true; // Only attack once per turn
+            }
         }
         else if (!creatureStats.inCombat)
         {
             hasAttackedThisTurn = false; // Reset flag when it's not our turn
+            attackDelay = 1f; // Reset attack delay for next turn
         }
     }
 
@@ -42,9 +51,7 @@ public class EnemyAttacks : MonoBehaviour
     {
         // Silently stop if player is already dead
         if (targetStats.isDead)
-        {
             return;
-        }
 
         // Resolve the attack using the combat system
         int slotNumber = 0; // For simplicity, enemies will always use the first weapon slot. This can be expanded to allow for multiple attacks or different weapons.
@@ -54,7 +61,7 @@ public class EnemyAttacks : MonoBehaviour
         //play attack animation here 
         animController.PlayAttack();
 
-        
+
         // Handle the result
         if (!result.wasAttempted)
         {
@@ -74,4 +81,6 @@ public class EnemyAttacks : MonoBehaviour
         // Advance to next turn
         initiative.NextTurn();
     }
+
+
 }

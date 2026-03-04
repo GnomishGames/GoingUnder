@@ -238,7 +238,7 @@ public class CreatureStats : Creature
         OnArmorClassChanged?.Invoke(armorClass);
     }
 
-    public int AttackRoll()
+    public int toHit()
     {
         int attackRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)Strength.Modifier;
         return attackRoll;

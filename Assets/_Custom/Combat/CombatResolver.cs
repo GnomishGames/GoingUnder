@@ -63,9 +63,9 @@ public class CombatResolver : MonoBehaviour
         }
 
         // Perform attack roll
-        int attackRoll = attacker.AttackRoll();
+        int toHit = attacker.toHit();
         int targetAC = (int)target.armorClass;
-        bool isHit = attackRoll >= targetAC;
+        bool isHit = toHit >= targetAC;
 
         int damageDealt = 0;
         if (isHit)
@@ -80,7 +80,7 @@ public class CombatResolver : MonoBehaviour
         return new AttackResult(
             wasAttempted: true,
             wasHit: isHit,
-            attackRoll: attackRoll,
+            attackRoll: toHit,
             targetAC: targetAC,
             damageDealt: damageDealt
         );
