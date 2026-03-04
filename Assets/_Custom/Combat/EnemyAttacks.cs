@@ -9,6 +9,8 @@ public class EnemyAttacks : MonoBehaviour
     CreatureStats myStats;
     CreatureStats targetStats;
     Initiative initiative;
+    AnimationController animController;
+    
     private bool hasAttackedThisTurn = false;
 
     void Start()
@@ -20,6 +22,7 @@ public class EnemyAttacks : MonoBehaviour
         initiative = FindAnyObjectByType<Initiative>();
         myStats = GetComponent<CreatureStats>();
         targetStats = player.GetComponent<CreatureStats>();
+        animController = GetComponent<AnimationController>();
     }
 
     void Update()
@@ -48,6 +51,10 @@ public class EnemyAttacks : MonoBehaviour
         WeaponSO weapon = equipment.weaponSOs[slotNumber];
         AttackResult result = combatResolver.ResolveAttack(myStats, targetStats, weapon);
 
+        //play attack animation here 
+        animController.PlayAttack();
+
+        
         // Handle the result
         if (!result.wasAttempted)
         {

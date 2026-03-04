@@ -214,9 +214,14 @@ public class CreatureStats : Creature
         {
             isDead = true;
             // play death animation
-            
-            if (animController != null)            {
+
+            if (animController != null)
+            {
                 animController.PlayDeath();
+            }
+            else
+            {
+                Debug.LogWarning("No AnimationController found on " + this.name + " to play death animation.");
             }
 
             Debug.Log($"{this.name} has died.");
