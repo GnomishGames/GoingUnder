@@ -219,6 +219,9 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        CreatureStats playerStats = player.GetComponent<CreatureStats>();
+        CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+
         if (equipment.weaponSOs[slotNumber] == null)
         {
             Debug.Log("Weapon: No weapon equipped in this slot.");
@@ -232,12 +235,17 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
             return;
         }
 
-        CreatureStats playerStats = player.GetComponent<CreatureStats>();
-        CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+        // check if player is already dead
+        if (playerStats.isDead)
+        {
+            Debug.Log("Weapon: Player is dead.");
+            return;
+        }
 
-        // Silently stop if target is already dead (expected behavior, no need to spam)
+        // check if target is already dead        
         if (targetStats.isDead)
         {
+            Debug.Log("Weapon: Target is already dead.");
             return;
         }
 

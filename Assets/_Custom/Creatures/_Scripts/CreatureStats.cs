@@ -105,7 +105,7 @@ public class CreatureStats : Creature
     public int equipmentAc { get; private set; }
 
     // death
-    public bool isDead { get; private set; } = false;
+    public bool isDead = false;
 
     //initiative
     public bool inCombat = false;

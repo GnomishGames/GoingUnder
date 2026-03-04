@@ -72,6 +72,13 @@ public class CombatResolver : MonoBehaviour
             target.Hitpoints.ModifyCurrent(-damageDealt);
         }
 
+        //check if target is dead and if it is then set isDead to true.
+        if (target.Hitpoints.Current <= 0)
+        {
+            target.isDead = true;
+            Debug.Log($"CombatResolver: Target has been killed!");
+        }
+        
         return new AttackResult(
             wasAttempted: true,
             wasHit: isHit,
@@ -79,6 +86,8 @@ public class CombatResolver : MonoBehaviour
             targetAC: targetAC,
             damageDealt: damageDealt
         );
+
+
     }
 
     // Calculates damage for an attack based on the weapon and attacker stats
