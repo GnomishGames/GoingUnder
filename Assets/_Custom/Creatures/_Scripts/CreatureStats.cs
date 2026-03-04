@@ -77,6 +77,7 @@ public class CreatureStats : Creature
 
     //references
     private Equipment equipment;
+    private AnimationController animController;
 
     //xp Tracking
     public bool gaveXP = false;
@@ -114,6 +115,7 @@ public class CreatureStats : Creature
     {
         // Get references
         equipment = GetComponent<Equipment>();
+        animController = GetComponent<AnimationController>();
 
         // Initialize resources
         Hitpoints = new Resource();
@@ -204,5 +206,21 @@ public class CreatureStats : Creature
     {
         int initiativeRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)Dexterity.Modifier;
         return initiativeRoll;
+    }
+
+    public void CheckIfDead()
+    {
+        if (Hitpoints.Current <= 0)
+        {
+            isDead = true;
+            // play death animation
+            
+            if (animController != null)            {
+                animController.PlayDeath();
+            }
+
+            Debug.Log($"{this.name} has died.");
+
+        }
     }
 }

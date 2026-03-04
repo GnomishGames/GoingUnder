@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CombatResolver : MonoBehaviour
 {
+
+
     // Resolves an attack from an attacker to a target using a specific weapon
     public AttackResult ResolveAttack(CreatureStats attacker, CreatureStats target, WeaponSO weapon)
     {
@@ -72,13 +74,9 @@ public class CombatResolver : MonoBehaviour
             target.Hitpoints.ModifyCurrent(-damageDealt);
         }
 
-        //check if target is dead and if it is then set isDead to true.
-        if (target.Hitpoints.Current <= 0)
-        {
-            target.isDead = true;
-            Debug.Log($"CombatResolver: Target has been killed!");
-        }
-        
+        // invoke death event
+        target.CheckIfDead();
+
         return new AttackResult(
             wasAttempted: true,
             wasHit: isHit,
@@ -86,8 +84,6 @@ public class CombatResolver : MonoBehaviour
             targetAC: targetAC,
             damageDealt: damageDealt
         );
-
-
     }
 
     // Calculates damage for an attack based on the weapon and attacker stats

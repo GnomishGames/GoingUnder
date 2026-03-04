@@ -3,7 +3,7 @@ using UnityEngine;
 public class AnimationController : MonoBehaviour
 {
     private Animator animator;
-    
+
     [Header("Idle Animations")]
     [SerializeField] private AnimationClip Idle1;
     [SerializeField] private AnimationClip Idle2;
@@ -23,35 +23,21 @@ public class AnimationController : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        PlayIdle();
     }
 
-    void Update()
-    {
-        // For testing purposes, trigger animations with number keys
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            animator.Play(Idle1.name);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            animator.Play(Attack1.name);
-            // go back to idle after attack animation finishes
-            Invoke("PlayIdle", Attack1.length);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            animator.Play(Attack2.name);
-            // go back to idle after attack animation finishes
-            Invoke("PlayIdle", Attack2.length);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            animator.Play(Idle2.name);
-        }
-    }
-
-    private void PlayIdle()
+    public void PlayIdle()
     {
         animator.Play(Idle1.name);
+    }
+
+    public void PlayAttack()
+    {
+        animator.Play(Attack1.name);
+    }
+
+    public void PlayDeath()
+    {
+        animator.Play(Death1.name);
     }
 }
