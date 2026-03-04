@@ -11,15 +11,15 @@ public class ClassSO : ScriptableObject
 
     [Header("Stat bonuses are special skills developed by the class. 1 is normal.")]
     [Tooltip("A warrior might have more strength than they would appear to have at first glance.")]
-    public float strengthBonus;
+    public int strengthBonus;
     [Tooltip("A rogue might have more dexterity than they would appear to have at first glance.")]
-    public float dexterityBonus;
+    public int dexterityBonus;
     [Tooltip("A paladin might have more constitution than they would appear to have at first glance.")]
-    public float constitutionBonus;
+    public int constitutionBonus;
     [Tooltip("A wizard might have more intelligence than they would appear to have at first glance.")]
-    public float intelligenceBonus;
+    public int intelligenceBonus;
     [Tooltip("A cleric might have more wisdom than they would appear to have at first glance.")]
-    public float wisdomBonus;
+    public int wisdomBonus;
     [Tooltip("A bard might have more charisma than they would appear to have at first glance.")]
-    public float charismaBonus;
+    public int charismaBonus;
 }

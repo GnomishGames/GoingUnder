@@ -11,6 +11,7 @@ public class UIStatUpdate : MonoBehaviour
 
     Transform player;
     CreatureStats creatureStats;
+    Equipment equipment;
     TextMeshProUGUI textDisplay;
     [SerializeField] private string prefix = "";
     [SerializeField] private string suffix = "";
@@ -21,13 +22,14 @@ public class UIStatUpdate : MonoBehaviour
     void Start()
     {
         //find player by tag. This assumes this script is only used for the player character panel. If used for NPCs, this will need to be changed.
-        player = GameObject.FindGameObjectWithTag("Player").transform; 
+        player = GameObject.FindGameObjectWithTag("Player").transform;
 
         // Use the GameObject's name as the stat name
         statName = this.gameObject.name;
 
         //get characterstats if not assigned
         creatureStats = player.GetComponent<CreatureStats>();
+        equipment = player.GetComponent<Equipment>();
 
         //get textdisplay if not assigned
         textDisplay = GetComponent<TextMeshProUGUI>();

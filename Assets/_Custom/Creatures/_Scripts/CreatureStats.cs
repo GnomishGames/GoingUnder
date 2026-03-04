@@ -12,6 +12,30 @@ public class Stat
     public int Modifier => Mathf.Max(1, (Score - 10) / 2);
 
     public event Action<int> OnChanged;
+
+    public void SetBaseValue(int value)
+    {
+        BaseValue = value;
+        OnChanged?.Invoke(Score);
+    }
+
+    public void SetRaceBonus(int value)
+    {
+        RaceBonus = value;
+        OnChanged?.Invoke(Score);
+    }
+
+    public void SetClassBonus(int value)
+    {
+        ClassBonus = value;
+        OnChanged?.Invoke(Score);
+    }
+
+    public void SetEquipmentBonus(int value)
+    {
+        EquipmentBonus = value;
+        OnChanged?.Invoke(Score);
+    }
 }
 
 public class Resource
@@ -80,7 +104,6 @@ public class CreatureStats : Creature
     //armor and size
     public int equipmentAc { get; private set; }
 
-
     // death
     public bool isDead { get; private set; } = false;
 
@@ -89,6 +112,9 @@ public class CreatureStats : Creature
 
     void Awake()
     {
+        // Get references
+        equipment = GetComponent<Equipment>();
+
         // Initialize resources
         Hitpoints = new Resource();
         Stamina = new Resource();
@@ -102,13 +128,43 @@ public class CreatureStats : Creature
         Wisdom = new Stat();
         Charisma = new Stat();
 
+        InitializeStats();
+        InitializeArmorClass();
+    }
+
+    private void InitializeStats()
+    {
         // set initial stats
+        InitializeStat(Strength, 10, characterRace.strengthBonus, characterClass.strengthBonus);
+        InitializeStat(Dexterity, 10, characterRace.dexterityBonus, characterClass.dexterityBonus);
+        InitializeStat(Constitution, 10, characterRace.constitutionBonus, characterClass.constitutionBonus);
+        InitializeStat(Intelligence, 10, characterRace.intelligenceBonus, characterClass.intelligenceBonus);
+        InitializeStat(Wisdom, 10, characterRace.wisdomBonus, characterClass.wisdomBonus);
+        InitializeStat(Charisma, 10, characterRace.charismaBonus, characterClass.charismaBonus);
+
         Hitpoints.ModifyMax(Constitution.Modifier * characterLevel + 10);
         Hitpoints.ModifyCurrent(Hitpoints.Max);
         Stamina.ModifyMax(10 + (Constitution.Modifier * characterLevel));
         Stamina.ModifyCurrent(Stamina.Max);
         Mana.ModifyMax(10 + (Intelligence.Modifier * characterLevel));
         Mana.ModifyCurrent(Mana.Max);
+
+        armorClass = 10 + equipmentAc + Dexterity.Modifier; // Size modifier can be added later when we have different creature sizes
+        OnArmorClassChanged?.Invoke(armorClass);
+    }
+
+    void InitializeStat(Stat stat, int baseValue, int raceBonus, int classBonus)
+    {
+        stat.SetBaseValue(baseValue);
+        stat.SetRaceBonus(raceBonus);
+        stat.SetClassBonus(classBonus);
+        stat.SetEquipmentBonus(0); // Start with no equipment bonus, will be updated when equipment is initialized
+    }
+
+    void InitializeArmorClass()
+    {
+        armorClass = 10 + equipment.ArmorAC + Dexterity.Modifier; // Size modifier can be added later when we have different creature sizes
+        OnArmorClassChanged?.Invoke(armorClass);
     }
 
     public int AttackRoll()
