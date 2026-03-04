@@ -31,7 +31,6 @@ public class AnimationController : MonoBehaviour
 
     public void PlayIdle(AnimationClip animationClip = null)
     {
-        creatureStats.CheckIfDead(); // Check if we're dead before trying to play an idle animation
         if (creatureStats.isDead)
             return;
 
@@ -45,7 +44,6 @@ public class AnimationController : MonoBehaviour
 
     public void PlayAttack(AnimationClip animationClip = null)
     {
-        creatureStats.CheckIfDead(); // Check if we're dead before trying to play an attack animation
         if (creatureStats.isDead)
             return;
             
