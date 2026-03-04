@@ -206,10 +206,10 @@ public class UIStatUpdate : MonoBehaviour
                 break;
 
             // Health
-            case "Health":
+            case "Hitpoints":
                 creatureStats.Hitpoints.OnCurrentChanged += UpdateDisplay;
                 break;
-            case "MaxHealth":
+            case "MaxHitpoints":
                 creatureStats.Hitpoints.OnMaxChanged += UpdateDisplay;
                 break;
 
@@ -221,7 +221,7 @@ public class UIStatUpdate : MonoBehaviour
                 creatureStats.OnEXPChanged += UpdateDisplay;
                 break;
             case "MaxExperience":
-                creatureStats.OnEXPChanged += UpdateDisplay;
+                creatureStats.OnMaxExperienceChanged += UpdateDisplay;
                 break;
 
             // Stamina
@@ -364,11 +364,11 @@ public class UIStatUpdate : MonoBehaviour
                 creatureStats.OnRaceChanged -= UpdateDisplayRace;
                 break;
 
-            // Health
-            case "Health":
+            // Hitpoints
+            case "Hitpoints":
                 creatureStats.Hitpoints.OnCurrentChanged -= UpdateDisplay;
                 break;
-            case "MaxHealth":
+            case "MaxHitpoints":
                 creatureStats.Hitpoints.OnMaxChanged -= UpdateDisplay;
                 break;
 
@@ -380,7 +380,7 @@ public class UIStatUpdate : MonoBehaviour
                 creatureStats.OnEXPChanged -= UpdateDisplay;
                 break;
             case "MaxExperience":
-                creatureStats.OnEXPChanged -= UpdateDisplay;
+                creatureStats.OnMaxExperienceChanged -= UpdateDisplay;
                 break;
 
             // Stamina
@@ -513,8 +513,7 @@ public class UIStatUpdate : MonoBehaviour
         if (textDisplay != null)
         {
             // Get the correct value based on statName
-            float displayValue = GetCurrentStatValue();
-            textDisplay.text = prefix + displayValue.ToString(formatString) + suffix;
+            textDisplay.text = prefix + value.ToString(formatString) + suffix;
         }
         else
         {

@@ -7,8 +7,9 @@ public class Stat
     public int RaceBonus { get; private set; }
     public int ClassBonus { get; private set; }
     public int EquipmentBonus { get; private set; }
+    public int LevelBonus { get; private set; }
 
-    public int Score => BaseValue + RaceBonus + ClassBonus + EquipmentBonus;
+    public int Score => BaseValue + RaceBonus + ClassBonus + EquipmentBonus + LevelBonus;
     public int Modifier => Mathf.Max(1, (Score - 10) / 2);
 
     public event Action<int> OnChanged;
@@ -34,6 +35,12 @@ public class Stat
     public void SetEquipmentBonus(int value)
     {
         EquipmentBonus = value;
+        OnChanged?.Invoke(Score);
+    }
+
+    public void SetLevelBonus(int value)
+    {
+        LevelBonus = value;
         OnChanged?.Invoke(Score);
     }
 }
@@ -70,6 +77,7 @@ public class CreatureStats : Creature
 
     //experience events
     public event Action<int> OnEXPChanged;
+    public event Action<int> OnMaxExperienceChanged;
     public event Action<int> OnLevelChanged;
 
     //armor class event
@@ -130,33 +138,48 @@ public class CreatureStats : Creature
         Wisdom = new Stat();
         Charisma = new Stat();
 
-        InitializeStats();
-        InitializeArmorClass();
+        // Set initial stat values
+        Strength.SetBaseValue(10);
+        Strength.SetRaceBonus(characterRace.strengthBonus);
+        Strength.SetClassBonus(characterClass.strengthBonus);
+
+        Dexterity.SetBaseValue(10);
+        Dexterity.SetRaceBonus(characterRace.dexterityBonus);
+        Dexterity.SetClassBonus(characterClass.dexterityBonus);
+
+        Constitution.SetBaseValue(10);
+        Constitution.SetRaceBonus(characterRace.constitutionBonus);
+        Constitution.SetClassBonus(characterClass.constitutionBonus);
+
+        Intelligence.SetBaseValue(10);
+        Intelligence.SetRaceBonus(characterRace.intelligenceBonus);
+        Intelligence.SetClassBonus(characterClass.intelligenceBonus);
+
+        Wisdom.SetBaseValue(10);
+        Wisdom.SetRaceBonus(characterRace.wisdomBonus);
+        Wisdom.SetClassBonus(characterClass.wisdomBonus);
+
+        Charisma.SetBaseValue(10);
+        Charisma.SetRaceBonus(characterRace.charismaBonus);
+        Charisma.SetClassBonus(characterClass.charismaBonus);
+
+        // Calculate derived values
+        CalculateResources();
+        CalculateExperience();
+        RecalculateArmorClass();
 
         // Subscribe to equipment changes to update stats and armor class
         equipment.OnEquipmentStatsChanged += OnEquipmentStatsChanged;
         equipment.CalculateStatChanges(); // Calculate initial equipment bonuses
     }
 
-    private void InitializeStats()
+    void Update()
     {
-        // set initial stats
-        InitializeStat(Strength, 10, characterRace.strengthBonus, characterClass.strengthBonus);
-        InitializeStat(Dexterity, 10, characterRace.dexterityBonus, characterClass.dexterityBonus);
-        InitializeStat(Constitution, 10, characterRace.constitutionBonus, characterClass.constitutionBonus);
-        InitializeStat(Intelligence, 10, characterRace.intelligenceBonus, characterClass.intelligenceBonus);
-        InitializeStat(Wisdom, 10, characterRace.wisdomBonus, characterClass.wisdomBonus);
-        InitializeStat(Charisma, 10, characterRace.charismaBonus, characterClass.charismaBonus);
-
-        Hitpoints.ModifyMax(Constitution.Modifier * characterLevel + 10);
-        Hitpoints.ModifyCurrent(Hitpoints.Max);
-        Stamina.ModifyMax(10 + (Constitution.Modifier * characterLevel));
-        Stamina.ModifyCurrent(Stamina.Max);
-        Mana.ModifyMax(10 + (Intelligence.Modifier * characterLevel));
-        Mana.ModifyCurrent(Mana.Max);
-
-        armorClass = 10 + equipmentAc + Dexterity.Modifier; // Size modifier can be added later when we have different creature sizes
-        OnArmorClassChanged?.Invoke(armorClass);
+        //for testing to add experience and 
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            GainExperience(500);
+        }
     }
 
     private void OnEquipmentStatsChanged(Equipment.EquipmentStatBonuses bonuses)
@@ -173,26 +196,45 @@ public class CreatureStats : Creature
         RecalculateArmorClass();
     }
 
+    private void CalculateResources()
+    {
+        // Calculate and set max values for resources based on current stats and level
+        int newMaxHP = Constitution.Modifier * characterLevel + 10;
+        int newMaxStamina = 10 + (Constitution.Modifier * characterLevel);
+        int newMaxMana = 10 + (Intelligence.Modifier * characterLevel);
+
+        Hitpoints.ModifyMax(newMaxHP - Hitpoints.Max);
+        Debug.Log($"Max HP modified. New max HP: {Hitpoints.Max} for {this}");
+        Stamina.ModifyMax(newMaxStamina - Stamina.Max);
+        Debug.Log($"Max Stamina modified. New max Stamina: {Stamina.Max} for {this}");
+        Mana.ModifyMax(newMaxMana - Mana.Max);
+        Debug.Log($"Max Mana modified. New max Mana: {Mana.Max} for {this}");
+
+        // On first initialization, set current to max
+        if (Hitpoints.Current == 0) Hitpoints.ModifyCurrent(Hitpoints.Max);
+        if (Stamina.Current == 0) Stamina.ModifyCurrent(Stamina.Max);
+        if (Mana.Current == 0) Mana.ModifyCurrent(Mana.Max);
+    }
+
+    private void CalculateExperience()
+    {
+        // Calculate XP needed for next level based on current level
+        int xpForCurrentLevel = GetXPRequiredForLevel(characterLevel);
+        int xpForNextLevel = GetXPRequiredForLevel(characterLevel + 1);
+
+        maxExperience = xpForNextLevel - xpForCurrentLevel;
+
+        OnMaxExperienceChanged?.Invoke(maxExperience);
+        OnEXPChanged?.Invoke(experience);
+        OnLevelChanged?.Invoke(characterLevel);
+    }
+
     private void RecalculateArmorClass()
     {
         int newArmorClass = 10 + equipmentAc + Dexterity.Modifier;
         if (newArmorClass == armorClass) return;
 
         armorClass = newArmorClass;
-        OnArmorClassChanged?.Invoke(armorClass);
-    }
-
-    void InitializeStat(Stat stat, int baseValue, int raceBonus, int classBonus)
-    {
-        stat.SetBaseValue(baseValue);
-        stat.SetRaceBonus(raceBonus);
-        stat.SetClassBonus(classBonus);
-        stat.SetEquipmentBonus(0); // Start with no equipment bonus, will be updated when equipment is initialized
-    }
-
-    void InitializeArmorClass()
-    {
-        armorClass = 10 + equipment.ArmorAC + Dexterity.Modifier; // Size modifier can be added later when we have different creature sizes
         OnArmorClassChanged?.Invoke(armorClass);
     }
 
@@ -206,6 +248,70 @@ public class CreatureStats : Creature
     {
         int initiativeRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)Dexterity.Modifier;
         return initiativeRoll;
+    }
+
+    void GainExperience(int amount)
+    {
+        experience += amount;
+        OnEXPChanged?.Invoke(experience);
+
+        // Check if we leveled up (possibly multiple times)
+        while (experience >= maxExperience)
+        {
+            LevelUp();
+        }
+    }
+
+    void LevelUp()
+    {
+        // Subtract the XP needed to level up
+        experience -= maxExperience;
+
+        // Increase level
+        characterLevel++;
+        OnLevelChanged?.Invoke(characterLevel);
+
+        // Recalculate derived values for new level
+        UpdateLevelBonuses();
+        CalculateExperience();
+        CalculateResources();
+        Hitpoints.ModifyCurrent(Hitpoints.Max); // Heal to full on level up
+        Stamina.ModifyCurrent(Stamina.Max); // Restore stamina to full on level up
+        Mana.ModifyCurrent(Mana.Max); // Restore mana to full on level up
+
+        Debug.Log($"{interactableName} leveled up to level {characterLevel}!");
+    }
+
+    void UpdateLevelBonuses()
+    {
+        // For simplicity, let's say each level gives +1 to all stats. This can be expanded to allow for different progression paths.
+        int levelBonus = characterLevel - 1; // Level 1 = 0 bonus, Level 2 = +1, etc.
+
+        Strength.SetLevelBonus(levelBonus);
+        Dexterity.SetLevelBonus(levelBonus);
+        Constitution.SetLevelBonus(levelBonus);
+        Intelligence.SetLevelBonus(levelBonus);
+        Wisdom.SetLevelBonus(levelBonus);
+        Charisma.SetLevelBonus(levelBonus);
+    }
+
+    void CalculateLevelFromExp()
+    {
+        // Calculate XP needed for next level
+        int xpForCurrentLevel = GetXPRequiredForLevel(characterLevel);
+        int xpForNextLevel = GetXPRequiredForLevel(characterLevel + 1);
+
+        maxExperience = xpForNextLevel - xpForCurrentLevel;
+
+        OnLevelChanged?.Invoke(characterLevel);
+        OnEXPChanged?.Invoke(experience);
+    }
+
+    // Calculate XP required to reach a specific level
+    int GetXPRequiredForLevel(int level)
+    {
+        // Total XP needed to reach a level: N × (N - 1) × 500
+        return level * (level - 1) * 500;
     }
 
     public void CheckIfDead()
@@ -225,6 +331,15 @@ public class CreatureStats : Creature
             }
 
             Debug.Log($"{this.name} has died.");
+
+            // give xp to player if this is an enemy and xp hasn't been given yet
+            if (!gaveXP)
+            {
+                Transform player = GameObject.FindWithTag("Player").transform;
+                CreatureStats playerStats = player.GetComponent<CreatureStats>();
+                playerStats.GainExperience(xpToGive);
+                gaveXP = true;
+            }
 
         }
     }
