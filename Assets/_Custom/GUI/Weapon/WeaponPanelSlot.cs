@@ -283,7 +283,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         Initiative initiative = FindAnyObjectByType<Initiative>();
         if (initiative != null)
         {
-            combatLog.SendMessageToCombatLog($"Player's turn ends.", CombatMessage.CombatMessageType.info);
+            //combatLog.SendMessageToCombatLog($"Player's turn ends.", CombatMessage.CombatMessageType.info);
             initiative.NextTurn();
         }
     }

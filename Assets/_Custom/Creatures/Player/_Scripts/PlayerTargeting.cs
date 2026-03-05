@@ -57,8 +57,8 @@ public class PlayerTargeting : MonoBehaviour
                 currentTarget = null;
                 targetPanel.SetNewTarget(null);
                 targetPanel.gameObject.SetActive(false);
-                damageDie.SetDieValue(0); // Clear damage die display when no target is selected
-                attackDie.SetDieValue(0); // Clear attack die display when no target is selected
+                //damageDie.SetDieValue(0); // Clear damage die display when no target is selected
+                //attackDie.SetDieValue(0); // Clear attack die display when no target is selected
             }
         }
     }

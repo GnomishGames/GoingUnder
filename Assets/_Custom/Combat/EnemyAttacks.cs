@@ -55,6 +55,9 @@ public class EnemyAttacks : MonoBehaviour
         if (targetStats.isDead)
             return;
 
+        if (creatureStats.isDead)
+            return;
+
         // Resolve the attack using the combat system
         int slotNumber = 0; // For simplicity, enemies will always use the first weapon slot. This can be expanded to allow for multiple attacks or different weapons.
         WeaponSO weapon = equipment.weaponSOs[slotNumber];
@@ -84,7 +87,7 @@ public class EnemyAttacks : MonoBehaviour
         }
 
         // Advance to next turn
-        combatLog.SendMessageToCombatLog($"Enemy's turn ends.", CombatMessage.CombatMessageType.info);
+        //combatLog.SendMessageToCombatLog($"Enemy's turn ends.", CombatMessage.CombatMessageType.info);
         initiative.NextTurn();
     }
 
