@@ -10,6 +10,7 @@ public class EnemyAttacks : MonoBehaviour
     CreatureStats targetStats;
     Initiative initiative;
     AnimationController animController;
+    CombatLogPanel combatLog;
 
     float attackDelay = 1f; // Delay before enemy attacks after their turn starts
 
@@ -26,6 +27,7 @@ public class EnemyAttacks : MonoBehaviour
         myStats = GetComponent<CreatureStats>();
         targetStats = player.GetComponent<CreatureStats>();
         animController = GetComponent<AnimationController>();
+        combatLog = FindAnyObjectByType<CombatLogPanel>();
     }
 
     void Update()
@@ -66,16 +68,19 @@ public class EnemyAttacks : MonoBehaviour
         if (!result.wasAttempted)
         {
             Debug.Log($"Enemy: Attack failed - {result.failureReason}");
+            combatLog.SendMessageToCombatLog($"Enemy attacks {targetStats.name} with {weapon.name} but the attack failed! (Reason: {result.failureReason})", CombatMessage.CombatMessageType.enemyAttack);
             return;
         }
 
         if (result.wasHit)
         {
             Debug.Log($"Enemy: Attack hit! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}, Damage: {result.damageDealt}");
+            combatLog.SendMessageToCombatLog($"Enemy attacks {targetStats.name} with {weapon.name} and hits for {result.damageDealt} damage!", CombatMessage.CombatMessageType.enemyAttack);
         }
         else
         {
             Debug.Log($"Enemy: Attack missed! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}");
+            combatLog.SendMessageToCombatLog($"Enemy attacks {targetStats.name} with {weapon.name} but misses! (Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC})", CombatMessage.CombatMessageType.enemyAttack);
         }
 
         // Advance to next turn

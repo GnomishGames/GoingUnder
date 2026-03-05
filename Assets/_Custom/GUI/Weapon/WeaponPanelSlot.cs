@@ -23,6 +23,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
     public EquipmentPanel equipmentPanel;
     public WeaponPanel weaponPanel;
     public ContainerPanel containerPanel;
+    public CombatLogPanel combatLog;
 
     //class references
     Equipment equipment;
@@ -43,6 +44,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         equipmentPanel = transform.root.GetComponentInChildren<EquipmentPanel>(true);
         weaponPanel = transform.root.GetComponentInChildren<WeaponPanel>(true);
         containerPanel = transform.root.GetComponentInChildren<ContainerPanel>(true);
+        combatLog = transform.root.GetComponentInChildren<CombatLogPanel>(true);
 
         if (weaponPanel == null)
         {
@@ -257,26 +259,31 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         if (!result.wasAttempted)
         {
             Debug.Log($"Weapon: Attack failed - {result.failureReason}");
+            combatLog.SendMessageToCombatLog($"Player attacks {playerTargeting.currentTarget.name} with {weapon.name} but the attack failed! (Reason: {result.failureReason})", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
         if (result.wasHit)
         {
             Debug.Log($"Weapon: Attack hit! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}, Damage: {result.damageDealt}");
-            attackDie.SetDieValue(result.attackRoll);
-            damageDie.SetDieValue(result.damageDealt);
+            
+            combatLog.SendMessageToCombatLog($"Player attacks {playerTargeting.currentTarget.name} with {weapon.name} and hits for {result.damageDealt} damage!", CombatMessage.CombatMessageType.playerAttack);
+            //attackDie.SetDieValue(result.attackRoll);
+            //damageDie.SetDieValue(result.damageDealt);
         }
         else
         {
             Debug.Log($"Weapon: Attack missed! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}");
-            attackDie.SetDieValue(result.attackRoll);
-            damageDie.SetDieValue(0);
+            combatLog.SendMessageToCombatLog($"Player attacks {playerTargeting.currentTarget.name} with {weapon.name} and misses! (Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC})", CombatMessage.CombatMessageType.playerAttack);
+            //attackDie.SetDieValue(result.attackRoll);
+            //damageDie.SetDieValue(0);
         }
 
         // Advance to next turn
         Initiative initiative = FindAnyObjectByType<Initiative>();
         if (initiative != null)
         {
+            combatLog.SendMessageToCombatLog($"Player's turn ends.", CombatMessage.CombatMessageType.info);
             initiative.NextTurn();
         }
     }
