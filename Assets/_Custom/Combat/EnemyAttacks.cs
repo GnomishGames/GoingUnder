@@ -84,6 +84,7 @@ public class EnemyAttacks : MonoBehaviour
         }
 
         // Advance to next turn
+        combatLog.SendMessageToCombatLog($"Enemy's turn ends.", CombatMessage.CombatMessageType.info);
         initiative.NextTurn();
     }
 

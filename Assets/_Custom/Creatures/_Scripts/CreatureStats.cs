@@ -86,6 +86,7 @@ public class CreatureStats : Creature
     //references
     private Equipment equipment;
     private AnimationController animController;
+    private CombatLogPanel combatLog;
 
     //xp Tracking
     public bool gaveXP = false;
@@ -170,6 +171,9 @@ public class CreatureStats : Creature
 
         // Subscribe to equipment changes to update stats and armor class
         equipment.OnEquipmentStatsChanged += OnEquipmentStatsChanged;
+
+        // Get reference to combat log
+        combatLog = FindAnyObjectByType<CombatLogPanel>();
         equipment.CalculateStatChanges(); // Calculate initial equipment bonuses
     }
 
@@ -255,6 +259,9 @@ public class CreatureStats : Creature
     {
         experience += amount;
         OnEXPChanged?.Invoke(experience);
+
+        // add combat log message
+        combatLog.SendMessageToCombatLog($"{interactableName} gains {amount} XP", CombatMessage.CombatMessageType.info);
 
         // Check if we leveled up (possibly multiple times)
         while (experience >= maxExperience)
