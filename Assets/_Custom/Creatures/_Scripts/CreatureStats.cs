@@ -357,4 +357,24 @@ public class CreatureStats : Creature
             }
         }
     }
+
+    public void SetClass(ClassSO newClass)
+    {
+        characterClass = newClass;
+        OnClassChanged?.Invoke(newClass);
+        // Recalculate stats based on new class...
+    }
+
+    public void SetRace(RaceSO newRace)
+    {
+        characterRace = newRace;
+        OnRaceChanged?.Invoke(newRace);
+        // Recalculate stats based on new race...
+    }
+
+    public void SetName(string newName)
+    {
+        interactableName = newName;
+        OnNameChanged?.Invoke(newName);
+    }
 }

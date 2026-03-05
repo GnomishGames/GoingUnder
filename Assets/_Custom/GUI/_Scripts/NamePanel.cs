@@ -30,6 +30,7 @@ public class NamePanel : MonoBehaviour
         creatureStats.OnRaceChanged += UpdateRace;
         //subscribe to class change event
         creatureStats.OnClassChanged += UpdateClass;
+        
     }
 
     void OnDestroy()
