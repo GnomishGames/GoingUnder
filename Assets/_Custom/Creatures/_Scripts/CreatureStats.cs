@@ -349,6 +349,12 @@ public class CreatureStats : Creature
                 gaveXP = true;
             }
 
+            //if the player died then load the start screen
+            if (this.CompareTag("Player"))
+            {
+                // For now, just reload the current scene. This can be expanded to show a death screen or return to the main menu.
+                UnityEngine.SceneManagement.SceneManager.LoadScene("StartScene");
+            }
         }
     }
 }
