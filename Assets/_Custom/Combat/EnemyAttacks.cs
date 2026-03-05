@@ -71,19 +71,19 @@ public class EnemyAttacks : MonoBehaviour
         if (!result.wasAttempted)
         {
             Debug.Log($"Enemy: Attack failed - {result.failureReason}");
-            combatLog.SendMessageToCombatLog($"Enemy attacks {targetStats.name} with {weapon.name} but the attack failed! (Reason: {result.failureReason})", CombatMessage.CombatMessageType.enemyAttack);
+            combatLog.SendMessageToCombatLog($"{myStats.name} attacks {targetStats.name} with {weapon.name} but the attack failed! (Reason: {result.failureReason})", CombatMessage.CombatMessageType.enemyAttack);
             return;
         }
 
         if (result.wasHit)
         {
             Debug.Log($"Enemy: Attack hit! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}, Damage: {result.damageDealt}");
-            combatLog.SendMessageToCombatLog($"Enemy attacks {targetStats.name} with {weapon.name} and hits for {result.damageDealt} damage!", CombatMessage.CombatMessageType.enemyAttack);
+            combatLog.SendMessageToCombatLog($"{myStats.name} attacks {targetStats.name} with {weapon.name} and hits for {result.damageDealt} damage!", CombatMessage.CombatMessageType.enemyAttack);
         }
         else
         {
             Debug.Log($"Enemy: Attack missed! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}");
-            combatLog.SendMessageToCombatLog($"Enemy attacks {targetStats.name} with {weapon.name} but misses! (Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC})", CombatMessage.CombatMessageType.enemyAttack);
+            combatLog.SendMessageToCombatLog($"{myStats.name} attacks {targetStats.name} with {weapon.name} but misses! (Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC})", CombatMessage.CombatMessageType.enemyAttack);
         }
 
         // Advance to next turn
