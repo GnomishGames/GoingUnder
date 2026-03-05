@@ -327,8 +327,8 @@ public class CreatureStats : Creature
         if (Hitpoints.Current <= 0)
         {
             isDead = true;
+            combatLog.SendMessageToCombatLog($"{interactableName} has died.", CombatMessage.CombatMessageType.info);
             // play death animation
-
             if (animController != null)
             {
                 animController.PlayDeath();
