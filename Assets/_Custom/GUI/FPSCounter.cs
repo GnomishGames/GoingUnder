@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 
 public class FPSCounter : MonoBehaviour
@@ -11,8 +10,6 @@ public class FPSCounter : MonoBehaviour
 
     private float fps;
     private bool showFPS = true;
-
-    //public TMP_Text fpsText;
 
     public void SetFPSVisibility(bool visible)
     {
