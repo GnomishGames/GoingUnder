@@ -1,5 +1,4 @@
 using System;
-using System.Linq.Expressions;
 using UnityEngine;
 
 public class SkillBar : MonoBehaviour
@@ -13,11 +12,13 @@ public class SkillBar : MonoBehaviour
     public event Action<int> OnSkillChanged;
 
     Equipment equipment;
+    public CombatLogPanel combatLog;
 
     void Awake()
     {
         skillBook = GetComponent<SkillBook>();
         equipment = GetComponent<Equipment>();
+        combatLog = transform.root.GetComponentInChildren<CombatLogPanel>(true);
     }
 
     public void TriggerSkillChanged(int slotNumber)
@@ -93,36 +94,32 @@ public class SkillBar : MonoBehaviour
         // Call the skill's effect method here, passing necessary parameters
         Debug.Log($"SkillBar: Activating skill {skillSOs[slotNumber].name} from slot {slotNumber}.");
 
-        // check if attack hits
-        int attackRoll = this.GetComponent<CreatureStats>().AttackRoll();
-
-        // calculate damage
-        if (attackRoll >= this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().armorClass)
+        // Apply self-heal if applicable
+        if (skillSOs[slotNumber].selfHeal > 0 && this.GetComponent<CreatureStats>() != null)
         {
-            // roll the weapon damage. Take the die and get a random number from that. 
-            // Repeat for the dieMultiplier and add them together. Then add the dieBonus.
+            this.GetComponent<CreatureStats>().Hitpoints.ModifyCurrent((int)skillSOs[slotNumber].selfHeal);
+            Debug.Log($"SkillBar: Skill {skillSOs[slotNumber].name} healed {skillSOs[slotNumber].selfHeal} HP!");
 
-            //first get the weapon
-            var weapon = equipment.weaponSOs[0]; // Assuming the first weapon slot is used for the attack
-
-            // Now calculate the damage based on the weapon's stats
-            int damage = 0;
-            for (int i = 0; i < weapon.DieMultiplier; i++)
-            {
-                damage += UnityEngine.Random.Range(1, weapon.Die + 1);
-                Debug.Log($"SkillBar: Rolled {damage} damage for skill {skillSOs[slotNumber].name} in slot {slotNumber}.");
-            }
-
-            damage += weapon.DieBonus;
-
-            // Apply damage to the target
-            this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().Hitpoints.ModifyCurrent(-damage);
-
-            Debug.Log($"SkillBar: Skill {skillSOs[slotNumber].name} hit for {damage} damage!");
+            //combatlog message
+            combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} used {skillSOs[slotNumber].name} and healed for {skillSOs[slotNumber].selfHeal} HP!", CombatMessage.CombatMessageType.playerAttack);
         }
-        else
+
+        // do damage to target if applicable
+        var targetStats = this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>();
+        if (targetStats != null && skillSOs[slotNumber].targetDamage > 0)
         {
-            Debug.Log($"SkillBar: Skill {skillSOs[slotNumber].name} missed!");
+            targetStats.Hitpoints.ModifyCurrent(-(int)skillSOs[slotNumber].targetDamage);
+
+            //combatlog message
+            combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} used {skillSOs[slotNumber].name} and dealt {skillSOs[slotNumber].targetDamage} damage to {targetStats.interactableName}!", CombatMessage.CombatMessageType.playerAttack);
+        }
+
+        // Advance to next turn
+        Initiative initiative = FindAnyObjectByType<Initiative>();
+        if (initiative != null)
+        {
+            //combatLog.SendMessageToCombatLog($"Player's turn ends.", CombatMessage.CombatMessageType.info);
+            initiative.NextTurn();
         }
     }
 }

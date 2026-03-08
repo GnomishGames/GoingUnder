@@ -6,5 +6,6 @@ public class SkillSO : ItemSO
     public float staminaCost;
     public int targetDamage;
     public float selfDamage;
+    public float selfHeal;
     public float attackRange;
 }
