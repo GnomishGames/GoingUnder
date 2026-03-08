@@ -1,33 +1,55 @@
+using System.Linq;
 using UnityEngine;
 
 public class EnemyAttacks : MonoBehaviour
 {
+    // player
     Transform player;
+    CreatureStats targetStats;
+    CombatLogPanel combatLog;
+
+    //me
+    CreatureStats myStats;
     CreatureStats creatureStats;
     Equipment equipment;
-    CombatResolver combatResolver;
-    CreatureStats myStats;
-    CreatureStats targetStats;
-    Initiative initiative;
     AnimationController animController;
-    CombatLogPanel combatLog;
+
+    //other systems
+    CombatResolver combatResolver;
+    Initiative initiative;
 
     float attackDelay = 1f; // Delay before enemy attacks after their turn starts
 
     private bool hasAttackedThisTurn = false;
 
-
     void OnEnable()
     {
+        //player
         player = GameObject.FindWithTag("Player").transform;
+        targetStats = player.GetComponent<CreatureStats>();
+        combatLog = player.GetComponentInChildren<CombatLogPanel>();
+
+        //me
         creatureStats = GetComponent<CreatureStats>();
         equipment = GetComponent<Equipment>();
+        myStats = GetComponent<CreatureStats>();
+        animController = GetComponent<AnimationController>();
+
+        //other systems
         combatResolver = FindAnyObjectByType<CombatResolver>();
         initiative = FindAnyObjectByType<Initiative>();
-        myStats = GetComponent<CreatureStats>();
-        targetStats = player.GetComponent<CreatureStats>();
-        animController = GetComponent<AnimationController>();
-        combatLog = FindAnyObjectByType<CombatLogPanel>();
+
+        // add myself to the initiative system's list of enemies if not already present
+        if (!initiative.enemies.Contains(transform))
+        {
+            initiative.enemies = initiative.enemies.Append(transform).ToArray();
+        }
+
+        // Start combat if not already in combat
+        if (!creatureStats.inCombat)
+        {
+            initiative.StartCombat();
+        }
     }
 
     void Update()

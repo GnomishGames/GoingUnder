@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class TargetStatSlider : MonoBehaviour
 {
-    private CreatureStats creatureStats;
+    private PlayerTargeting playerTargeting;
     private CreatureStats targetStats;
 
     private string statName;
@@ -13,8 +13,8 @@ public class TargetStatSlider : MonoBehaviour
     {
         statName = this.gameObject.name;
 
-        creatureStats = transform.root.GetComponent<CreatureStats>();
-        targetStats = creatureStats.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>();
+        playerTargeting = transform.root.GetComponentInChildren<PlayerTargeting>();
+        targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
 
         slider = GetComponent<Slider>();
 

@@ -10,7 +10,7 @@ It will likely need to reference the player and all enemies in the scene, as wel
 public class Initiative : MonoBehaviour
 {
     Transform player;
-    Transform[] enemies;
+    public Transform[] enemies;
     private System.Collections.Generic.List<Transform> turnOrder;
     private int currentTurnIndex = 0;
 
@@ -18,11 +18,9 @@ public class Initiative : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player").transform;
         enemies = GameObject.FindGameObjectsWithTag("Enemy").Select(e => e.transform).ToArray();
-
-        StartCombat();
     }
 
-    public void StartCombat()
+    public void StartCombat() //call this from the enemy when they spawn
     {
         // Roll initiative for player and enemies, sort them, and start the turn order
         int playerInitiative = player.GetComponent<CreatureStats>().RollInitiative();
