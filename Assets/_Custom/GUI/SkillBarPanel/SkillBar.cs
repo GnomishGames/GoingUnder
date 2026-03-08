@@ -94,7 +94,7 @@ public class SkillBar : MonoBehaviour
         Debug.Log($"SkillBar: Activating skill {skillSOs[slotNumber].name} from slot {slotNumber}.");
 
         // check if attack hits
-        int attackRoll = this.GetComponent<CreatureStats>().attackRoll();
+        int attackRoll = this.GetComponent<CreatureStats>().AttackRoll();
 
         // calculate damage
         if (attackRoll >= this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().armorClass)

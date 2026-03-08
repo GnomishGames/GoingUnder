@@ -63,7 +63,7 @@ public class CombatResolver : MonoBehaviour
         }
 
         // Perform attack roll
-        int toHit = attacker.attackRoll();
+        int toHit = attacker.AttackRoll();
         int targetAC = (int)target.armorClass;
         bool isHit = toHit >= targetAC;
 

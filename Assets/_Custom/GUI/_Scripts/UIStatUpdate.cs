@@ -3,7 +3,6 @@ using TMPro;
 
 public class UIStatUpdate : MonoBehaviour
 {
-
     /*
     This script is attached to text objects in the character panel and updates their display when the corresponding stat changes.
     It uses the name of the GameObject it's attached to determine which stat to display (e.g. "Health", "Mana", "StrengthScore", etc.)

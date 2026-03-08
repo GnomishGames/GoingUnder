@@ -242,7 +242,7 @@ public class CreatureStats : Creature
         OnArmorClassChanged?.Invoke(armorClass);
     }
 
-    public int attackRoll()
+    public int AttackRoll()
     {
         int attackRoll = UnityEngine.Random.Range(1, 21) + (int)characterLevel + (int)Strength.Modifier + characterRace.sizeAcBonus;
         //ranged attacks could use Dexterity instead, and we can add more complexity later (proficiency bonus, weapon bonuses, etc.)
