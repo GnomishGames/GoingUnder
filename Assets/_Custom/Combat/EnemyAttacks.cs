@@ -17,7 +17,7 @@ public class EnemyAttacks : MonoBehaviour
     private bool hasAttackedThisTurn = false;
 
 
-    void Start()
+    void OnEnable()
     {
         player = GameObject.FindWithTag("Player").transform;
         creatureStats = GetComponent<CreatureStats>();

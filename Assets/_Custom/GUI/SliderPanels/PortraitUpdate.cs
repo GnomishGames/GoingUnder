@@ -6,7 +6,7 @@ public class PortraitUpdate : MonoBehaviour
     private CreatureStats creatureStats;
     public Image icon;
 
-    void Start()
+    void OnEnable()
     {
         creatureStats = transform.root.GetComponent<CreatureStats>();
 
@@ -18,10 +18,7 @@ public class PortraitUpdate : MonoBehaviour
         {
             Debug.LogWarning($"[PortraitPanel] CreatureStats component not found on {transform.root.gameObject.name}");
         }
-    }
 
-    void OnEnable()
-    {
         UpdatePortrait(creatureStats);
     }
 

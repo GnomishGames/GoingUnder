@@ -40,13 +40,15 @@ public class TargetPortraitUpdate : MonoBehaviour
 
     void UpdatePortrait(CreatureStats creatureStats)
     {
+        if (creatureStats == null)
+        {
+            icon.sprite = null; // Clear icon if no target
+            return;
+        }
+        
         if (icon != null && creatureStats != null && creatureStats.icon != null)
         {
             icon.sprite = creatureStats.icon;
-        }
-        else
-        {
-            Debug.LogWarning($"[TargetPanel] Cannot update portrait - icon: {icon != null}, creatureStats: {creatureStats != null}, creatureStats.icon: {(creatureStats != null ? (creatureStats.icon != null).ToString() : "N/A")}");
         }
     }
 }
