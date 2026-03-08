@@ -208,11 +208,8 @@ public class CreatureStats : Creature
         int newMaxMana = 10 + (Intelligence.Modifier * characterLevel);
 
         Hitpoints.ModifyMax(newMaxHP - Hitpoints.Max);
-        Debug.Log($"Max HP modified. New max HP: {Hitpoints.Max} for {this}");
         Stamina.ModifyMax(newMaxStamina - Stamina.Max);
-        Debug.Log($"Max Stamina modified. New max Stamina: {Stamina.Max} for {this}");
         Mana.ModifyMax(newMaxMana - Mana.Max);
-        Debug.Log($"Max Mana modified. New max Mana: {Mana.Max} for {this}");
 
         // On first initialization, set current to max
         if (Hitpoints.Current == 0) Hitpoints.ModifyCurrent(Hitpoints.Max);
