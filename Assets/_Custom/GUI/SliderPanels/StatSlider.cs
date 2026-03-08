@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class StatSlider : MonoBehaviour
 {
     private CreatureStats creatureStats;
-    private CharacterPanel characterPanel;
 
     private string statName;
     private Slider slider;
@@ -13,8 +12,6 @@ public class StatSlider : MonoBehaviour
     private void Start()
     {
         statName = this.gameObject.name;
-
-        characterPanel = GetComponentInParent<CharacterPanel>();
 
         creatureStats = transform.root.GetComponent<CreatureStats>();
 

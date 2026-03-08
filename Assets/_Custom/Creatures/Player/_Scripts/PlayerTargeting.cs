@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -7,6 +8,9 @@ public class PlayerTargeting : MonoBehaviour
     [SerializeField] LayerMask interactableLayerMask;
     public Interactable currentTarget;
     TargetPanel targetPanel;
+
+    //events
+    public event Action<CreatureStats> OnTargetChanged; // Event to notify when the target changes, passing the new target's CreatureStats
 
     //dice
     AttackDie attackDie;
@@ -47,16 +51,16 @@ public class PlayerTargeting : MonoBehaviour
                 {
                     // If the hit object has a CreatureStats component, set it as the target
                     currentTarget = creature.GetComponent<Interactable>();
-                    targetPanel.SetNewTarget(creature);
                     targetPanel.gameObject.SetActive(true);
+                    OnTargetChanged?.Invoke(creature);
                 }
             }
             else
             {
                 // Clicked on empty space, clear target
                 currentTarget = null;
-                targetPanel.SetNewTarget(null);
                 targetPanel.gameObject.SetActive(false);
+                OnTargetChanged?.Invoke(null);
                 //damageDie.SetDieValue(0); // Clear damage die display when no target is selected
                 //attackDie.SetDieValue(0); // Clear attack die display when no target is selected
             }
