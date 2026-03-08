@@ -15,7 +15,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
     private Transform dragLayer;
 
     //player reference
-    public Transform player;
+    public Transform playerTransform;
     PlayerTargeting playerTargeting;
 
     //panels
@@ -28,6 +28,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
     //class references
     Equipment equipment;
     CombatResolver combatResolver;
+    CreatureStats creatureStats;
 
     //dice
     AttackDie attackDie;
@@ -52,11 +53,12 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
             return;
         }
 
-        player = GameObject.FindWithTag("Player").transform;
+        playerTransform = transform.root;
+        creatureStats = playerTransform.GetComponent<CreatureStats>();
 
         //set arrays
-        equipment = player.GetComponent<Equipment>();
-        playerTargeting = player.GetComponent<PlayerTargeting>();
+        equipment = playerTransform.GetComponent<Equipment>();
+        playerTargeting = playerTransform.GetComponent<PlayerTargeting>();
 
         //set ui elements
         rectTransform = GetComponent<RectTransform>();
@@ -221,37 +223,33 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        CreatureStats playerStats = player.GetComponent<CreatureStats>();
+        CreatureStats playerStats = playerTransform.GetComponent<CreatureStats>();
         CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
 
         if (equipment.weaponSOs[slotNumber] == null)
         {
-            Debug.Log("Weapon: No weapon equipped in this slot.");
-            combatLog.SendMessageToCombatLog($"{player.name} tries to attack with an empty weapon slot but fails!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with an empty weapon slot but fails!", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
         // Check basic requirements
         if (playerTargeting.currentTarget == null)
         {
-            Debug.Log("Weapon: No target selected.");
-            combatLog.SendMessageToCombatLog($"{player.name} tries to attack with no target selected but fails!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with no target selected but fails!", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
         // check if player is already dead
         if (playerStats.isDead)
         {
-            Debug.Log("Weapon: Player is dead.");
-            combatLog.SendMessageToCombatLog($"{player.name} tries to attack but is already dead!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack but is already dead!", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
         // check if target is already dead        
         if (targetStats.isDead)
         {
-            Debug.Log("Weapon: Target is already dead.");
-            combatLog.SendMessageToCombatLog($"{player.name} tries to attack {playerTargeting.currentTarget.name} but they are already dead!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack {targetStats.interactableName} but they are already dead!", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
@@ -262,22 +260,19 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
         // Handle the result
         if (!result.wasAttempted)
         {
-            Debug.Log($"Weapon: Attack failed - {result.failureReason}");
-            combatLog.SendMessageToCombatLog($"{player.name} attacks {playerTargeting.currentTarget.name} with {weapon.name} but the attack failed! (Reason: {result.failureReason})", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} but the attack failed! (Reason: {result.failureReason})", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
         if (result.wasHit)
         {
-            Debug.Log($"Weapon: Attack hit! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}, Damage: {result.damageDealt}");
-            combatLog.SendMessageToCombatLog($"{player.name} attacks {playerTargeting.currentTarget.name} with {weapon.name} and hits for {result.damageDealt} damage!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} and hits for {result.damageDealt} damage!", CombatMessage.CombatMessageType.playerAttack);
             //attackDie.SetDieValue(result.attackRoll);
             //damageDie.SetDieValue(result.damageDealt);
         }
         else
         {
-            Debug.Log($"Weapon: Attack missed! Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC}");
-            combatLog.SendMessageToCombatLog($"{player.name} attacks {playerTargeting.currentTarget.name} with {weapon.name} and misses! (Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC})", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} and misses! (Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC})", CombatMessage.CombatMessageType.playerAttack);
             //attackDie.SetDieValue(result.attackRoll);
             //damageDie.SetDieValue(0);
         }
