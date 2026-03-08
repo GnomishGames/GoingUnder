@@ -10,28 +10,102 @@ public class UIStatUpdate : MonoBehaviour
 
     Transform player;
     CreatureStats creatureStats;
+    CreatureStats playerStats;
+    PlayerTargeting playerTargeting;
     Equipment equipment;
     TextMeshProUGUI textDisplay;
+    [SerializeField] private bool useTargetStats = false;
     [SerializeField] private string prefix = "";
     [SerializeField] private string suffix = "";
+    [SerializeField] private string noTargetValue = "-";
     [SerializeField] private string formatString = "F0"; // "F0" for whole numbers, "F1" for one decimal, etc.
 
     private string statName;
 
-    void Start()
+    void Awake()
     {
-        //find player by tag. This assumes this script is only used for the player character panel. If used for NPCs, this will need to be changed.
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-
         // Use the GameObject's name as the stat name
         statName = this.gameObject.name;
 
-        //get characterstats if not assigned
-        creatureStats = player.GetComponent<CreatureStats>();
-        equipment = player.GetComponent<Equipment>();
-
-        //get textdisplay if not assigned
+        // Get text display reference once
         textDisplay = GetComponent<TextMeshProUGUI>();
+
+        CachePlayerReferences();
+    }
+
+    void Start()
+    {
+        CachePlayerReferences();
+
+        if (playerStats == null)
+        {
+            Debug.LogWarning("CreatureStats not found on Player for " + gameObject.name);
+            return;
+        }
+
+        if (useTargetStats)
+        {
+            if (playerTargeting == null)
+            {
+                Debug.LogWarning("PlayerTargeting not found on Player for " + gameObject.name);
+                SetCreatureStats(null);
+                return;
+            }
+
+            playerTargeting.OnTargetChanged += HandleTargetChanged;
+
+            CreatureStats currentTargetStats = null;
+            if (playerTargeting.currentTarget != null)
+            {
+                currentTargetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+            }
+
+            SetCreatureStats(currentTargetStats);
+            return;
+        }
+
+        SetCreatureStats(playerStats);
+    }
+
+    void CachePlayerReferences()
+    {
+        if (player == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerObject != null)
+            {
+                player = playerObject.transform;
+            }
+        }
+
+        if (player == null)
+            return;
+
+        //get characterstats if not assigned
+        playerStats = player.GetComponent<CreatureStats>();
+        playerTargeting = player.GetComponent<PlayerTargeting>();
+        equipment = player.GetComponent<Equipment>();
+    }
+
+    void HandleTargetChanged(CreatureStats newTargetStats)
+    {
+        SetCreatureStats(newTargetStats);
+    }
+
+    void SetCreatureStats(CreatureStats newStats)
+    {
+        if (creatureStats == newStats)
+        {
+            UpdateDisplayFromStatName();
+            return;
+        }
+
+        if (creatureStats != null)
+        {
+            UnsubscribeFromEvent();
+        }
+
+        creatureStats = newStats;
 
         if (creatureStats != null)
         {
@@ -42,12 +116,18 @@ public class UIStatUpdate : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("CreatureStats not found on " + gameObject.name);
+            UpdateEmptyDisplay();
         }
     }
 
     void UpdateDisplayFromStatName()
     {
+        if (creatureStats == null)
+        {
+            UpdateEmptyDisplay();
+            return;
+        }
+
         switch (statName)
         {
             // String types
@@ -71,6 +151,9 @@ public class UIStatUpdate : MonoBehaviour
 
     int GetCurrentStatValue()
     {
+        if (creatureStats == null)
+            return 0;
+
         switch (statName)
         {
             // Health
@@ -183,14 +266,23 @@ public class UIStatUpdate : MonoBehaviour
 
     void OnDisable()
     {
-        if (creatureStats == null)
-            return;
+        if (playerTargeting != null)
+        {
+            playerTargeting.OnTargetChanged -= HandleTargetChanged;
+        }
 
-        UnsubscribeFromEvent();
+        if (creatureStats != null)
+        {
+            UnsubscribeFromEvent();
+            creatureStats = null;
+        }
     }
 
     void SubscribeToEvent()
     {
+        if (creatureStats == null)
+            return;
+
         switch (statName)
         {
             // General
@@ -350,6 +442,9 @@ public class UIStatUpdate : MonoBehaviour
 
     void UnsubscribeFromEvent()
     {
+        if (creatureStats == null)
+            return;
+
         switch (statName)
         {
             // General
@@ -541,6 +636,14 @@ public class UIStatUpdate : MonoBehaviour
         if (textDisplay != null && raceSO != null)
         {
             textDisplay.text = prefix + raceSO.name + suffix;
+        }
+    }
+
+    void UpdateEmptyDisplay()
+    {
+        if (textDisplay != null)
+        {
+            textDisplay.text = prefix + noTargetValue + suffix;
         }
     }
 }
