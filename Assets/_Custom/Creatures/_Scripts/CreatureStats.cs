@@ -347,7 +347,11 @@ public class CreatureStats : Creature
             }
 
             //if the player died then load the start screen
-            UnityEngine.SceneManagement.SceneManager.LoadScene("StartScene");
+            if (this.CompareTag("Player"))
+            {
+                Debug.Log("Player has died. Loading start screen...");
+                UnityEngine.SceneManagement.SceneManager.LoadScene("StartScene");
+            }
         }
     }
 
