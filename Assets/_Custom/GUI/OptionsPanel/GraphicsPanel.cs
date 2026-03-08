@@ -155,7 +155,7 @@ public class GraphicsPanel : MonoBehaviour
     private void OnDetailDensitySliderChanged(float value)
     {
         OnDetailDensityChanged?.Invoke(value);
-        detailDensityValueText.text = value.ToString();
+        detailDensityValueText.text = value.ToString("F2");
         if (targetTerrain != null)
         {
             targetTerrain.detailObjectDensity = value; // Update the terrain's detail density immediately
