@@ -9,7 +9,7 @@ public class TargetStatSlider : MonoBehaviour
     private string statName;
     private Slider slider;
 
-    private void Start()
+    private void OnEnable()
     {
         statName = this.gameObject.name;
 

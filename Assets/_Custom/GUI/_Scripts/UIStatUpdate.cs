@@ -67,6 +67,17 @@ public class UIStatUpdate : MonoBehaviour
         SetCreatureStats(playerStats);
     }
 
+    void OnEnable()
+    {
+        CreatureStats currentTargetStats = null;
+        if (playerTargeting.currentTarget != null)
+        {
+            currentTargetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+        }
+
+        SetCreatureStats(currentTargetStats);
+    }
+
     void CachePlayerReferences()
     {
         if (player == null)

@@ -83,10 +83,17 @@ public class CreatureStats : Creature
     //armor class event
     public event Action<int> OnArmorClassChanged;
 
+    //death event
+    public event Action OnDeath;
+
     //references
     private Equipment equipment;
     private AnimationController animController;
     private CombatLogPanel combatLog;
+    private Transform player;
+
+    //panels
+    public TargetPanel targetPanel;
 
     //xp Tracking
     public bool gaveXP = false;
@@ -125,6 +132,8 @@ public class CreatureStats : Creature
         // Get references
         equipment = GetComponent<Equipment>();
         animController = GetComponent<AnimationController>();
+        player = GameObject.FindWithTag("Player").transform;
+        targetPanel = player.GetComponentInChildren<TargetPanel>(true);
 
         // Initialize resources
         Hitpoints = new Resource();
@@ -352,6 +361,9 @@ public class CreatureStats : Creature
                 Debug.Log("Player has died. Loading start screen...");
                 UnityEngine.SceneManagement.SceneManager.LoadScene("StartScene");
             }
+
+            targetPanel.gameObject.SetActive(false);
+            OnDeath?.Invoke();
         }
     }
 
