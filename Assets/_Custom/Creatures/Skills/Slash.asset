@@ -19,7 +19,8 @@ MonoBehaviour:
   itemWeight: 0
   itemValue: 0
   slotType: 13
-  staminaCost: 0
-  targetDamage: 0
+  staminaCost: 5
+  targetDamage: 5
   selfDamage: 0
-  attackRange: 0
+  selfHeal: 0
+  attackRange: 1

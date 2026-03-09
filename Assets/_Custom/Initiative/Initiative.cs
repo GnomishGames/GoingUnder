@@ -22,6 +22,18 @@ public class Initiative : MonoBehaviour
 
     public void StartCombat() //call this from the enemy when they spawn
     {
+        // Refresh enemy list to get current enemies in the scene
+        enemies = GameObject.FindGameObjectsWithTag("Enemy")
+            .Select(e => e.transform)
+            .Where(e => e != null && e.GetComponent<CreatureStats>() != null && !e.GetComponent<CreatureStats>().isDead)
+            .ToArray();
+
+        if (enemies.Length == 0)
+        {
+            Debug.LogWarning("StartCombat: No valid enemies found!");
+            return;
+        }
+
         // Roll initiative for player and enemies, sort them, and start the turn order
         int playerInitiative = player.GetComponent<CreatureStats>().RollInitiative();
         var enemyInitiatives = enemies.Select(e => new { Enemy = e, Initiative = e.GetComponent<CreatureStats>().RollInitiative() }).ToList();
@@ -69,5 +81,20 @@ public class Initiative : MonoBehaviour
         }
 
         StartTurn(turnOrder[currentTurnIndex]);
+    }
+
+    public void RemoveFromTurnOrder(Transform transform)
+    {
+        if (turnOrder.Contains(transform))
+        {
+            turnOrder.Remove(transform);
+            Debug.Log($"{transform.name} removed from turn order.");
+
+            // If the removed combatant was the current one, move to the next turn
+            if (currentTurnIndex >= turnOrder.Count)
+            {
+                currentTurnIndex = 0;
+            }
+        }
     }
 }

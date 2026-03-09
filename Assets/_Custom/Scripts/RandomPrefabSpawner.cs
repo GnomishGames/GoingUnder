@@ -13,6 +13,8 @@ public class RandomPrefabSpawner : MonoBehaviour
             return;
         }
 
+        RemoveDeadCreatures();
+
         StartCoroutine(SpawnAfterFrame());
     }
 
@@ -31,6 +33,32 @@ public class RandomPrefabSpawner : MonoBehaviour
         else
         {
             Debug.LogWarning($"RandomPrefabSpawner: Prefab at index {randomIndex} is null!");
+        }
+
+        // start turn after spawning
+        Initiative initiative = FindAnyObjectByType<Initiative>();
+        if (initiative != null)
+        {
+            initiative.StartCombat();
+            //combatLog.SendMessageToCombatLog($"A new creature has entered the battle!", CombatMessage.CombatMessageType.info);
+        }
+    }
+
+    // remove other creatures that are dead
+    public void RemoveDeadCreatures()
+    {
+        CreatureStats[] allCreatures = FindObjectsByType<CreatureStats>(FindObjectsSortMode.None);
+        foreach (CreatureStats creature in allCreatures)
+        {
+            if (creature.isDead)
+            {
+                // remove creature from initiative turn order if it's in there
+                Initiative initiative = FindAnyObjectByType<Initiative>();
+                if (initiative != null)                {
+                    initiative.RemoveFromTurnOrder(creature.transform);
+                }
+                Destroy(creature.gameObject);
+            }
         }
     }
 }
