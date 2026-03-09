@@ -114,6 +114,8 @@ public class SkillBar : MonoBehaviour
             combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} used {skillSOs[slotNumber].name} and dealt {skillSOs[slotNumber].targetDamage} damage to {targetStats.interactableName}!", CombatMessage.CombatMessageType.playerAttack);
         }
 
+        targetStats.CheckIfDead();
+
         // Advance to next turn
         Initiative initiative = FindAnyObjectByType<Initiative>();
         if (initiative != null)
