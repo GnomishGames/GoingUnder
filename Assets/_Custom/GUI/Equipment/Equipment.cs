@@ -41,7 +41,12 @@ public class Equipment : MonoBehaviour
 
     float timer;
     public GameObject prefab;
-    
+
+    void OnEnable()
+    {
+        CalculateStatChanges();
+    }
+
     private void Awake()
     {
         inventory = GetComponent<Inventory>();
@@ -55,22 +60,6 @@ public class Equipment : MonoBehaviour
     public void TriggerWeaponSlotChanged(int slotNumber)
     {
         OnWeaponSlotChanged?.Invoke(slotNumber);
-    }
-
-    private void Start()
-    {
-        timer = 1;
-    }
-
-    private void Update()
-    {
-        timer -= Time.deltaTime;
-        if (timer <= 0)
-        {
-            //UpdateEquipped();
-            CalculateStatChanges();
-            timer = 1;
-        }
     }
 
     public void CalculateStatChanges()
@@ -112,7 +101,10 @@ public class Equipment : MonoBehaviour
             CharismaBonus = CharismaBonus,
             StaminaBonus = StaminaBonus,
             ManaBonus = ManaBonus
+
         });
+
+        Debug.Log($"Equipment stats updated: AC {ArmorAC}, STR {StrengthBonus}, CON {ConstitutionBonus}, DEX {DexterityBonus}, INT {IntelligenceBonus}, WIS {WisdomBonus}, CHA {CharismaBonus}, STA {StaminaBonus}, MANA {ManaBonus}");
     }
 
     void AddBonusesFromItem(EquipmentSO item)
@@ -135,7 +127,7 @@ public class Equipment : MonoBehaviour
             var buffer = armorSOs[to];
             armorSOs[to] = armorSOs[from];
             armorSOs[from] = buffer;
-            
+
             OnArmorSlotChanged?.Invoke(from);
             OnArmorSlotChanged?.Invoke(to);
         }
@@ -148,7 +140,7 @@ public class Equipment : MonoBehaviour
             var buffer = weaponSOs[to];
             weaponSOs[to] = weaponSOs[from];
             weaponSOs[from] = buffer;
-            
+
             OnWeaponSlotChanged?.Invoke(from);
             OnWeaponSlotChanged?.Invoke(to);
         }
@@ -222,7 +214,7 @@ public class Equipment : MonoBehaviour
         if (name != "" && name != null)
         {
             var children = GetComponentsInChildren<Transform>();
-            
+
             foreach (var child in children)
             {
                 if (child.name == name)

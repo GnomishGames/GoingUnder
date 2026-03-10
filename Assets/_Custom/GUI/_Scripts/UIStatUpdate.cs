@@ -184,6 +184,8 @@ public class UIStatUpdate : MonoBehaviour
                 return creatureStats.Strength.RaceBonus;
             case "StrengthClass":
                 return creatureStats.Strength.ClassBonus;
+            case "StrengthEquipment":
+                return playerEquipment.StrengthBonus;
             case "StrengthScore":
                 return creatureStats.Strength.Score;
             case "StrengthModifier":
@@ -196,6 +198,8 @@ public class UIStatUpdate : MonoBehaviour
                 return creatureStats.Dexterity.RaceBonus;
             case "DexterityClass":
                 return creatureStats.Dexterity.ClassBonus;
+            case "DexterityEquipment":
+                return playerEquipment.DexterityBonus;
             case "DexterityScore":
                 return creatureStats.Dexterity.Score;
             case "DexterityModifier":
@@ -208,6 +212,8 @@ public class UIStatUpdate : MonoBehaviour
                 return creatureStats.Constitution.RaceBonus;
             case "ConstitutionClass":
                 return creatureStats.Constitution.ClassBonus;
+            case "ConstitutionEquipment":
+                return playerEquipment.ConstitutionBonus;
             case "ConstitutionScore":
                 return creatureStats.Constitution.Score;
             case "ConstitutionModifier":
@@ -220,6 +226,8 @@ public class UIStatUpdate : MonoBehaviour
                 return creatureStats.Intelligence.RaceBonus;
             case "IntelligenceClass":
                 return creatureStats.Intelligence.ClassBonus;
+            case "IntelligenceEquipment":
+                return playerEquipment.IntelligenceBonus;
             case "IntelligenceScore":
                 return creatureStats.Intelligence.Score;
             case "IntelligenceModifier":
@@ -232,6 +240,8 @@ public class UIStatUpdate : MonoBehaviour
                 return creatureStats.Wisdom.RaceBonus;
             case "WisdomClass":
                 return creatureStats.Wisdom.ClassBonus;
+            case "WisdomEquipment":
+                return playerEquipment.WisdomBonus;
             case "WisdomScore":
                 return creatureStats.Wisdom.Score;
             case "WisdomModifier":
@@ -244,6 +254,8 @@ public class UIStatUpdate : MonoBehaviour
                 return creatureStats.Charisma.RaceBonus;
             case "CharismaClass":
                 return creatureStats.Charisma.ClassBonus;
+            case "CharismaEquipment":
+                return playerEquipment.CharismaBonus;
             case "CharismaScore":
                 return creatureStats.Charisma.Score;
             case "CharismaModifier":
