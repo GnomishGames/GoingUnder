@@ -10,9 +10,9 @@ public class UIStatUpdate : MonoBehaviour
 
     Transform player;
     CreatureStats creatureStats;
-    CreatureStats playerStats;
+    //CreatureStats playerStats;
     PlayerTargeting playerTargeting;
-    Equipment equipment;
+    Equipment playerEquipment;
     TextMeshProUGUI textDisplay;
     [SerializeField] private bool useTargetStats = false;
     [SerializeField] private string prefix = "";
@@ -29,73 +29,50 @@ public class UIStatUpdate : MonoBehaviour
 
         // Get text display reference once
         textDisplay = GetComponent<TextMeshProUGUI>();
-
-        CachePlayerReferences();
     }
 
     void Start()
     {
-        CachePlayerReferences();
-
-        if (playerStats == null)
-        {
-            Debug.LogWarning("CreatureStats not found on Player for " + gameObject.name);
-            return;
-        }
-
         if (useTargetStats)
         {
-            if (playerTargeting == null)
-            {
-                Debug.LogWarning("PlayerTargeting not found on Player for " + gameObject.name);
-                SetCreatureStats(null);
-                return;
-            }
-
-            playerTargeting.OnTargetChanged += HandleTargetChanged;
-
-            CreatureStats currentTargetStats = null;
             if (playerTargeting.currentTarget != null)
             {
-                currentTargetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+                creatureStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
             }
 
-            SetCreatureStats(currentTargetStats);
-            return;
+            SetCreatureStats(creatureStats);
         }
-
-        SetCreatureStats(playerStats);
+        else
+        {
+            //get playercharacterstats
+            player = transform.root;
+            creatureStats = player.GetComponent<CreatureStats>();
+            playerTargeting = player.GetComponent<PlayerTargeting>();
+            playerEquipment = player.GetComponent<Equipment>();
+            SetCreatureStats(creatureStats);
+        }
     }
 
     void OnEnable()
     {
-        CreatureStats currentTargetStats = null;
-        if (playerTargeting.currentTarget != null)
+        if (useTargetStats)
         {
-            currentTargetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
-        }
-
-        SetCreatureStats(currentTargetStats);
-    }
-
-    void CachePlayerReferences()
-    {
-        if (player == null)
-        {
-            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-            if (playerObject != null)
+            if (playerTargeting.currentTarget != null)
             {
-                player = playerObject.transform;
+                creatureStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
             }
+
+            SetCreatureStats(creatureStats);
         }
-
-        if (player == null)
-            return;
-
-        //get characterstats if not assigned
-        playerStats = player.GetComponent<CreatureStats>();
-        playerTargeting = player.GetComponent<PlayerTargeting>();
-        equipment = player.GetComponent<Equipment>();
+        else
+        {
+            //get playercharacterstats
+            player = transform.root;
+            creatureStats = player.GetComponent<CreatureStats>();
+            playerTargeting = player.GetComponent<PlayerTargeting>();
+            playerEquipment = player.GetComponent<Equipment>();
+            SetCreatureStats(creatureStats);
+        }
     }
 
     void HandleTargetChanged(CreatureStats newTargetStats)
@@ -268,6 +245,12 @@ public class UIStatUpdate : MonoBehaviour
             // Armor
             case "ArmorClass":
                 return creatureStats.armorClass;
+            case "ArmorClassBase":
+                return creatureStats.armorClassBase;
+            case "EquipmentAC":
+                return playerEquipment.ArmorAC;
+            case "SizeAcBonus":
+                return creatureStats.characterRace.sizeAcBonus;
 
             default:
                 Debug.LogWarning($"Unknown stat name: {statName}");
@@ -448,6 +431,15 @@ public class UIStatUpdate : MonoBehaviour
             case "ArmorClass":
                 creatureStats.OnArmorClassChanged += UpdateDisplay;
                 break;
+            case "ArmorClassBase":
+                creatureStats.OnArmorClassChanged += UpdateDisplay;
+                break;
+            case "EquipmentAC":
+                creatureStats.OnArmorClassChanged += UpdateDisplay;
+                break;
+            case "SizeAcBonus":
+                creatureStats.OnArmorClassChanged += UpdateDisplay;
+                break;
         }
     }
 
@@ -608,6 +600,15 @@ public class UIStatUpdate : MonoBehaviour
 
             // Armor
             case "ArmorClass":
+                creatureStats.OnArmorClassChanged -= UpdateDisplay;
+                break;
+            case "ArmorClassBase":
+                creatureStats.OnArmorClassChanged -= UpdateDisplay;
+                break;
+            case "EquipmentAC":
+                creatureStats.OnArmorClassChanged -= UpdateDisplay;
+                break;
+            case "SizeAcBonus":
                 creatureStats.OnArmorClassChanged -= UpdateDisplay;
                 break;
         }

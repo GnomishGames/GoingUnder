@@ -103,6 +103,7 @@ public class CreatureStats : Creature
     public Resource Stamina;
     public Resource Mana;
 
+    public int armorClassBase = 10; // Base AC without armor, dex, or size modifiers
     public int armorClass { get; private set; } //10 + armorBonus + dexMod + sizeMod
 
     //stats
@@ -241,7 +242,7 @@ public class CreatureStats : Creature
 
     private void RecalculateArmorClass()
     {
-        int newArmorClass = 10 + equipmentAc + Dexterity.Modifier + characterRace.sizeAcBonus;
+        int newArmorClass = armorClassBase + equipmentAc + Dexterity.Modifier + characterRace.sizeAcBonus;
         if (newArmorClass == armorClass) return;
 
         armorClass = newArmorClass;
