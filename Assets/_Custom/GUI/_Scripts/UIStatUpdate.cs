@@ -21,6 +21,7 @@ public class UIStatUpdate : MonoBehaviour
     [SerializeField] private string formatString = "F0"; // "F0" for whole numbers, "F1" for one decimal, etc.
 
     private string statName;
+    private bool hasStarted = false;
 
     void Awake()
     {
@@ -35,13 +36,16 @@ public class UIStatUpdate : MonoBehaviour
         playerEquipment = player.GetComponent<Equipment>();
     }
 
-    void Start()
+    void OnEnable()
     {
+        if (!hasStarted) //for some reason OnEnable can occur before Start, so we have to check for it
+            return;
         GetCreatureStats();
     }
 
-    void OnEnable()
+    void Start()
     {
+        hasStarted = true;
         GetCreatureStats();
     }
 
@@ -49,21 +53,32 @@ public class UIStatUpdate : MonoBehaviour
     {
         if (useTargetStats)
         {
+            CreatureStats targetStats = null;
+
             if (playerTargeting != null)
             {
                 playerTargeting.OnTargetChanged += HandleTargetChanged;
 
                 if (playerTargeting.currentTarget != null)
                 {
-                    creatureStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+                    targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+                }
+                else
+                {
+                    Debug.LogWarning($"UIStatUpdate: No current target or CreatureStats found on target for {gameObject.name}");
                 }
             }
-            SetCreatureStats(creatureStats);
+
+            SetCreatureStats(targetStats);
         }
         else
         {
-            creatureStats = player.GetComponent<CreatureStats>();
-            SetCreatureStats(creatureStats);
+            if (player != null)
+            {
+
+                creatureStats = player.GetComponent<CreatureStats>();
+                SetCreatureStats(creatureStats);
+            }
         }
     }
 
