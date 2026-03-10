@@ -29,48 +29,40 @@ public class UIStatUpdate : MonoBehaviour
 
         // Get text display reference once
         textDisplay = GetComponent<TextMeshProUGUI>();
+
+        player = transform.root;
+        playerTargeting = player.GetComponent<PlayerTargeting>();
+        playerEquipment = player.GetComponent<Equipment>();
     }
 
     void Start()
     {
-        if (useTargetStats)
-        {
-            if (playerTargeting.currentTarget != null)
-            {
-                creatureStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
-            }
-
-            SetCreatureStats(creatureStats);
-        }
-        else
-        {
-            //get playercharacterstats
-            player = transform.root;
-            creatureStats = player.GetComponent<CreatureStats>();
-            playerTargeting = player.GetComponent<PlayerTargeting>();
-            playerEquipment = player.GetComponent<Equipment>();
-            SetCreatureStats(creatureStats);
-        }
+        GetCreatureStats();
     }
 
     void OnEnable()
     {
+        GetCreatureStats();
+    }
+
+    private void GetCreatureStats()
+    {
         if (useTargetStats)
         {
-            if (playerTargeting.currentTarget != null)
+            if (playerTargeting != null)
             {
-                creatureStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
-            }
+                playerTargeting.OnTargetChanged += HandleTargetChanged;
 
+                if (playerTargeting.currentTarget != null)
+                {
+                    creatureStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+                }
+            }
             SetCreatureStats(creatureStats);
         }
         else
         {
-            //get playercharacterstats
-            player = transform.root;
             creatureStats = player.GetComponent<CreatureStats>();
-            playerTargeting = player.GetComponent<PlayerTargeting>();
-            playerEquipment = player.GetComponent<Equipment>();
             SetCreatureStats(creatureStats);
         }
     }
