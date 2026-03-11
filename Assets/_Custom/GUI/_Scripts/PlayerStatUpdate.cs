@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class PlayerStatUpdate : MonoBehaviour
 {
@@ -20,34 +21,50 @@ public class PlayerStatUpdate : MonoBehaviour
     Equipment equipment;
     TextMeshProUGUI statText;
     string statName;
-    public bool initialized = false; // flag to prevent subscribing to events before Start() has completed
+    bool hasStarted;
 
     void Awake()
     {
         GetReferences();
-        CreateSubscriptions();
         InitializeStatGetters();
-
-        //initialized = true; 
     }
 
     void OnEnable()
     {
-    //    if (!initialized)
-    //        return;
+        if (!hasStarted)
+            return;
 
-        
+        EnsureInitialized();
+        SubscribeToEvent(); // subscribe to the relevant stat change event based on the statName
+    }
+
+    void Start()
+    {
+        EnsureInitialized();
+        hasStarted = true;
         SubscribeToEvent();
-        UpdateDisplay(GetCurrentStatValue()); // initialize display with current value
+        UpdateDisplay(GetCurrentStatValue()); // ensure display is initialized with current value at start
+    }
+
+    void EnsureInitialized()
+    {
+        if (creatureStats == null || equipment == null || statText == null || string.IsNullOrEmpty(statName))
+            GetReferences();
+
+        if (statGetters == null)
+            InitializeStatGetters();
+
+        if (subscriptions == null)
+            CreateSubscriptions();
     }
 
     void GetReferences()
     {
-        creatureStats = transform.root.GetComponentInChildren<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
+        creatureStats = GetComponentInParent<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
         if (creatureStats == null)
             Debug.LogError($"PlayerStatUpdate: Could not find CreatureStats component in root of {gameObject.name}");
 
-        equipment = transform.root.GetComponentInChildren<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
+        equipment = GetComponentInParent<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
         if (equipment == null)
             Debug.LogError($"PlayerStatUpdate: Could not find Equipment component in root of {gameObject.name}");
 
@@ -62,6 +79,36 @@ public class PlayerStatUpdate : MonoBehaviour
 
     private void CreateSubscriptions()
     {
+        if (creatureStats == null)
+        {
+            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because creatureStats is missing on {gameObject.name}");
+            return;
+        }
+
+        if (equipment == null)
+        {
+            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because equipment is missing on {gameObject.name}");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(statName))
+        {
+            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because statName is null or empty for {gameObject.name}");
+            return;
+        }
+
+        if (statText == null)
+        {
+            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because statText is missing on {gameObject.name}");
+            return;
+        }
+
+        if (subscriptions != null)
+        {
+            Debug.LogWarning($"PlayerStatUpdate: Subscriptions already created for {gameObject.name}");
+            return;
+        }
+
         subscriptions = new Dictionary<string, (Action subscribe, Action unsubscribe)>()
         {
             { "Name", (
@@ -236,6 +283,12 @@ public class PlayerStatUpdate : MonoBehaviour
 
     void SubscribeToEvent()
     {
+        if (subscriptions == null)
+            return;
+
+        if (!IsCurrentStatReady())
+            return;
+
         if (subscriptions.TryGetValue(statName, out var subscription))
         {
             subscription.subscribe();
@@ -349,7 +402,7 @@ public class PlayerStatUpdate : MonoBehaviour
 
     int GetCurrentStatValue()
     {
-        if (creatureStats == null)
+        if (creatureStats == null || statGetters == null || !IsCurrentStatReady())
             return 0;
 
         if (statGetters.TryGetValue(statName, out var getter))
@@ -358,8 +411,32 @@ public class PlayerStatUpdate : MonoBehaviour
         return 0;
     }
 
+    bool IsCurrentStatReady()
+    {
+        if (creatureStats == null)
+            return false;
+
+        switch (statName)
+        {
+            case "Hitpoints":
+            case "MaxHitpoints":
+                return creatureStats.Hitpoints != null;
+            case "Stamina":
+            case "MaxStamina":
+                return creatureStats.Stamina != null;
+            case "Mana":
+            case "MaxMana":
+                return creatureStats.Mana != null;
+            default:
+                return true;
+        }
+    }
+
     void UnsubscribeToEvent()
     {
+        if (subscriptions == null || !IsCurrentStatReady())
+            return;
+
         if (subscriptions.TryGetValue(statName, out var subscription))
         {
             subscription.unsubscribe();
