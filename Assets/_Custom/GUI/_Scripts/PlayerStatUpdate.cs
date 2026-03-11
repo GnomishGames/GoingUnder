@@ -30,8 +30,13 @@ public class PlayerStatUpdate : MonoBehaviour
         statText = GetComponent<TextMeshProUGUI>(); // get the TextMeshProUGUI component on this gameobject to update the text
 
         CreateSubscriptions();
-        SubscribeToEvent();
         InitializeStatGetters();
+    }
+
+    void Start()
+    {
+        SubscribeToEvent();
+        
     }
 
     private void CreateSubscriptions()
