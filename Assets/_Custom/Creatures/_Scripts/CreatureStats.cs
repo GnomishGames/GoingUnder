@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Stat
 {
+    public event Action<int> OnChanged;
+
     public int BaseValue { get; private set; }
     public int RaceBonus { get; private set; }
     public int ClassBonus { get; private set; }
@@ -11,8 +13,6 @@ public class Stat
 
     public int Score => BaseValue + RaceBonus + ClassBonus + EquipmentBonus + LevelBonus;
     public int Modifier => Mathf.Max(1, (Score - 10) / 2);
-
-    public event Action<int> OnChanged;
 
     public void SetBaseValue(int value)
     {

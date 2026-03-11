@@ -34,11 +34,6 @@ public class PlayerStatUpdate : MonoBehaviour
         InitializeStatGetters();
     }
 
-    void OnDisable()
-    {
-        UnsubscribeToEvent();
-    }
-
     private void CreateSubscriptions()
     {
         subscriptions = new Dictionary<string, (Action subscribe, Action unsubscribe)>()
@@ -221,14 +216,6 @@ public class PlayerStatUpdate : MonoBehaviour
         }
     }
 
-    void UnsubscribeToEvent()
-    {
-        if (subscriptions.TryGetValue(statName, out var subscription))
-        {
-            subscription.unsubscribe();
-        }
-    }
-
     void UpdateDisplayString(string value)
     {
         if (statText != null)
@@ -251,11 +238,6 @@ public class PlayerStatUpdate : MonoBehaviour
         {
             statText.text = raceSO.name;
         }
-    }
-
-    void OnDestroy()
-    {
-        UnsubscribeToEvent();
     }
 
     void UpdateEmptyDisplay()
@@ -341,5 +323,23 @@ public class PlayerStatUpdate : MonoBehaviour
             return getter();
 
         return 0;
+    }
+
+    void UnsubscribeToEvent()
+    {
+        if (subscriptions.TryGetValue(statName, out var subscription))
+        {
+            subscription.unsubscribe();
+        }
+    }
+
+    void OnDisable()
+    {
+        UnsubscribeToEvent();
+    }
+
+    void OnDestroy()
+    {
+        UnsubscribeToEvent();
     }
 }
