@@ -23,9 +23,9 @@ public class Equipment : MonoBehaviour
     Inventory inventory;
 
     //events
-    public event Action<EquipmentStatBonuses> OnEquipmentStatsChanged;
-    public event Action<string> OnEquippedItemChanged;
-    public event Action<int> OnArmorSlotChanged;
+    public event Action<EquipmentStatBonuses> OnEquipmentStatsChanged; //triggers in the calculatestats method
+    public event Action<string> OnEquippedItemChanged; //triggers in the equip methods
+    public event Action<int> OnArmorSlotChanged; 
     public event Action<int> OnWeaponSlotChanged;
 
     //vars

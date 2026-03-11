@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class UIStatUpdate : MonoBehaviour
 {
@@ -40,13 +41,37 @@ public class UIStatUpdate : MonoBehaviour
     {
         if (!hasStarted) //for some reason OnEnable can occur before Start, so we have to check for it
             return;
+
+        SubscribeRuntimeEvents();
+        GetCreatureStats();
+    }
+
+    private void HandleEquippedItemChanged(string obj)
+    {
         GetCreatureStats();
     }
 
     void Start()
     {
         hasStarted = true;
+        SubscribeRuntimeEvents();
         GetCreatureStats();
+    }
+
+    void SubscribeRuntimeEvents()
+    {
+        if (playerEquipment != null)
+        {
+            // Remove first to avoid duplicate subscriptions after re-enable.
+            playerEquipment.OnEquippedItemChanged -= HandleEquippedItemChanged;
+            playerEquipment.OnEquippedItemChanged += HandleEquippedItemChanged;
+        }
+
+        if (useTargetStats && playerTargeting != null)
+        {
+            playerTargeting.OnTargetChanged -= HandleTargetChanged;
+            playerTargeting.OnTargetChanged += HandleTargetChanged;
+        }
     }
 
     private void GetCreatureStats()
@@ -57,8 +82,6 @@ public class UIStatUpdate : MonoBehaviour
 
             if (playerTargeting != null)
             {
-                playerTargeting.OnTargetChanged += HandleTargetChanged;
-
                 if (playerTargeting.currentTarget != null)
                 {
                     targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
@@ -82,7 +105,7 @@ public class UIStatUpdate : MonoBehaviour
         }
     }
 
-    void HandleTargetChanged(CreatureStats newTargetStats)
+    private void HandleTargetChanged(CreatureStats newTargetStats)
     {
         SetCreatureStats(newTargetStats);
     }
@@ -185,7 +208,7 @@ public class UIStatUpdate : MonoBehaviour
             case "StrengthClass":
                 return creatureStats.Strength.ClassBonus;
             case "StrengthEquipment":
-                return playerEquipment.StrengthBonus;
+                return playerEquipment != null ? playerEquipment.StrengthBonus : 0;
             case "StrengthScore":
                 return creatureStats.Strength.Score;
             case "StrengthModifier":
@@ -199,7 +222,7 @@ public class UIStatUpdate : MonoBehaviour
             case "DexterityClass":
                 return creatureStats.Dexterity.ClassBonus;
             case "DexterityEquipment":
-                return playerEquipment.DexterityBonus;
+                return playerEquipment != null ? playerEquipment.DexterityBonus : 0;
             case "DexterityScore":
                 return creatureStats.Dexterity.Score;
             case "DexterityModifier":
@@ -213,7 +236,7 @@ public class UIStatUpdate : MonoBehaviour
             case "ConstitutionClass":
                 return creatureStats.Constitution.ClassBonus;
             case "ConstitutionEquipment":
-                return playerEquipment.ConstitutionBonus;
+                return playerEquipment != null ? playerEquipment.ConstitutionBonus : 0;
             case "ConstitutionScore":
                 return creatureStats.Constitution.Score;
             case "ConstitutionModifier":
@@ -227,7 +250,7 @@ public class UIStatUpdate : MonoBehaviour
             case "IntelligenceClass":
                 return creatureStats.Intelligence.ClassBonus;
             case "IntelligenceEquipment":
-                return playerEquipment.IntelligenceBonus;
+                return playerEquipment != null ? playerEquipment.IntelligenceBonus : 0;
             case "IntelligenceScore":
                 return creatureStats.Intelligence.Score;
             case "IntelligenceModifier":
@@ -241,7 +264,7 @@ public class UIStatUpdate : MonoBehaviour
             case "WisdomClass":
                 return creatureStats.Wisdom.ClassBonus;
             case "WisdomEquipment":
-                return playerEquipment.WisdomBonus;
+                return playerEquipment != null ? playerEquipment.WisdomBonus : 0;
             case "WisdomScore":
                 return creatureStats.Wisdom.Score;
             case "WisdomModifier":
@@ -255,7 +278,7 @@ public class UIStatUpdate : MonoBehaviour
             case "CharismaClass":
                 return creatureStats.Charisma.ClassBonus;
             case "CharismaEquipment":
-                return playerEquipment.CharismaBonus;
+                return playerEquipment != null ? playerEquipment.CharismaBonus : 0;
             case "CharismaScore":
                 return creatureStats.Charisma.Score;
             case "CharismaModifier":
@@ -267,7 +290,7 @@ public class UIStatUpdate : MonoBehaviour
             case "ArmorClassBase":
                 return creatureStats.armorClassBase;
             case "EquipmentAC":
-                return playerEquipment.ArmorAC;
+                return playerEquipment != null ? playerEquipment.ArmorAC : 0;
             case "SizeAcBonus":
                 return creatureStats.characterRace.sizeAcBonus;
 
@@ -279,6 +302,11 @@ public class UIStatUpdate : MonoBehaviour
 
     void OnDisable()
     {
+        if (playerEquipment != null)
+        {
+            playerEquipment.OnEquippedItemChanged -= HandleEquippedItemChanged;
+        }
+
         if (playerTargeting != null)
         {
             playerTargeting.OnTargetChanged -= HandleTargetChanged;
@@ -637,8 +665,9 @@ public class UIStatUpdate : MonoBehaviour
     {
         if (textDisplay != null)
         {
-            // Get the correct value based on statName
-            textDisplay.text = prefix + value.ToString(formatString) + suffix;
+            // Recompute by statName because event payloads can differ from the field being displayed.
+            int currentValue = GetCurrentStatValue();
+            textDisplay.text = prefix + currentValue.ToString(formatString) + suffix;
         }
         else
         {
