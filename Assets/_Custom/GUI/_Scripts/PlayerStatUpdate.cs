@@ -24,11 +24,7 @@ public class PlayerStatUpdate : MonoBehaviour
 
     void Awake()
     {
-        creatureStats = transform.root.GetComponentInChildren<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
-        equipment = transform.root.GetComponentInChildren<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
-        statName = gameObject.name;// use the gameobjects name as the stat name
-        statText = GetComponent<TextMeshProUGUI>(); // get the TextMeshProUGUI component on this gameobject to update the text
-
+        GetReferences();
         CreateSubscriptions();
         InitializeStatGetters();
     }
@@ -36,7 +32,29 @@ public class PlayerStatUpdate : MonoBehaviour
     void Start()
     {
         SubscribeToEvent();
-        
+    }
+
+    void OnEnable(){
+        SubscribeToEvent();
+    }
+
+    void GetReferences()
+    {
+        creatureStats = transform.root.GetComponentInChildren<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
+        if (creatureStats == null)
+            Debug.LogError($"PlayerStatUpdate: Could not find CreatureStats component in root of {gameObject.name}");
+
+        equipment = transform.root.GetComponentInChildren<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
+        if (equipment == null)
+            Debug.LogError($"PlayerStatUpdate: Could not find Equipment component in root of {gameObject.name}");
+
+        statName = gameObject.name;// use the gameobjects name as the stat name
+        if (string.IsNullOrEmpty(statName))
+            Debug.LogError($"PlayerStatUpdate: GameObject name is null or empty for {gameObject.name}");
+
+        statText = GetComponent<TextMeshProUGUI>(); // get the TextMeshProUGUI component on this gameobject to update the text
+        if (statText == null)
+            Debug.LogError($"PlayerStatUpdate: Could not find TextMeshProUGUI component on {gameObject.name}");
     }
 
     private void CreateSubscriptions()
