@@ -104,7 +104,7 @@ public class Equipment : MonoBehaviour
 
         });
 
-        Debug.Log($"Equipment stats updated: AC {ArmorAC}, STR {StrengthBonus}, CON {ConstitutionBonus}, DEX {DexterityBonus}, INT {IntelligenceBonus}, WIS {WisdomBonus}, CHA {CharismaBonus}, STA {StaminaBonus}, MANA {ManaBonus}");
+        //Debug.Log($"Equipment stats updated: AC {ArmorAC}, STR {StrengthBonus}, CON {ConstitutionBonus}, DEX {DexterityBonus}, INT {IntelligenceBonus}, WIS {WisdomBonus}, CHA {CharismaBonus}, STA {StaminaBonus}, MANA {ManaBonus}");
     }
 
     void AddBonusesFromItem(EquipmentSO item)

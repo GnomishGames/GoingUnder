@@ -16,26 +16,29 @@ public class PlayerStatUpdate : MonoBehaviour
 
     Dictionary<string, (Action subscribe, Action unsubscribe)> subscriptions;
     Dictionary<string, Func<int>> statGetters;
-
     CreatureStats creatureStats;
     Equipment equipment;
     TextMeshProUGUI statText;
     string statName;
+    public bool initialized = false; // flag to prevent subscribing to events before Start() has completed
 
     void Awake()
     {
         GetReferences();
         CreateSubscriptions();
         InitializeStatGetters();
+
+        //initialized = true; 
     }
 
-    void Start()
+    void OnEnable()
     {
-        SubscribeToEvent();
-    }
+    //    if (!initialized)
+    //        return;
 
-    void OnEnable(){
+        
         SubscribeToEvent();
+        UpdateDisplay(GetCurrentStatValue()); // initialize display with current value
     }
 
     void GetReferences()
@@ -237,6 +240,10 @@ public class PlayerStatUpdate : MonoBehaviour
         {
             subscription.subscribe();
         }
+        else
+        {
+            Debug.LogWarning($"PlayerStatUpdate: No subscription found for stat {statName} on {gameObject.name}");
+        }
     }
 
     void UpdateDisplayString(string value)
@@ -244,6 +251,7 @@ public class PlayerStatUpdate : MonoBehaviour
         if (statText != null)
         {
             statText.text = value;
+            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {value} on {gameObject.name}");
         }
     }
 
@@ -252,6 +260,7 @@ public class PlayerStatUpdate : MonoBehaviour
         if (statText != null && classSO != null)
         {
             statText.text = classSO.name;
+            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {classSO.name} on {gameObject.name}");
         }
     }
 
@@ -260,6 +269,7 @@ public class PlayerStatUpdate : MonoBehaviour
         if (statText != null && raceSO != null)
         {
             statText.text = raceSO.name;
+            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {raceSO.name} on {gameObject.name}");
         }
     }
 
@@ -357,11 +367,6 @@ public class PlayerStatUpdate : MonoBehaviour
     }
 
     void OnDisable()
-    {
-        UnsubscribeToEvent();
-    }
-
-    void OnDestroy()
     {
         UnsubscribeToEvent();
     }
