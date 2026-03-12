@@ -3,20 +3,19 @@ using TMPro;
 using System;
 using System.Collections.Generic;
 
-public class PlayerStatUpdate : MonoBehaviour
+public class TargetStatUpdate : MonoBehaviour
 {
     /*
-    This script is attached to text objects in the character panel and updates 
-    their display when the corresponding stat changes.
-    It uses the name of the GameObject it's attached to determine which stat to 
-    display (e.g. "Health", "Mana", "StrengthScore", etc.)
-    This is only for the player. There is a separate script that updates the 
-    target panel stats when the player targets an enemy.
+    This script is responsible for updating the target stat display in the UI. 
+    It listens for changes in the target's stats and updates the display accordingly. 
+    The subscriptions dictionary holds the actions to subscribe and unsubscribe from stat change events, 
+    while the statGetters dictionary holds functions to retrieve the current value of each stat.
     */
 
     Dictionary<string, (Action subscribe, Action unsubscribe)> subscriptions;
     Dictionary<string, Func<int>> statGetters;
     CreatureStats creatureStats;
+    PlayerTargeting playerTargeting;
     Equipment equipment;
     TextMeshProUGUI statText;
     string statName;
@@ -57,13 +56,77 @@ public class PlayerStatUpdate : MonoBehaviour
             CreateSubscriptions();
     }
 
+    void UpdateDisplay(int value)
+    {
+        if (statText != null)
+        {
+            // Recompute by statName because event payloads can differ from the field being displayed.
+            int currentValue = GetCurrentStatValue();
+            statText.text = currentValue.ToString();
+        }
+    }
+
+    int GetCurrentStatValue()
+    {
+        if (creatureStats == null || statGetters == null || !IsCurrentStatReady())
+            return 0;
+
+        if (statGetters.TryGetValue(statName, out var getter))
+            return getter();
+
+        return 0;
+    }
+
+    bool IsCurrentStatReady()
+    {
+        if (creatureStats == null)
+            return false;
+
+        switch (statName)
+        {
+            case "Hitpoints":
+            case "MaxHitpoints":
+                return creatureStats.Hitpoints != null;
+            case "Stamina":
+            case "MaxStamina":
+                return creatureStats.Stamina != null;
+            case "Mana":
+            case "MaxMana":
+                return creatureStats.Mana != null;
+            default:
+                return true;
+        }
+    }
+
+    void SubscribeToEvent()
+    {
+        if (subscriptions == null)
+            return;
+
+        if (!IsCurrentStatReady())
+            return;
+
+        if (subscriptions.TryGetValue(statName, out var subscription))
+        {
+            subscription.subscribe();
+        }
+        else
+        {
+            Debug.LogWarning($"PlayerStatUpdate: No subscription found for stat {statName} on {gameObject.name}");
+        }
+    }
+
     void GetReferences()
     {
-        creatureStats = GetComponentInParent<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
+        playerTargeting = GetComponentInParent<PlayerTargeting>(); // get the PlayerTargeting component from the root of this UI element (which should be the player)
+        if (playerTargeting == null)
+            Debug.LogError($"PlayerStatUpdate: Could not find PlayerTargeting component in root of {gameObject.name}");
+        
+        creatureStats = playerTargeting.currentTarget.GetComponentInParent<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
         if (creatureStats == null)
             Debug.LogError($"PlayerStatUpdate: Could not find CreatureStats component in root of {gameObject.name}");
 
-        equipment = GetComponentInParent<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
+        equipment = playerTargeting.currentTarget.GetComponentInParent<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
         if (equipment == null)
             Debug.LogError($"PlayerStatUpdate: Could not find Equipment component in root of {gameObject.name}");
 
@@ -76,38 +139,35 @@ public class PlayerStatUpdate : MonoBehaviour
             Debug.LogError($"PlayerStatUpdate: Could not find TextMeshProUGUI component on {gameObject.name}");
     }
 
+    void UpdateDisplayString(string value)
+    {
+        if (statText != null)
+        {
+            statText.text = value;
+            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {value} on {gameObject.name}");
+        }
+    }
+
+    void UpdateDisplayClass(ClassSO classSO)
+    {
+        if (statText != null && classSO != null)
+        {
+            statText.text = classSO.name;
+            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {classSO.name} on {gameObject.name}");
+        }
+    }
+
+    void UpdateDisplayRace(RaceSO raceSO)
+    {
+        if (statText != null && raceSO != null)
+        {
+            statText.text = raceSO.name;
+            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {raceSO.name} on {gameObject.name}");
+        }
+    }
+
     private void CreateSubscriptions()
     {
-        if (creatureStats == null)
-        {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because creatureStats is missing on {gameObject.name}");
-            return;
-        }
-
-        if (equipment == null)
-        {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because equipment is missing on {gameObject.name}");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(statName))
-        {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because statName is null or empty for {gameObject.name}");
-            return;
-        }
-
-        if (statText == null)
-        {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because statText is missing on {gameObject.name}");
-            return;
-        }
-
-        if (subscriptions != null)
-        {
-            Debug.LogWarning($"PlayerStatUpdate: Subscriptions already created for {gameObject.name}");
-            return;
-        }
-
         subscriptions = new Dictionary<string, (Action subscribe, Action unsubscribe)>()
         {
             { "Name", (
@@ -280,69 +340,6 @@ public class PlayerStatUpdate : MonoBehaviour
         };
     }
 
-    void SubscribeToEvent()
-    {
-        if (subscriptions == null)
-            return;
-
-        if (!IsCurrentStatReady())
-            return;
-
-        if (subscriptions.TryGetValue(statName, out var subscription))
-        {
-            subscription.subscribe();
-        }
-        else
-        {
-            Debug.LogWarning($"PlayerStatUpdate: No subscription found for stat {statName} on {gameObject.name}");
-        }
-    }
-
-    void UpdateDisplayString(string value)
-    {
-        if (statText != null)
-        {
-            statText.text = value;
-            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {value} on {gameObject.name}");
-        }
-    }
-
-    void UpdateDisplayClass(ClassSO classSO)
-    {
-        if (statText != null && classSO != null)
-        {
-            statText.text = classSO.name;
-            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {classSO.name} on {gameObject.name}");
-        }
-    }
-
-    void UpdateDisplayRace(RaceSO raceSO)
-    {
-        if (statText != null && raceSO != null)
-        {
-            statText.text = raceSO.name;
-            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {raceSO.name} on {gameObject.name}");
-        }
-    }
-
-    void UpdateEmptyDisplay()
-    {
-        if (statText != null)
-        {
-            statText.text = "-";
-        }
-    }
-
-    void UpdateDisplay(int value)
-    {
-        if (statText != null)
-        {
-            // Recompute by statName because event payloads can differ from the field being displayed.
-            int currentValue = GetCurrentStatValue();
-            statText.text = currentValue.ToString();
-        }
-    }
-
     void InitializeStatGetters()
     {
         statGetters = new Dictionary<string, Func<int>>()
@@ -399,51 +396,4 @@ public class PlayerStatUpdate : MonoBehaviour
         };
     }
 
-    int GetCurrentStatValue()
-    {
-        if (creatureStats == null || statGetters == null || !IsCurrentStatReady())
-            return 0;
-
-        if (statGetters.TryGetValue(statName, out var getter))
-            return getter();
-
-        return 0;
-    }
-
-    bool IsCurrentStatReady()
-    {
-        if (creatureStats == null)
-            return false;
-
-        switch (statName)
-        {
-            case "Hitpoints":
-            case "MaxHitpoints":
-                return creatureStats.Hitpoints != null;
-            case "Stamina":
-            case "MaxStamina":
-                return creatureStats.Stamina != null;
-            case "Mana":
-            case "MaxMana":
-                return creatureStats.Mana != null;
-            default:
-                return true;
-        }
-    }
-
-    void UnsubscribeToEvent()
-    {
-        if (subscriptions == null || !IsCurrentStatReady())
-            return;
-
-        if (subscriptions.TryGetValue(statName, out var subscription))
-        {
-            subscription.unsubscribe();
-        }
-    }
-
-    void OnDisable()
-    {
-        UnsubscribeToEvent();
-    }
 }

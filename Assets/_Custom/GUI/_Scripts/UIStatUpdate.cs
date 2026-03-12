@@ -46,15 +46,15 @@ public class UIStatUpdate : MonoBehaviour
         GetCreatureStats();
     }
 
-    private void HandleEquippedItemChanged(string obj)
-    {
-        GetCreatureStats();
-    }
-
     void Start()
     {
         hasStarted = true;
         SubscribeRuntimeEvents();
+        GetCreatureStats();
+    }
+
+    private void HandleEquippedItemChanged(string obj)
+    {
         GetCreatureStats();
     }
 
