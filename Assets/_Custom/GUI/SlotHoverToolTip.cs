@@ -8,32 +8,32 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
     /*
         This script is attached to UI elements that have a hover tooltip.
         It shows the tooltip when the pointer enters the element and hides it when the pointer exits.
-        */
+    */
 
     //panel that is hovered over
     public GameObject hoverBoxPanel;
-    private Transform hoverBoxOriginalParent;
+    Transform hoverBoxOriginalParent;
 
     //get player's inventory to access item data
-    private Inventory inventory;
-    private Equipment equipment;
+    Inventory inventory;
+    Equipment equipment;
 
     //bool for enabling/disabling the hover box
     public bool isHoverBoxEnabled = true;
 
     // look for the image component on this GO
-    private Image image;
+    Image image;
 
     //drag layer reference
-    private Transform dragLayer;
+    Transform dragLayer;
 
     //player reference
-    private GameObject player;
+    GameObject player;
 
-    // Reference to the parent slot
-    private InventoryPanelSlot inventoryParentSlot;
-    private EquipmentPanelSlot equipmentParentSlot;
-    private WeaponsPanelSlot weaponsPanelSlot;
+    // Reference to the panel slots
+    InventoryPanelSlot inventoryPanelSlot;
+    EquipmentPanelSlot equipmentPanelSlot;
+    WeaponsPanelSlot weaponsPanelSlot;
 
     void Start()
     {
@@ -49,7 +49,7 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
         dragLayer = GameObject.FindWithTag("DragLayer").transform;
 
         // Get the player        
-        player = GameObject.FindWithTag("Player");
+        player = transform.root.gameObject;
 
         // get player's inventory
         inventory = player.GetComponent<Inventory>();
@@ -61,11 +61,11 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
         image = GetComponent<Image>();
 
         // Find the parent slots
-        inventoryParentSlot = GetComponentInParent<InventoryPanelSlot>();
-        equipmentParentSlot = GetComponentInParent<EquipmentPanelSlot>();
+        inventoryPanelSlot = GetComponentInParent<InventoryPanelSlot>();
+        equipmentPanelSlot = GetComponentInParent<EquipmentPanelSlot>();
         weaponsPanelSlot = GetComponentInParent<WeaponsPanelSlot>();
 
-        if (inventoryParentSlot == null && equipmentParentSlot == null && weaponsPanelSlot == null)
+        if (inventoryPanelSlot == null && equipmentPanelSlot == null && weaponsPanelSlot == null)
         {
             Debug.LogError("SlotHoverToolTip: Could not find InventoryPanelSlot, EquipmentPanelSlot, or WeaponsPanelSlot in parent hierarchy!", gameObject);
         }
@@ -75,23 +75,15 @@ public class SlotHoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         // If the hover box is not enabled, or if there is no item in the slot, do not show the hover box
         if (hoverBoxPanel == null || !isHoverBoxEnabled || image.sprite == null || inventory == null || equipment == null)
-        {
             return;
-        }
 
         // Determine which slot this is and get the corresponding item
-        int slotNumber = inventoryParentSlot != null ? inventoryParentSlot.slotNumber : equipmentParentSlot != null ? equipmentParentSlot.slotNumber : weaponsPanelSlot != null ? weaponsPanelSlot.slotNumber : -1;
-        if (slotNumber == -1)
-        {
-            return;
-        }
+        int slotNumber = inventoryPanelSlot != null ? inventoryPanelSlot.slotNumber : equipmentPanelSlot != null ? equipmentPanelSlot.slotNumber : weaponsPanelSlot != null ? weaponsPanelSlot.slotNumber : -1;
 
         // Get the item from the appropriate slot
-        ItemSO item = inventoryParentSlot != null ? inventory.inventoryItem[slotNumber] : equipmentParentSlot != null ? equipment.armorSOs[slotNumber] : weaponsPanelSlot != null ? equipment.weaponSOs[slotNumber] : null;
+        ItemSO item = inventoryPanelSlot != null ? inventory.inventoryItem[slotNumber] : equipmentPanelSlot != null ? equipment.armorSOs[slotNumber] : weaponsPanelSlot != null ? equipment.weaponSOs[slotNumber] : null;
         if (item == null)
-        {
             return;
-        }
 
         // set the transform to be on the draglayer so it renders on top of everything else
         hoverBoxPanel.transform.SetParent(dragLayer, true);
