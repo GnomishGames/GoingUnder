@@ -2,8 +2,9 @@ using UnityEngine;
 using TMPro;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
-public class PlayerStatUpdate : MonoBehaviour
+public class GuiTxtStatUpdate : MonoBehaviour
 {
     /*
     This script is attached to text objects in the character panel and updates 
@@ -14,9 +15,11 @@ public class PlayerStatUpdate : MonoBehaviour
     target panel stats when the player targets an enemy.
     */
 
+    public bool playersTarget; //set this if this script is meant to track the players target instead of the player
     Dictionary<string, (Action subscribe, Action unsubscribe)> subscriptions;
     Dictionary<string, Func<int>> statGetters;
     CreatureStats creatureStats;
+    PlayerTargeting playerTargeting;
     Equipment equipment;
     TextMeshProUGUI statText;
     string statName;
@@ -35,6 +38,7 @@ public class PlayerStatUpdate : MonoBehaviour
 
         EnsureInitialized();
         SubscribeToEvent(); // subscribe to the relevant stat change event based on the statName
+        UpdateDisplay(GetCurrentStatValue()); // update the display immediately to reflect the current value of the stat
     }
 
     void Start()
@@ -59,52 +63,70 @@ public class PlayerStatUpdate : MonoBehaviour
 
     void GetReferences()
     {
-        creatureStats = GetComponentInParent<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
-        if (creatureStats == null)
-            Debug.LogError($"PlayerStatUpdate: Could not find CreatureStats component in root of {gameObject.name}");
 
-        equipment = GetComponentInParent<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
-        if (equipment == null)
-            Debug.LogError($"PlayerStatUpdate: Could not find Equipment component in root of {gameObject.name}");
+        if (playersTarget)
+        {
+            playerTargeting = GetComponentInParent<PlayerTargeting>(); // get the PlayerTargeting component from the root of this UI element (which should be the player)
+            if (playerTargeting == null)
+                Debug.LogError($"GuiTxtStatUpdate: Could not find PlayerTargeting component in root of {gameObject.name}");
+
+            creatureStats = playerTargeting.currentTarget.GetComponentInParent<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
+            if (creatureStats == null)
+                Debug.LogError($"GuiTxtStatUpdate: Could not find CreatureStats component in root of {gameObject.name}");
+
+            equipment = playerTargeting.currentTarget.GetComponentInParent<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
+            if (equipment == null)
+                Debug.LogError($"GuiTxtStatUpdate: Could not find Equipment component in root of {gameObject.name}");
+        }
+        else
+        {
+            creatureStats = GetComponentInParent<CreatureStats>(); // get the CreatureStats component from the root of this UI element (which should be the player)
+            if (creatureStats == null)
+                Debug.LogError($"GuiTxtStatUpdate: Could not find CreatureStats component in root of {gameObject.name}");
+
+            equipment = GetComponentInParent<Equipment>(); // get the Equipment component from the root of this UI element (which should be the player)
+            if (equipment == null)
+                Debug.LogError($"GuiTxtStatUpdate: Could not find Equipment component in root of {gameObject.name}");
+        }
 
         statName = gameObject.name;// use the gameobjects name as the stat name
         if (string.IsNullOrEmpty(statName))
-            Debug.LogError($"PlayerStatUpdate: GameObject name is null or empty for {gameObject.name}");
+            Debug.LogError($"GuiTxtStatUpdate: GameObject name is null or empty for {gameObject.name}");
 
         statText = GetComponent<TextMeshProUGUI>(); // get the TextMeshProUGUI component on this gameobject to update the text
         if (statText == null)
-            Debug.LogError($"PlayerStatUpdate: Could not find TextMeshProUGUI component on {gameObject.name}");
+            Debug.LogError($"GuiTxtStatUpdate: Could not find TextMeshProUGUI component on {gameObject.name}");
     }
 
     private void CreateSubscriptions()
     {
         if (creatureStats == null)
         {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because creatureStats is missing on {gameObject.name}");
+            Debug.LogError($"GuiTxtStatUpdate: Cannot create subscriptions because creatureStats is missing on {gameObject.name}");
             return;
         }
 
         if (equipment == null)
         {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because equipment is missing on {gameObject.name}");
+            Debug.LogError($"GuiTxtStatUpdate: Cannot create subscriptions because equipment is missing on {gameObject.name}");
             return;
         }
 
         if (string.IsNullOrEmpty(statName))
         {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because statName is null or empty for {gameObject.name}");
+            Debug.LogError($"GuiTxtStatUpdate: Cannot create subscriptions because statName is null or empty for {gameObject.name}");
             return;
         }
 
         if (statText == null)
         {
-            Debug.LogError($"PlayerStatUpdate: Cannot create subscriptions because statText is missing on {gameObject.name}");
+            Debug.LogError($"GuiTxtStatUpdate: Cannot create subscriptions because statText is missing on {gameObject.name}");
             return;
         }
 
         if (subscriptions != null)
         {
-            Debug.LogWarning($"PlayerStatUpdate: Subscriptions already created for {gameObject.name}");
+            Debug.LogWarning($"GuiTxtStatUpdate: Subscriptions already created for {gameObject.name}");
             return;
         }
 
@@ -294,7 +316,7 @@ public class PlayerStatUpdate : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"PlayerStatUpdate: No subscription found for stat {statName} on {gameObject.name}");
+            Debug.LogWarning($"GuiTxtStatUpdate: No subscription found for stat {statName} on {gameObject.name}");
         }
     }
 
@@ -303,7 +325,7 @@ public class PlayerStatUpdate : MonoBehaviour
         if (statText != null)
         {
             statText.text = value;
-            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {value} on {gameObject.name}");
+            Debug.Log($"GuiTxtStatUpdate: Updated display for {statName} to {value} on {gameObject.name}");
         }
     }
 
@@ -312,7 +334,7 @@ public class PlayerStatUpdate : MonoBehaviour
         if (statText != null && classSO != null)
         {
             statText.text = classSO.name;
-            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {classSO.name} on {gameObject.name}");
+            Debug.Log($"GuiTxtStatUpdate: Updated display for {statName} to {classSO.name} on {gameObject.name}");
         }
     }
 
@@ -321,7 +343,7 @@ public class PlayerStatUpdate : MonoBehaviour
         if (statText != null && raceSO != null)
         {
             statText.text = raceSO.name;
-            Debug.Log($"PlayerStatUpdate: Updated display for {statName} to {raceSO.name} on {gameObject.name}");
+            Debug.Log($"GuiTxtStatUpdate: Updated display for {statName} to {raceSO.name} on {gameObject.name}");
         }
     }
 
