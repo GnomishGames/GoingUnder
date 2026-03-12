@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Scriptable Object/Item/New Item")]
@@ -9,6 +10,7 @@ public class ItemSO : ScriptableObject
     
     public string itemName;
     public string itemNameSuffix;
+    public ItemRarity itemRarity;
     
     public string itemDescription;
 
@@ -16,4 +18,31 @@ public class ItemSO : ScriptableObject
     public int itemValue;
     
     public SlotType slotType;
+
+        public virtual List<TooltipLine> GetTooltip()
+    {
+        var lines = new List<TooltipLine>();
+
+        lines.Add(new TooltipLine(itemName, "", RarityColor()));
+
+        lines.Add(new TooltipLine(itemRarity.ToString(), "", RarityColor()));
+
+        if (!string.IsNullOrEmpty(itemDescription))
+            lines.Add(new TooltipLine(itemDescription));
+
+        return lines;
+    }
+
+    Color RarityColor()
+    {
+        switch (itemRarity)
+        {
+            case ItemRarity.Common: return Color.white;
+            case ItemRarity.Uncommon: return Color.green;
+            case ItemRarity.Rare: return Color.cyan;
+            case ItemRarity.Epic: return new Color(0.7f, 0.3f, 1f);
+        }
+
+        return Color.white;
+    }
 }

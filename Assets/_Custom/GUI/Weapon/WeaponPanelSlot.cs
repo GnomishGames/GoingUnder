@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler, IPointerClickHandler
+public class WeaponsPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler, IPointerClickHandler
 {
     private RectTransform rectTransform;
     [SerializeField] private Canvas canvas;
@@ -86,6 +86,17 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHa
 
         // Initial update
         UpdateSlotIcons();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if(equipment.weaponSOs[slotNumber] != null)
+            TooltipUI.Instance.Show(equipment.weaponSOs[slotNumber]);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        TooltipUI.Instance.Hide();
     }
 
     void OnDestroy()

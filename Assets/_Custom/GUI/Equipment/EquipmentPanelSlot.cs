@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
+public class EquipmentPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
     //player reference
     public Transform player;
@@ -23,14 +23,14 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
     public ContainerPanel containerPanel;
 
     //source references for drag/drop
-    Inventory sourceInventory;
-    Equipment sourceEquipment;
-    Transform sourcePlayer;
-    Container container;
+    //Inventory sourceInventory;
+    //Equipment sourceEquipment;
+    //Transform sourcePlayer;
+    //Container container;
 
     //source slot references for drag/drop
-    EquipmentPanelSlot sourceEquipmentSlot;
-    InventoryPanelSlot sourceSlot;
+    //EquipmentPanelSlot sourceEquipmentSlot;
+    //InventoryPanelSlot sourceSlot;
 
     //array reference
     Equipment equipment;
@@ -131,7 +131,7 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         // we do this here instead of Start to ensure we have a reference even if the drag layer was not found at startup
         if (dragLayer == null)
         {
-            if ((canvas != null))
+            if (canvas != null)
             {
                 dragLayer = canvas.transform; // use canvas as drag layer if available
             }
@@ -148,6 +148,17 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
         rectTransform.SetParent(dragLayer, false);
         rectTransform.position = worldPos;
         rectTransform.SetAsLastSibling();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if(equipment.armorSOs[slotNumber] != null)
+            TooltipUI.Instance.Show(equipment.armorSOs[slotNumber]);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        TooltipUI.Instance.Hide();
     }
 
     public void OnEndDrag(PointerEventData eventData)

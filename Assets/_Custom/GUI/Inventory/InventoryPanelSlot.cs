@@ -15,7 +15,7 @@ update them accordingly when an item is dragged and dropped. It also has a refer
 to a drag layer to ensure that dragged items render on top of other UI elements.
 */
 
-public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
+public class InventoryPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
     private RectTransform rectTransform;
     [SerializeField] private Canvas canvas;
@@ -64,6 +64,17 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
         // Initial update
         UpdateSlotIcons();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if(inventory.inventoryItem[slotNumber] != null)
+            TooltipUI.Instance.Show(inventory.inventoryItem[slotNumber]);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        TooltipUI.Instance.Hide();
     }
 
     void OnDestroy()
