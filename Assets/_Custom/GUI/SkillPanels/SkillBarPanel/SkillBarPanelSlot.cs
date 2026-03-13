@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SkillBarPanelSlot : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
+public class SkillBarPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
     //player references
     public Transform player;
@@ -58,6 +58,17 @@ public class SkillBarPanelSlot : MonoBehaviour, IPointerClickHandler, IBeginDrag
 
         // Initial update
         UpdateSlotIcons();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if(skillBar.skillSOs[slotNumber] != null)
+            TooltipUI.ShowTooltip(skillBar.skillSOs[slotNumber]);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        TooltipUI.HideTooltip();
     }
 
     void OnDestroy()

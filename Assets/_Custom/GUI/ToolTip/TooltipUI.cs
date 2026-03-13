@@ -4,7 +4,34 @@ using TMPro;
 
 public class TooltipUI : MonoBehaviour
 {
-    public static TooltipUI Instance;
+    static TooltipUI instance;
+
+    public static TooltipUI Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                TooltipUI[] tooltips = Resources.FindObjectsOfTypeAll<TooltipUI>();
+
+                foreach (TooltipUI tooltip in tooltips)
+                {
+                    if (!tooltip.gameObject.scene.IsValid())
+                    {
+                        continue;
+                    }
+
+                    instance = tooltip;
+                    instance.EnsureInitialized();
+                    break;
+                }
+            }
+
+            return instance;
+        }
+    }
+
+    static readonly Vector3 MouseOffset = new Vector3(10f, 75f, 0f);
 
     public GameObject panel;
     public Transform container;
@@ -13,27 +40,68 @@ public class TooltipUI : MonoBehaviour
 
     //drag layer reference
     Transform dragLayer;
+    bool isInitialized;
 
     void Awake()
     {
-        originalParent = transform.parent;
-        Instance = this;
-        Hide();
+        instance = this;
+        EnsureInitialized();
 
-        //draglayer keeps icons on top when dragging
-        dragLayer = GameObject.FindWithTag("DragLayer").transform;
+        if (panel != null)
+        {
+            panel.SetActive(false);
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 
     void Update()
     {
-        if (panel.activeSelf)
+        if (panel != null && panel.activeSelf)
         {
-            transform.position = Input.mousePosition;
+            UpdatePosition();
         }
+    }
+
+    public static void ShowTooltip(ItemSO item)
+    {
+        TooltipUI tooltip = Instance;
+
+        if (tooltip == null || item == null)
+        {
+            return;
+        }
+
+        tooltip.Show(item);
+    }
+
+    public static void HideTooltip()
+    {
+        TooltipUI tooltip = Instance;
+
+        if (tooltip == null)
+        {
+            return;
+        }
+
+        tooltip.Hide();
     }
 
     public void Show(ItemSO item)
     {
+        EnsureInitialized();
+
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+
         Clear();
 
         List<TooltipLine> lines = item.GetTooltip();
@@ -51,27 +119,73 @@ public class TooltipUI : MonoBehaviour
             texts[1].color = line.color;
         }
 
-        transform.SetParent(dragLayer, true);
-        transform.SetAsLastSibling();
+        Transform targetParent = dragLayer != null ? dragLayer : originalParent;
 
-        panel.SetActive(true);
+        if (targetParent != null)
+        {
+            transform.SetParent(targetParent, true);
+        }
+
+        transform.SetAsLastSibling();
+        UpdatePosition();
+
+        if (panel != null)
+        {
+            panel.SetActive(true);
+        }
     }
 
     public void Hide()
     {
-        if (transform.parent != originalParent)
+        EnsureInitialized();
+
+        if (originalParent != null && transform.parent != originalParent)
         {
-            // If the tooltip is currently a child of the drag layer, move it back to its original parent
-            transform.SetParent(originalParent, true);
             Vector3 worldPos = transform.position;
             transform.SetParent(originalParent, true);
             transform.position = worldPos;
         }
-        panel.SetActive(false);
+
+        if (panel != null)
+        {
+            panel.SetActive(false);
+        }
+    }
+
+    void EnsureInitialized()
+    {
+        if (isInitialized)
+        {
+            return;
+        }
+
+        originalParent = transform.parent;
+
+        if (dragLayer == null)
+        {
+            GameObject dragLayerObject = GameObject.FindWithTag("DragLayer");
+
+            if (dragLayerObject != null)
+            {
+                dragLayer = dragLayerObject.transform;
+            }
+        }
+
+        isInitialized = true;
+    }
+
+    void UpdatePosition()
+    {
+        transform.position = Input.mousePosition + MouseOffset;
     }
 
     void Clear()
     {
+        if (container == null)
+        {
+            return;
+        }
+
         foreach (Transform child in container)
             Destroy(child.gameObject);
     }

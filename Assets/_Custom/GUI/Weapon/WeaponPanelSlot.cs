@@ -91,12 +91,12 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void OnPointerEnter(PointerEventData eventData)
     {
         if(equipment.weaponSOs[slotNumber] != null)
-            TooltipUI.Instance.Show(equipment.weaponSOs[slotNumber]);
+            TooltipUI.ShowTooltip(equipment.weaponSOs[slotNumber]);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        TooltipUI.Instance.Hide();
+        TooltipUI.HideTooltip();
     }
 
     void OnDestroy()

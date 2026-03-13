@@ -153,12 +153,12 @@ public class EquipmentPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerE
     public void OnPointerEnter(PointerEventData eventData)
     {
         if(equipment.armorSOs[slotNumber] != null)
-            TooltipUI.Instance.Show(equipment.armorSOs[slotNumber]);
+            TooltipUI.ShowTooltip(equipment.armorSOs[slotNumber]);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        TooltipUI.Instance.Hide();
+        TooltipUI.HideTooltip();
     }
 
     public void OnEndDrag(PointerEventData eventData)

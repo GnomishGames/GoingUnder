@@ -69,12 +69,12 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerE
     public void OnPointerEnter(PointerEventData eventData)
     {
         if(inventory.inventoryItem[slotNumber] != null)
-            TooltipUI.Instance.Show(inventory.inventoryItem[slotNumber]);
+            TooltipUI.ShowTooltip(inventory.inventoryItem[slotNumber]);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        TooltipUI.Instance.Hide();
+        TooltipUI.HideTooltip();
     }
 
     void OnDestroy()
