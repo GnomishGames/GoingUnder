@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class TooltipUI : MonoBehaviour
 {
@@ -128,6 +129,7 @@ public class TooltipUI : MonoBehaviour
 
         transform.SetAsLastSibling();
         UpdatePosition();
+        UpdateSize();
 
         if (panel != null)
         {
@@ -188,5 +190,22 @@ public class TooltipUI : MonoBehaviour
 
         foreach (Transform child in container)
             Destroy(child.gameObject);
+    }
+
+    void UpdateSize()
+    {
+        if (panel == null || container == null)
+        {
+            return;
+        }
+
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        RectTransform containerRect = (RectTransform)container;
+
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(containerRect);
+
+        float preferredHeight = LayoutUtility.GetPreferredHeight(containerRect);
+        panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, preferredHeight);
     }
 }

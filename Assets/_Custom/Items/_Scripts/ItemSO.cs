@@ -23,12 +23,11 @@ public class ItemSO : ScriptableObject
     {
         var lines = new List<TooltipLine>();
 
-        lines.Add(new TooltipLine(itemName, "", RarityColor()));
-
+        lines.Add(new TooltipLine(itemName, itemNameSuffix, RarityColor()));
         lines.Add(new TooltipLine(itemRarity.ToString(), "", RarityColor()));
-
-        if (!string.IsNullOrEmpty(itemDescription))
-            lines.Add(new TooltipLine(itemDescription));
+        lines.Add(new TooltipLine(itemDescription));
+        lines.Add(new TooltipLine("Weight", $"{itemWeight}"));
+        lines.Add(new TooltipLine("Value", $"{itemValue}"));
 
         return lines;
     }
