@@ -16,7 +16,7 @@ public class Equipment : MonoBehaviour
         public int ManaBonus;
     }
 
-    public ArmorSO[] armorSOs = new ArmorSO[9];
+    public ArmorSO[] armorSOs = new ArmorSO[10];
     public WeaponSO[] weaponSOs = new WeaponSO[4];
 
     //references
