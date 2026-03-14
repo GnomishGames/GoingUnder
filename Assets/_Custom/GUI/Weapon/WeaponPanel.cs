@@ -11,8 +11,9 @@ public class WeaponPanel : MonoBehaviour
     CombatResolver combatResolver;
     CreatureStats creatureStats;
     CombatLogPanel combatLog;
+    CreatureStats targetStats;
 
-    void Start()
+    void Awake()
     {
         creatureStats = GetComponentInParent<CreatureStats>();
         equipment = GetComponentInParent<Equipment>();
@@ -29,8 +30,8 @@ public class WeaponPanel : MonoBehaviour
             return;
         if (CheckForDead()) //if player or target is dead, log it and do not attempt attack
             return;
-            
-        CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+
+        targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
 
         // Resolve the attack using the combat system
         WeaponSO weapon = equipment.weaponSOs[slotNumber];
@@ -87,12 +88,12 @@ public class WeaponPanel : MonoBehaviour
             combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} has died!", CombatMessage.CombatMessageType.info);
         }
 
-        if (playerTargeting.currentTarget.GetComponent<CreatureStats>().isDead)
+        if (targetStats.isDead)
         {
-            combatLog.SendMessageToCombatLog($"{playerTargeting.currentTarget.GetComponent<CreatureStats>().interactableName} has died!", CombatMessage.CombatMessageType.info);
+            combatLog.SendMessageToCombatLog($"{targetStats.interactableName} has died!", CombatMessage.CombatMessageType.info);
         }
 
-        return creatureStats.isDead || playerTargeting.currentTarget.GetComponent<CreatureStats>().isDead;
+        return creatureStats.isDead || targetStats.isDead;
     }
 
     bool CheckRequiredReferences()

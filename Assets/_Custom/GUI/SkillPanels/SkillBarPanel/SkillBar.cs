@@ -14,10 +14,14 @@ public class SkillBar : MonoBehaviour
     Equipment equipment;
     public CombatLogPanel combatLog;
 
+    PlayerTargeting playerTargeting;
+
     void Awake()
     {
         skillBook = GetComponent<SkillBook>();
         equipment = GetComponent<Equipment>();
+        combatLog = transform.root.GetComponentInChildren<CombatLogPanel>(true);
+        playerTargeting = GetComponent<PlayerTargeting>();
         combatLog = transform.root.GetComponentInChildren<CombatLogPanel>(true);
     }
 
@@ -70,26 +74,14 @@ public class SkillBar : MonoBehaviour
             return;
         }
 
-        //check for target null
-        if (this.GetComponent<PlayerTargeting>().currentTarget == null)
-        {
-            Debug.Log($"SkillBar: No target selected for skill {skillSOs[slotNumber].name} in slot {slotNumber}.");
+        if (!CheckRequiredReferences()) //if any required references are missing, log errors and do not attempt skill
             return;
-        }
+        if (!CheckForTarget()) //if no target is selected, log it and do not attempt skill
+            return;
+        if (CheckForDead()) //if player or target is dead, log it and do not attempt skill
+            return;
 
-        // target dead?
-        if (this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>().isDead)
-        {
-            Debug.Log($"SkillBar: Target is too dead for skill {skillSOs[slotNumber].name} in slot {slotNumber}.");
-            return;
-        }
-
-        // Am I dead?
-        if (this.GetComponent<CreatureStats>().isDead)
-        {
-            Debug.Log($"SkillBar: Player is too dead to use skill {skillSOs[slotNumber].name} in slot {slotNumber}.");
-            return;
-        }
+        CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
 
         // Call the skill's effect method here, passing necessary parameters
         Debug.Log($"SkillBar: Activating skill {skillSOs[slotNumber].name} from slot {slotNumber}.");
@@ -105,9 +97,9 @@ public class SkillBar : MonoBehaviour
         }
 
         // do damage to target if applicable
-        var targetStats = this.GetComponent<PlayerTargeting>().currentTarget.GetComponent<CreatureStats>();
-        if (targetStats != null && skillSOs[slotNumber].targetDamage > 0)
+        if (playerTargeting.currentTarget != null && skillSOs[slotNumber].targetDamage > 0)
         {
+            targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
             targetStats.Hitpoints.ModifyCurrent(-(int)skillSOs[slotNumber].targetDamage);
 
             //combatlog message
@@ -123,5 +115,67 @@ public class SkillBar : MonoBehaviour
             //combatLog.SendMessageToCombatLog($"Player's turn ends.", CombatMessage.CombatMessageType.info);
             initiative.NextTurn();
         }
+    }
+
+    private bool CheckForDead()
+    {
+        if (this.GetComponent<CreatureStats>().isDead)
+        {
+            Debug.Log($"SkillBar: Player is dead and cannot use skills.");
+            combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} tries to use {skillSOs[0].name} but is dead and cannot act!", CombatMessage.CombatMessageType.info);
+            return true;
+        }
+
+        if (playerTargeting.currentTarget.GetComponent<CreatureStats>().isDead)
+        {
+            Debug.Log($"SkillBar: Target is dead. Cannot use skill on dead target.");
+            combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} tries to use {skillSOs[0].name} on {playerTargeting.currentTarget.GetComponent<CreatureStats>().interactableName} but the target is already dead!", CombatMessage.CombatMessageType.info);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool CheckForTarget()
+    {
+        if (playerTargeting.currentTarget == null)
+        {
+            Debug.Log($"SkillBar: No target selected for skill.");
+            combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} tries to use {skillSOs[0].name} but has no target selected!", CombatMessage.CombatMessageType.info);
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool CheckRequiredReferences()
+    {
+        bool hasErrors = false;
+
+        if (equipment == null)
+        {
+            Debug.LogError($"SkillBar: Equipment component not found on player!");
+            hasErrors = true;
+        }
+
+        if (combatLog == null)
+        {
+            Debug.LogError($"SkillBar: CombatLogPanel not found in parent hierarchy!");
+            hasErrors = true;
+        }
+
+        if (playerTargeting == null)
+        {
+            Debug.LogError($"SkillBar: PlayerTargeting component not found on player!");
+            hasErrors = true;
+        }
+
+        if (this.GetComponent<CreatureStats>() == null)
+        {
+            Debug.LogError($"SkillBar: CreatureStats component not found on player!");
+            hasErrors = true;
+        }
+
+        return !hasErrors;
     }
 }
