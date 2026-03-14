@@ -23,54 +23,14 @@ public class WeaponPanel : MonoBehaviour
 
     internal void DoSkill(int slotNumber)
     {
-        // check for skill null
-        Debug.Log($"WeaponPanel: Attempting to use weapon in slot {slotNumber}..."); // Debug log to check slot number
-        if (equipment.weaponSOs[slotNumber] == null)
-        {
-            Debug.Log($"WeaponPanel: No weapon equipped in slot {slotNumber}.");
+        if (!CheckRequiredReferences()) //if any required references are missing, log errors and do not attempt attack
             return;
-        }
-
-        if (playerTargeting.currentTarget == null)
-        {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack but has no target selected!", CombatMessage.CombatMessageType.playerAttack);
+        if (!CheckForTarget()) //if no target is selected, log it and do not attempt attack
             return;
-        }
-
+        if (CheckForDead()) //if player or target is dead, log it and do not attempt attack
+            return;
+            
         CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
-
-        if (targetStats == null)
-        {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack but has no target!", CombatMessage.CombatMessageType.playerAttack);
-            return;
-        }
-
-        if (equipment.weaponSOs[slotNumber] == null)
-        {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with no weapon equipped!", CombatMessage.CombatMessageType.playerAttack);
-            return;
-        }
-
-        // Check basic requirements
-        if (playerTargeting.currentTarget == null)
-        {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with no target selected!", CombatMessage.CombatMessageType.playerAttack);
-            return;
-        }
-
-        // check if player is already dead
-        if (creatureStats.isDead)
-        {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack but is already dead!", CombatMessage.CombatMessageType.playerAttack);
-            return;
-        }
-
-        // check if target is already dead        
-        if (targetStats.isDead)
-        {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack {targetStats.interactableName} but they are already dead!", CombatMessage.CombatMessageType.playerAttack);
-            return;
-        }
 
         // Resolve the attack using the combat system
         WeaponSO weapon = equipment.weaponSOs[slotNumber];
@@ -106,5 +66,62 @@ public class WeaponPanel : MonoBehaviour
             //combatLog.SendMessageToCombatLog($"Player's turn ends.", CombatMessage.CombatMessageType.info);
             initiative.NextTurn();
         }
+    }
+
+    bool CheckForTarget()
+    {
+        if (playerTargeting.currentTarget == null)
+        {
+            Debug.Log($"WeaponPanel: No target selected for attack.");
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack but has no target selected!", CombatMessage.CombatMessageType.info);
+            return false;
+        }
+
+        return true;
+    }
+
+    bool CheckForDead()
+    {
+        if (creatureStats.isDead)
+        {
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} has died!", CombatMessage.CombatMessageType.info);
+        }
+
+        if (playerTargeting.currentTarget.GetComponent<CreatureStats>().isDead)
+        {
+            combatLog.SendMessageToCombatLog($"{playerTargeting.currentTarget.GetComponent<CreatureStats>().interactableName} has died!", CombatMessage.CombatMessageType.info);
+        }
+
+        return creatureStats.isDead || playerTargeting.currentTarget.GetComponent<CreatureStats>().isDead;
+    }
+
+    bool CheckRequiredReferences()
+    {
+        if (playerTargeting == null)
+        {
+            Debug.LogError("WeaponPanel: PlayerTargeting component not found in parent hierarchy!");
+        }
+
+        if (equipment == null)
+        {
+            Debug.LogError("WeaponPanel: Equipment component not found in parent hierarchy!");
+        }
+
+        if (combatResolver == null)
+        {
+            Debug.LogError("WeaponPanel: CombatResolver not found in scene!");
+        }
+
+        if (creatureStats == null)
+        {
+            Debug.LogError("WeaponPanel: CreatureStats component not found in parent hierarchy!");
+        }
+
+        if (combatLog == null)
+        {
+            Debug.LogError("WeaponPanel: CombatLogPanel not found in parent hierarchy!");
+        }
+
+        return playerTargeting != null && equipment != null && combatResolver != null && creatureStats != null && combatLog != null;
     }
 }
