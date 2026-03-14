@@ -17,6 +17,9 @@ public class WeaponSO : EquipmentSO
     [Tooltip("Bonus added to the damage roll")]
     public int DieBonus; //bonus added to the damage roll
 
+    [Header("Animation and Effects")]
+    public GameObject impactEffect;
+
     public override List<TooltipLine> GetTooltip()
     {
         var lines = base.GetTooltip();
