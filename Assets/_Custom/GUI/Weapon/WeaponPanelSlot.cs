@@ -235,18 +235,31 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void OnPointerClick(PointerEventData eventData)
     {
         CreatureStats playerStats = playerTransform.GetComponent<CreatureStats>();
+
+        if (playerTargeting.currentTarget == null)
+        {
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack but has no target selected!", CombatMessage.CombatMessageType.playerAttack);
+            return;
+        }
+
         CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+        
+        if (targetStats == null)
+        {
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack but has no target!", CombatMessage.CombatMessageType.playerAttack);
+            return;
+        }
 
         if (equipment.weaponSOs[slotNumber] == null)
         {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with an empty weapon slot but fails!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with no weapon equipped!", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
         // Check basic requirements
         if (playerTargeting.currentTarget == null)
         {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with no target selected but fails!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to attack with no target selected!", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 

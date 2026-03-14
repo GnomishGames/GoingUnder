@@ -17,7 +17,7 @@ public class CombatResolver : MonoBehaviour
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: (int)target.armorClass,
+                targetAC: target.armorClass,
                 damageDealt: 0,
                 failureReason: "Missing attacker, target, or weapon"
             );
@@ -30,7 +30,7 @@ public class CombatResolver : MonoBehaviour
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: (int)target.armorClass,
+                targetAC: target.armorClass,
                 damageDealt: 0,
                 failureReason: "Attacker is dead"
             );
@@ -43,7 +43,7 @@ public class CombatResolver : MonoBehaviour
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: (int)target.armorClass,
+                targetAC: target.armorClass,
                 damageDealt: 0,
                 failureReason: "Target is already dead"
             );
@@ -56,7 +56,7 @@ public class CombatResolver : MonoBehaviour
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: (int)target.armorClass,
+                targetAC: target.armorClass,
                 damageDealt: 0,
                 failureReason: "It's not the attacker's turn"
             );
@@ -64,7 +64,7 @@ public class CombatResolver : MonoBehaviour
 
         // Perform attack roll
         int toHit = attacker.AttackRoll();
-        int targetAC = (int)target.armorClass;
+        int targetAC = target.armorClass;
         bool isHit = toHit >= targetAC;
 
         int damageDealt = 0;
