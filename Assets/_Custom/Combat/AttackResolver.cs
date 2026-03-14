@@ -3,23 +3,35 @@ using UnityEngine;
 // Handles all combat resolution logic including attack rolls, damage calculation, and damage application.
 // This is separate from UI and can be used by any system that needs to resolve attacks.
 
-public class CombatResolver : MonoBehaviour
+public class AttackResolver : MonoBehaviour
 {
-
-
     // Resolves an attack from an attacker to a target using a specific weapon
     public AttackResult ResolveAttack(CreatureStats attacker, CreatureStats target, WeaponSO weapon)
     {
         // Validation checks
-        if (attacker == null || target == null || weapon == null)
+        if (attacker == null || weapon == null)
         {
             return new AttackResult(
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: target.armorClass,
+                targetAC: target != null ? target.armorClass : 0,
                 damageDealt: 0,
-                failureReason: "Missing attacker, target, or weapon"
+                failureReason: "Missing attacker or weapon"
+            );
+        }
+
+        // is target null? This can happen if the player tries to attack without having a target selected, or if the target dies before the attack resolves.
+        if (target == null)
+        {
+            Debug.LogError($"AttackResolver: No target specified for attack!");
+            return new AttackResult(
+                wasAttempted: false,
+                wasHit: false,
+                attackRoll: 0,
+                targetAC: 0,
+                damageDealt: 0,
+                failureReason: "No target specified"
             );
         }
 
@@ -30,7 +42,7 @@ public class CombatResolver : MonoBehaviour
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: target.armorClass,
+                targetAC: target != null ? target.armorClass : 0,
                 damageDealt: 0,
                 failureReason: "Attacker is dead"
             );
@@ -43,7 +55,7 @@ public class CombatResolver : MonoBehaviour
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: target.armorClass,
+                targetAC: target != null ? target.armorClass : 0,
                 damageDealt: 0,
                 failureReason: "Target is already dead"
             );
@@ -56,7 +68,7 @@ public class CombatResolver : MonoBehaviour
                 wasAttempted: false,
                 wasHit: false,
                 attackRoll: 0,
-                targetAC: target.armorClass,
+                targetAC: target != null ? target.armorClass : 0,
                 damageDealt: 0,
                 failureReason: "It's not the attacker's turn"
             );
@@ -64,14 +76,17 @@ public class CombatResolver : MonoBehaviour
 
         // Perform attack roll
         int toHit = attacker.AttackRoll();
-        int targetAC = target.armorClass;
+        int targetAC = target != null ? target.armorClass : 0;
         bool isHit = toHit >= targetAC;
 
         int damageDealt = 0;
         if (isHit)
         {
             damageDealt = CalculateDamage(attacker, weapon);
-            target.Hitpoints.ModifyCurrent(-damageDealt);
+            if (target != null)
+            {
+                target.Hitpoints.ModifyCurrent(-damageDealt);
+            }
         }
 
         // invoke death event

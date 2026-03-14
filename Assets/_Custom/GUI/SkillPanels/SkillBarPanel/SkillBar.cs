@@ -15,6 +15,9 @@ public class SkillBar : MonoBehaviour
     public CombatLogPanel combatLog;
 
     PlayerTargeting playerTargeting;
+    CreatureStats targetStats;
+    CreatureStats creatureStats;
+    SkillResolver skillResolver;
 
     void Awake()
     {
@@ -22,7 +25,13 @@ public class SkillBar : MonoBehaviour
         equipment = GetComponent<Equipment>();
         combatLog = transform.root.GetComponentInChildren<CombatLogPanel>(true);
         playerTargeting = GetComponent<PlayerTargeting>();
-        combatLog = transform.root.GetComponentInChildren<CombatLogPanel>(true);
+        creatureStats = GetComponent<CreatureStats>();
+        skillResolver = FindFirstObjectByType<SkillResolver>();
+
+        if (skillResolver == null)
+        {
+            Debug.LogError($"SkillBar: No SkillResolver found in scene! Skill usage will not work without a SkillResolver.");
+        }
     }
 
     public void TriggerSkillChanged(int slotNumber)
@@ -73,37 +82,48 @@ public class SkillBar : MonoBehaviour
             Debug.Log($"SkillBar: No skill equipped in slot {slotNumber}.");
             return;
         }
+        else
+        {
+            Debug.Log($"SkillBar: Attempting to use skill {skillSOs[slotNumber].name} from slot {slotNumber}.");
+        }
+
+        if (!CheckForTarget()) //if no target is selected, log it and do not attempt skill
+            return;
+
+        targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
 
         if (!CheckRequiredReferences()) //if any required references are missing, log errors and do not attempt skill
             return;
-        if (!CheckForTarget()) //if no target is selected, log it and do not attempt skill
-            return;
+
         if (CheckForDead()) //if player or target is dead, log it and do not attempt skill
             return;
 
-        CreatureStats targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+        Debug.Log(creatureStats.interactableName + " attempts to use " + skillSOs[slotNumber].name + " on " + targetStats.interactableName);
+        //resolve the skill using the skill resolver
+        SkillResult skillResult = skillResolver.ResolveSkill(creatureStats, targetStats, skillSOs[slotNumber]);
 
-        // Call the skill's effect method here, passing necessary parameters
-        Debug.Log($"SkillBar: Activating skill {skillSOs[slotNumber].name} from slot {slotNumber}.");
-
-        // Apply self-heal if applicable
-        if (skillSOs[slotNumber].selfHeal > 0 && this.GetComponent<CreatureStats>() != null)
+        //handle the result
+        if (!skillResult.wasAttempted)
         {
-            this.GetComponent<CreatureStats>().Hitpoints.ModifyCurrent((int)skillSOs[slotNumber].selfHeal);
-            Debug.Log($"SkillBar: Skill {skillSOs[slotNumber].name} healed {skillSOs[slotNumber].selfHeal} HP!");
-
-            //combatlog message
-            combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} used {skillSOs[slotNumber].name} and healed for {skillSOs[slotNumber].selfHeal} HP!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} tries to use {skillSOs[slotNumber].name} on {targetStats.interactableName} but the skill usage failed! (Reason: {skillResult.failureReason})", CombatMessage.CombatMessageType.playerAttack);
+            return;
         }
 
-        // do damage to target if applicable
-        if (playerTargeting.currentTarget != null && skillSOs[slotNumber].targetDamage > 0)
+        if (skillResult.wasSuccessful)
         {
-            targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
-            targetStats.Hitpoints.ModifyCurrent(-(int)skillSOs[slotNumber].targetDamage);
+            string resultMessage = $"{creatureStats.interactableName} uses {skillSOs[slotNumber].name} on {targetStats.interactableName} and successfully hits for {skillResult.damageDealt} damage!";
+            if (skillResult.healingDone > 0)
+            {
+                resultMessage += $" and heals for {skillResult.healingDone} hitpoints!";
+            }
+            combatLog.SendMessageToCombatLog(resultMessage, CombatMessage.CombatMessageType.playerAttack);
 
-            //combatlog message
-            combatLog.SendMessageToCombatLog($"{this.GetComponent<CreatureStats>().interactableName} used {skillSOs[slotNumber].name} and dealt {skillSOs[slotNumber].targetDamage} damage to {targetStats.interactableName}!", CombatMessage.CombatMessageType.playerAttack);
+            //play skill effect here
+            InstantiateEffect.PlayEffect(skillSOs[slotNumber].impactEffect, targetStats.transform.position, Quaternion.identity);
+        }
+        else
+        {
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} uses {skillSOs[slotNumber].name} on {targetStats.interactableName} but misses! (Damage Dealt: {skillResult.damageDealt})", CombatMessage.CombatMessageType.playerAttack);
         }
 
         targetStats.CheckIfDead();

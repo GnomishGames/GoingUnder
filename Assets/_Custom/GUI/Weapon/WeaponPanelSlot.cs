@@ -26,7 +26,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     //class references
     Equipment equipment;
-    CombatResolver combatResolver;
+    AttackResolver combatResolver;
     CreatureStats creatureStats;
 
     //dice
@@ -66,7 +66,7 @@ public class WeaponsPanelSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         damageDie = FindFirstObjectByType<DamageDie>();
 
         // Find CombatResolver in the scene
-        combatResolver = FindFirstObjectByType<CombatResolver>();
+        combatResolver = FindFirstObjectByType<AttackResolver>();
         if (combatResolver == null)
         {
             Debug.LogError("WeaponsPanelSlot: CombatResolver not found in scene!");

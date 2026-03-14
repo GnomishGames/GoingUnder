@@ -15,7 +15,7 @@ public class EnemyAttacks : MonoBehaviour
     AnimationController animController;
 
     //other systems
-    CombatResolver combatResolver;
+    AttackResolver combatResolver;
     Initiative initiative;
 
     float attackDelay = 1f; // Delay before enemy attacks after their turn starts
@@ -36,7 +36,7 @@ public class EnemyAttacks : MonoBehaviour
         animController = GetComponent<AnimationController>();
 
         //other systems
-        combatResolver = FindAnyObjectByType<CombatResolver>();
+        combatResolver = FindAnyObjectByType<AttackResolver>();
         initiative = FindAnyObjectByType<Initiative>();
 
         // add myself to the initiative system's list of enemies if not already present

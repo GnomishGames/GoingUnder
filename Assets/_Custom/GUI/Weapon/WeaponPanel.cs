@@ -8,7 +8,7 @@ public class WeaponPanel : MonoBehaviour
 
     PlayerTargeting playerTargeting;
     Equipment equipment;
-    CombatResolver combatResolver;
+    AttackResolver attackResolver;
     CreatureStats creatureStats;
     CombatLogPanel combatLog;
     CreatureStats targetStats;
@@ -18,35 +18,36 @@ public class WeaponPanel : MonoBehaviour
         creatureStats = GetComponentInParent<CreatureStats>();
         equipment = GetComponentInParent<Equipment>();
         playerTargeting = GetComponentInParent<PlayerTargeting>();
-        combatResolver = FindFirstObjectByType<CombatResolver>();
+        attackResolver = FindFirstObjectByType<AttackResolver>();
         combatLog = transform.root.GetComponentInChildren<CombatLogPanel>(true);
     }
 
     internal void DoSkill(int slotNumber)
     {
-        if (!CheckRequiredReferences()) //if any required references are missing, log errors and do not attempt attack
-            return;
         if (!CheckForTarget()) //if no target is selected, log it and do not attempt attack
+            return;
+            
+        targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
+
+        if (!CheckRequiredReferences()) //if any required references are missing, log errors and do not attempt attack
             return;
         if (CheckForDead()) //if player or target is dead, log it and do not attempt attack
             return;
 
-        targetStats = playerTargeting.currentTarget.GetComponent<CreatureStats>();
-
         // Resolve the attack using the combat system
         WeaponSO weapon = equipment.weaponSOs[slotNumber];
-        AttackResult result = combatResolver.ResolveAttack(creatureStats, targetStats, weapon);
+        AttackResult attackResult = attackResolver.ResolveAttack(creatureStats, targetStats, weapon);
 
         // Handle the result
-        if (!result.wasAttempted)
+        if (!attackResult.wasAttempted)
         {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} but the attack failed! (Reason: {result.failureReason})", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} but the attack failed! (Reason: {attackResult.failureReason})", CombatMessage.CombatMessageType.playerAttack);
             return;
         }
 
-        if (result.wasHit)
+        if (attackResult.wasHit)
         {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} and hits for {result.damageDealt} damage!", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} and hits for {attackResult.damageDealt} damage!", CombatMessage.CombatMessageType.playerAttack);
             //attackDie.SetDieValue(result.attackRoll);
             //damageDie.SetDieValue(result.damageDealt);
 
@@ -55,10 +56,12 @@ public class WeaponPanel : MonoBehaviour
         }
         else
         {
-            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} and misses! (Attack Roll: {result.attackRoll} vs Target AC: {result.targetAC})", CombatMessage.CombatMessageType.playerAttack);
+            combatLog.SendMessageToCombatLog($"{creatureStats.interactableName} attacks {targetStats.interactableName} with {weapon.name} and misses! (Attack Roll: {attackResult.attackRoll} vs Target AC: {attackResult.targetAC})", CombatMessage.CombatMessageType.playerAttack);
             //attackDie.SetDieValue(result.attackRoll);
             //damageDie.SetDieValue(0);
         }
+
+        targetStats.CheckIfDead();
 
         // Advance to next turn
         Initiative initiative = FindAnyObjectByType<Initiative>();
@@ -108,7 +111,7 @@ public class WeaponPanel : MonoBehaviour
             Debug.LogError("WeaponPanel: Equipment component not found in parent hierarchy!");
         }
 
-        if (combatResolver == null)
+        if (attackResolver == null)
         {
             Debug.LogError("WeaponPanel: CombatResolver not found in scene!");
         }
@@ -123,6 +126,6 @@ public class WeaponPanel : MonoBehaviour
             Debug.LogError("WeaponPanel: CombatLogPanel not found in parent hierarchy!");
         }
 
-        return playerTargeting != null && equipment != null && combatResolver != null && creatureStats != null && combatLog != null;
+        return playerTargeting != null && equipment != null && attackResolver != null && creatureStats != null && combatLog != null;
     }
 }

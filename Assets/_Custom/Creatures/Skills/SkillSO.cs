@@ -8,4 +8,5 @@ public class SkillSO : ItemSO
     public int selfDamage;
     public int selfHeal;
     public float attackRange;
+    public GameObject impactEffect;
 }

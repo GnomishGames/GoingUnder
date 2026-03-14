@@ -1,10 +1,11 @@
 using UnityEngine;
 
+// This class is responsible for resolving skill usage including checking for valid targets, applying damage, and triggering any additional effects.
+// It is separate from UI and can be used by any system that needs to resolve skill usage.
+
 public class SkillResolver : MonoBehaviour
 {
-    // This class is responsible for resolving skill usage including checking for valid targets, applying damage, and triggering any additional effects.
-    // It is separate from UI and can be used by any system that needs to resolve skill usage.
-
+    // Resolves the usage of a skill by a skill user on a target. Returns a SkillResult indicating the outcome.
     public SkillResult ResolveSkill(CreatureStats skillUser, CreatureStats target, SkillSO skill)
     {
         // Validation checks
@@ -20,6 +21,7 @@ public class SkillResolver : MonoBehaviour
             );
         }
 
+        // is target null? This can happen if the player tries to use a skill that requires a target without having one selected, or if the target dies before the skill resolves.
         if (target == null)
         {
             Debug.LogError($"SkillResolver: No target specified for skill usage!");
@@ -68,8 +70,8 @@ public class SkillResolver : MonoBehaviour
         // Apply healing to target if applicable
         if (skill.selfHeal > 0)
         {
-            target.Hitpoints.ModifyCurrent(skill.selfHeal);
-            Debug.Log($"{skillUser.interactableName} uses {skill.name} on {target.interactableName} and heals for {skill.selfHeal} hitpoints!");
+            skillUser.Hitpoints.ModifyCurrent(skill.selfHeal);
+            Debug.Log($"{skillUser.interactableName} uses {skill.name} on {skillUser.interactableName} and heals for {skill.selfHeal} hitpoints!");
         }
 
         return new SkillResult(
