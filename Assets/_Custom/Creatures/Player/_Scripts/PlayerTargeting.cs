@@ -15,7 +15,7 @@ public class PlayerTargeting : MonoBehaviour
     //dice
     AttackDie attackDie;
     DamageDie damageDie;
-    
+
     void Start()
     {
         cam = GetComponentInChildren<Camera>(); //camera component is on a child object of the player
@@ -50,20 +50,33 @@ public class PlayerTargeting : MonoBehaviour
                 if (creature != null)
                 {
                     // If the hit object has a CreatureStats component, set it as the target
-                    currentTarget = creature.GetComponent<Interactable>();
-                    targetPanel.gameObject.SetActive(true);
-                    OnTargetChanged?.Invoke(creature);
+                    ChangeTarget(creature);
                 }
             }
             else
             {
                 // Clicked on empty space, clear target
-                currentTarget = null;
-                targetPanel.gameObject.SetActive(false);
-                OnTargetChanged?.Invoke(null);
+                ChangeTarget(null);
                 //damageDie.SetDieValue(0); // Clear damage die display when no target is selected
                 //attackDie.SetDieValue(0); // Clear attack die display when no target is selected
             }
+        }
+    }
+
+    public void ChangeTarget(CreatureStats creature)
+    {
+        if (creature == null)
+        {
+            currentTarget = null;
+            targetPanel.gameObject.SetActive(false);
+            OnTargetChanged?.Invoke(null);
+            return;
+        }
+        else
+        {
+            currentTarget = creature.GetComponent<Interactable>();
+            targetPanel.gameObject.SetActive(true);
+            OnTargetChanged?.Invoke(creature);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,9 +7,6 @@ public class TargetSelf : MonoBehaviour, IPointerClickHandler
     PlayerTargeting playerTargeting;
     TargetPanel targetPanel;
     CreatureStats creatureStats;
-
-    //events
-    public event Action<CreatureStats> OnTargetChanged; // Event to notify when the target changes, passing the new target's CreatureStats
 
     void Awake()
     {
@@ -27,9 +23,6 @@ public class TargetSelf : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         creatureStats = transform.root.GetComponent<CreatureStats>();
-        playerTargeting.currentTarget = creatureStats; // Set the current target to the player itself
-        OnTargetChanged?.Invoke(creatureStats);
-
-        targetPanel.gameObject.SetActive(true);
+        playerTargeting.ChangeTarget(creatureStats);
     }
 }

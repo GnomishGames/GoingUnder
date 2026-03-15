@@ -24,7 +24,6 @@ public class SkillResolver : MonoBehaviour
         // is target null? This can happen if the player tries to use a skill that requires a target without having one selected, or if the target dies before the skill resolves.
         if (target == null)
         {
-            Debug.LogError($"SkillResolver: No target specified for skill usage!");
             return new SkillResult(
                 wasAttempted: false,
                 wasSuccessful: false,
@@ -37,7 +36,6 @@ public class SkillResolver : MonoBehaviour
         // Is skill user dead?
         if (skillUser.isDead)
         {
-            Debug.LogError($"SkillResolver: Skill user {skillUser.interactableName} is dead and cannot use skills!");
             return new SkillResult(
                 wasAttempted: false,
                 wasSuccessful: false,
@@ -50,7 +48,6 @@ public class SkillResolver : MonoBehaviour
         // Is target dead?
         if (target.isDead)
         {
-            Debug.LogError($"SkillResolver: Target {target.interactableName} is already dead! Cannot use skills on a dead target.");
             return new SkillResult(
                 wasAttempted: false,
                 wasSuccessful: false,
@@ -63,7 +60,6 @@ public class SkillResolver : MonoBehaviour
         // Check if skill user has enough stamina and mana to use the skill
         if (skillUser.Stamina.Current < skill.staminaCost)
         {
-            Debug.LogError($"SkillResolver: {skillUser.interactableName} does not have enough stamina to use {skill.name}!");
             return new SkillResult(
                 wasAttempted: false,
                 wasSuccessful: false,
@@ -75,7 +71,6 @@ public class SkillResolver : MonoBehaviour
 
         if (skillUser.Mana.Current < skill.manaCost)
         {
-            Debug.LogError($"SkillResolver: {skillUser.interactableName} does not have enough mana to use {skill.name}!");
             return new SkillResult(
                 wasAttempted: false,
                 wasSuccessful: false,
@@ -89,27 +84,24 @@ public class SkillResolver : MonoBehaviour
         if (skill.damage > 0)
         {
             target.Hitpoints.ModifyCurrent(-skill.damage);
-            Debug.Log($"{skillUser.interactableName} uses {skill.name} on {target.interactableName} for {skill.damage} damage!");
         }
 
         // Apply healing to target if applicable
         if (skill.heal > 0)
         {
             target.Hitpoints.ModifyCurrent(skill.heal);
-            Debug.Log($"{skillUser.interactableName} uses {skill.name} on {target.interactableName} and heals for {skill.heal} hitpoints!");
         }
 
         //subtract stamina and mana costs from skill user
         if (skill.staminaCost > 0)
         {
             skillUser.Stamina.ModifyCurrent(-skill.staminaCost);
-            Debug.Log($"{skillUser.interactableName} pays {skill.staminaCost} stamina to use {skill.name}.");
         }
 
+        //subtract mana cost from skill user
         if (skill.manaCost > 0)
         {
             skillUser.Mana.ModifyCurrent(-skill.manaCost);
-            Debug.Log($"{skillUser.interactableName} pays {skill.manaCost} mana to use {skill.name}.");
         }
 
         return new SkillResult(
