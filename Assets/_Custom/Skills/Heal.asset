@@ -20,9 +20,8 @@ MonoBehaviour:
   itemWeight: 0
   itemValue: 0
   slotType: 13
-  staminaCost: 0
-  targetDamage: 0
-  selfDamage: 0
-  selfHeal: 5
-  attackRange: 0
+  staminaCost: 5
+  manaCost: 0
+  damage: 0
+  heal: 5
   impactEffect: {fileID: 8607967071603326515, guid: a9570c803805d978280d67453df45ba7, type: 3}

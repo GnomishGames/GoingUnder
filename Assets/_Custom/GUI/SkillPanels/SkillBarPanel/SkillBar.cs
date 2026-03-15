@@ -105,6 +105,7 @@ public class SkillBar : MonoBehaviour
             return;
         }
 
+        // If we got here, the skill was attempted. Log success or failure.
         if (skillResult.wasSuccessful)
         {
             string resultMessage = $"{creatureStats.interactableName} uses {skillSOs[slotNumber].name} on {targetStats.interactableName} and successfully hits for {skillResult.damageDealt} damage!";

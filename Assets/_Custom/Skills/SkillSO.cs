@@ -4,9 +4,8 @@ using UnityEngine;
 public class SkillSO : ItemSO
 {
     public int staminaCost;
-    public int targetDamage;
-    public int selfDamage;
-    public int selfHeal;
-    public float attackRange;
+    public int manaCost;
+    public int damage;
+    public int heal;
     public GameObject impactEffect;
 }
