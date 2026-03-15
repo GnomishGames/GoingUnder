@@ -94,7 +94,6 @@ public class SkillBar : MonoBehaviour
         if (CheckForDead()) //if player or target is dead, log it and do not attempt skill
             return;
 
-        Debug.Log(creatureStats.interactableName + " attempts to use " + skillSOs[slotNumber].name + " on " + targetStats.interactableName);
         //resolve the skill using the skill resolver
         SkillResult skillResult = skillResolver.ResolveSkill(creatureStats, targetStats, skillSOs[slotNumber]);
 

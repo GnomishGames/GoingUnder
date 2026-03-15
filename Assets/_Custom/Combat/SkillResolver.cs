@@ -95,8 +95,8 @@ public class SkillResolver : MonoBehaviour
         // Apply healing to target if applicable
         if (skill.heal > 0)
         {
-            skillUser.Hitpoints.ModifyCurrent(skill.heal);
-            Debug.Log($"{skillUser.interactableName} uses {skill.name} on {skillUser.interactableName} and heals for {skill.heal} hitpoints!");
+            target.Hitpoints.ModifyCurrent(skill.heal);
+            Debug.Log($"{skillUser.interactableName} uses {skill.name} on {target.interactableName} and heals for {skill.heal} hitpoints!");
         }
 
         //subtract stamina and mana costs from skill user
