@@ -10,17 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 866637b2e95943700b359e5394c9b939, type: 3}
-  m_Name: Slash
+  m_Name: Heal
   m_EditorClassIdentifier: Assembly-CSharp::SkillSO
-  sprite: {fileID: 21300000, guid: 77c06a65a8ebcf24e9267547b3c71a60, type: 3}
-  itemName: Slash
+  sprite: {fileID: 21300000, guid: 6aae2326a9e3663438bbdf2090234260, type: 3}
+  itemName: Heal
   itemNameSuffix: 
+  itemRarity: 0
   itemDescription: 
   itemWeight: 0
   itemValue: 0
   slotType: 13
-  staminaCost: 5
-  targetDamage: 5
+  staminaCost: 0
+  targetDamage: 0
   selfDamage: 0
-  selfHeal: 0
-  attackRange: 1
+  selfHeal: 5
+  attackRange: 0
+  impactEffect: {fileID: 8607967071603326515, guid: a9570c803805d978280d67453df45ba7, type: 3}

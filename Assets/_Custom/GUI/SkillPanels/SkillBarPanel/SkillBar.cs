@@ -82,10 +82,6 @@ public class SkillBar : MonoBehaviour
             Debug.Log($"SkillBar: No skill equipped in slot {slotNumber}.");
             return;
         }
-        else
-        {
-            Debug.Log($"SkillBar: Attempting to use skill {skillSOs[slotNumber].name} from slot {slotNumber}.");
-        }
 
         if (!CheckForTarget()) //if no target is selected, log it and do not attempt skill
             return;
