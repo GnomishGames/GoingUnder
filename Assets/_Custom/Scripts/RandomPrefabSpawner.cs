@@ -35,13 +35,7 @@ public class RandomPrefabSpawner : MonoBehaviour
             Debug.LogWarning($"RandomPrefabSpawner: Prefab at index {randomIndex} is null!");
         }
 
-        // start turn after spawning
-        Initiative initiative = FindAnyObjectByType<Initiative>();
-        if (initiative != null)
-        {
-            initiative.StartCombat();
-            //combatLog.SendMessageToCombatLog($"A new creature has entered the battle!", CombatMessage.CombatMessageType.info);
-        }
+
     }
 
     // remove other creatures that are dead
